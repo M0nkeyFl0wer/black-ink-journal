@@ -123,7 +123,7 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
                 className="rounded-xl border-gray-300 hover:bg-gray-50"
               >
                 <Eye className="w-4 h-4 mr-2" />
-                View Site
+                View Live Site
               </Button>
               <Button 
                 onClick={handleNewPost} 
