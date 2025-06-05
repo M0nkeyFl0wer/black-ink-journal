@@ -62,7 +62,7 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-4xl mx-auto px-6 py-8">
         {loading && (
           <div className="text-center text-gray-400">
             <p>Loading posts...</p>
@@ -81,23 +81,13 @@ const Index = () => {
           </div>
         )}
 
-        {/* Featured Post */}
-        {featuredPost && !loading && (
-          <div className="mb-8 max-w-2xl">
-            <BlogPreview post={featuredPost} isFeatured={true} />
+        {/* Single Column Layout */}
+        {!loading && posts.length > 0 && (
+          <div className="space-y-6">
+            {posts.map((post, index) => (
+              <BlogPreview key={post.id} post={post} isFeatured={index === 0} />
+            ))}
           </div>
-        )}
-
-        {/* Other Posts Grid */}
-        {otherPosts.length > 0 && (
-          <>
-            <Separator className="my-8 bg-gray-800" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {otherPosts.map((post) => (
-                <BlogPreview key={post.id} post={post} isFeatured={false} />
-              ))}
-            </div>
-          </>
         )}
 
         {/* Bluesky Feed Section */}
