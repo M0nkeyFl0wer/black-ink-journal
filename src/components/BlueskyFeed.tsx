@@ -143,57 +143,18 @@ export const BlueskyFeed = () => {
       try {
         console.log('Starting Bluesky feed fetch...');
         
-        // Try different approaches to invoke the function
         const cacheBust = Date.now();
         
-        // First, try with the Supabase client
         console.log('Attempting to invoke bluesky-feed function via Supabase client...');
-        let data, error;
+        const { data, error } = await supabase.functions.invoke('bluesky-feed', {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          },
+          body: { cacheBust }
+        });
         
-        try {
-          const response = await supabase.functions.invoke('bluesky-feed', {
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              'Pragma': 'no-cache'
-            },
-            body: { cacheBust }
-          });
-          data = response.data;
-          error = response.error;
-          console.log('Supabase function invoke response:', { data, error });
-        } catch (invokeError) {
-          console.error('Error invoking function via Supabase client:', invokeError);
-          
-          // Fallback: try direct fetch to the function URL
-          console.log('Fallback: attempting direct fetch to function URL...');
-          try {
-            const directResponse = await fetch(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/bluesky-feed?cb=${cacheBust}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${supabase.supabaseKey}`,
-                'apikey': supabase.supabaseKey,
-                'Cache-Control': 'no-cache'
-              },
-              body: JSON.stringify({ cacheBust })
-            });
-            
-            console.log('Direct fetch response status:', directResponse.status);
-            
-            if (directResponse.ok) {
-              data = await directResponse.json();
-              error = null;
-              console.log('Direct fetch successful:', data);
-            } else {
-              const errorText = await directResponse.text();
-              console.error('Direct fetch failed:', directResponse.status, errorText);
-              throw new Error(`Direct fetch failed: ${directResponse.status} - ${errorText}`);
-            }
-          } catch (directError) {
-            console.error('Direct fetch also failed:', directError);
-            throw invokeError; // Throw the original error
-          }
-        }
+        console.log('Supabase function invoke response:', { data, error });
         
         if (error) {
           console.error('Function returned error:', error);
