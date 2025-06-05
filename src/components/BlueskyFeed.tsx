@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { ExternalLink, Heart, MessageCircle, Repeat2, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -140,64 +141,121 @@ export const BlueskyFeed = () => {
   useEffect(() => {
     const fetchBlueskyFeed = async () => {
       try {
-        console.log('Fetching Bluesky feed with cache bust...');
+        console.log('Starting Bluesky feed fetch...');
         
-        // Add cache-busting parameter
+        // Try different approaches to invoke the function
         const cacheBust = Date.now();
-        const { data, error } = await supabase.functions.invoke('bluesky-feed', {
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          },
-          body: { cacheBust }
-        });
         
-        console.log('Supabase function response:', { data, error });
+        // First, try with the Supabase client
+        console.log('Attempting to invoke bluesky-feed function via Supabase client...');
+        let data, error;
+        
+        try {
+          const response = await supabase.functions.invoke('bluesky-feed', {
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache'
+            },
+            body: { cacheBust }
+          });
+          data = response.data;
+          error = response.error;
+          console.log('Supabase function invoke response:', { data, error });
+        } catch (invokeError) {
+          console.error('Error invoking function via Supabase client:', invokeError);
+          
+          // Fallback: try direct fetch to the function URL
+          console.log('Fallback: attempting direct fetch to function URL...');
+          try {
+            const directResponse = await fetch(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/bluesky-feed?cb=${cacheBust}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${supabase.supabaseKey}`,
+                'apikey': supabase.supabaseKey,
+                'Cache-Control': 'no-cache'
+              },
+              body: JSON.stringify({ cacheBust })
+            });
+            
+            console.log('Direct fetch response status:', directResponse.status);
+            
+            if (directResponse.ok) {
+              data = await directResponse.json();
+              error = null;
+              console.log('Direct fetch successful:', data);
+            } else {
+              const errorText = await directResponse.text();
+              console.error('Direct fetch failed:', directResponse.status, errorText);
+              throw new Error(`Direct fetch failed: ${directResponse.status} - ${errorText}`);
+            }
+          } catch (directError) {
+            console.error('Direct fetch also failed:', directError);
+            throw invokeError; // Throw the original error
+          }
+        }
         
         if (error) {
-          console.error('Supabase function error:', error);
+          console.error('Function returned error:', error);
           setFeedData({ 
             posts: [], 
-            error: `Function error: ${error.message}`,
+            error: `Function error: ${error.message || JSON.stringify(error)}`,
             debug: error
           });
           setDebugInfo({ 
-            type: 'supabase_error', 
-            error: error.message,
-            details: error
+            type: 'function_error', 
+            error: error.message || JSON.stringify(error),
+            details: error,
+            timestamp: new Date().toISOString()
           });
         } else if (data && data.error) {
-          console.error('Bluesky API error:', data.error);
+          console.error('API returned error:', data.error);
           setFeedData({ 
             posts: [], 
             error: `API error: ${data.error}`,
             debug: data.debug
           });
           setDebugInfo({ 
-            type: 'bluesky_error', 
+            type: 'api_error', 
             error: data.error,
-            debug: data.debug
+            debug: data.debug,
+            timestamp: new Date().toISOString()
           });
-        } else {
+        } else if (data) {
           console.log('Successfully fetched Bluesky data:', data);
-          setFeedData(data || { posts: [] });
-          if (data && data.debug) {
+          setFeedData(data);
+          if (data.debug) {
             setDebugInfo({ 
               type: 'success', 
               debug: data.debug,
-              postsCount: data.posts?.length || 0
+              postsCount: data.posts?.length || 0,
+              timestamp: new Date().toISOString()
             });
           }
+        } else {
+          console.error('No data received from function');
+          setFeedData({ 
+            posts: [], 
+            error: 'No data received from function'
+          });
+          setDebugInfo({ 
+            type: 'no_data', 
+            error: 'No data received',
+            timestamp: new Date().toISOString()
+          });
         }
       } catch (error) {
         console.error('Error fetching Bluesky feed:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         setFeedData({ 
           posts: [], 
-          error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`
+          error: `Network error: ${errorMessage}`
         });
         setDebugInfo({ 
           type: 'network_error', 
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: errorMessage,
+          stack: error instanceof Error ? error.stack : undefined,
+          timestamp: new Date().toISOString()
         });
       } finally {
         setLoading(false);
@@ -225,7 +283,6 @@ export const BlueskyFeed = () => {
     }
   };
 
-  // Debug logging
   console.log('BlueskyFeed render state:', { 
     loading, 
     feedData, 
@@ -259,16 +316,34 @@ export const BlueskyFeed = () => {
     return (
       <div className="space-y-4">
         <div className="p-4 border border-red-800 rounded-lg">
-          <p className="text-red-400 text-sm">Error loading Bluesky posts: {feedData.error}</p>
-          <p className="text-gray-400 text-xs mt-2">Please try refreshing the page.</p>
-          {debugInfo && (
-            <details className="mt-3">
-              <summary className="text-xs text-gray-500 cursor-pointer">Debug Info</summary>
-              <pre className="text-xs text-gray-600 mt-2 overflow-auto">
-                {JSON.stringify(debugInfo, null, 2)}
-              </pre>
-            </details>
-          )}
+          <p className="text-red-400 text-sm mb-2">Error loading Bluesky posts:</p>
+          <p className="text-red-300 text-xs font-mono mb-3">{feedData.error}</p>
+          <p className="text-gray-400 text-xs mb-3">Please try refreshing the page.</p>
+          
+          {/* Enhanced debug information */}
+          <details className="mt-3">
+            <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400">
+              🔍 Debug Information (Click to expand)
+            </summary>
+            <div className="mt-2 p-2 bg-gray-900 rounded text-xs">
+              <div className="mb-2">
+                <strong className="text-gray-300">Timestamp:</strong> {debugInfo?.timestamp || 'N/A'}
+              </div>
+              <div className="mb-2">
+                <strong className="text-gray-300">Error Type:</strong> {debugInfo?.type || 'Unknown'}
+              </div>
+              <div className="mb-2">
+                <strong className="text-gray-300">Error Details:</strong>
+                <pre className="text-gray-400 mt-1 overflow-auto whitespace-pre-wrap">
+                  {JSON.stringify(debugInfo, null, 2)}
+                </pre>
+              </div>
+              <div className="mt-2 pt-2 border-t border-gray-700">
+                <strong className="text-gray-300">Function URL:</strong> 
+                <span className="text-blue-400 ml-1">https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/bluesky-feed</span>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     );
@@ -297,8 +372,8 @@ export const BlueskyFeed = () => {
       {/* Debug info for development */}
       {debugInfo && debugInfo.type === 'success' && (
         <div className="text-xs text-gray-500 mb-2">
-          Last updated: {debugInfo.debug?.timestamp && new Date(debugInfo.debug.timestamp).toLocaleTimeString()}
-          {debugInfo.postsCount && ` • ${debugInfo.postsCount} posts`}
+          ✅ Last updated: {debugInfo.debug?.timestamp && new Date(debugInfo.debug.timestamp).toLocaleTimeString()}
+          {debugInfo.postsCount && ` • ${debugInfo.postsCount} posts loaded`}
         </div>
       )}
       

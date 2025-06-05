@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -29,8 +28,13 @@ interface BlueskyPost {
 }
 
 serve(async (req) => {
+  console.log('🚀 Bluesky feed function invoked');
+  console.log('Request method:', req.method);
+  console.log('Request URL:', req.url);
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -43,17 +47,23 @@ serve(async (req) => {
     console.log('Environment check:', {
       hasHandle: !!blueskyHandle,
       hasPassword: !!blueskyPassword,
-      handleValue: blueskyHandle ? `${blueskyHandle.substring(0, 5)}...` : 'missing'
+      handleValue: blueskyHandle ? `${blueskyHandle.substring(0, 5)}...` : 'missing',
+      envKeys: Object.keys(Deno.env.toObject()).filter(key => key.includes('BLUESKY'))
     });
 
     if (!blueskyHandle || !blueskyPassword) {
-      console.error('Missing Bluesky credentials');
+      console.error('❌ Missing Bluesky credentials');
+      const availableEnvVars = Object.keys(Deno.env.toObject());
+      console.log('Available environment variables:', availableEnvVars);
+      
       return new Response(JSON.stringify({ 
         error: 'Bluesky credentials not configured',
         posts: [],
         debug: {
           hasHandle: !!blueskyHandle,
-          hasPassword: !!blueskyPassword
+          hasPassword: !!blueskyPassword,
+          availableEnvVars: availableEnvVars,
+          timestamp: new Date().toISOString()
         }
       }), {
         status: 500,
@@ -61,7 +71,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('Authenticating with Bluesky...');
+    console.log('✅ Credentials found, authenticating with Bluesky...');
 
     // Create session with Bluesky
     const authResponse = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
@@ -80,13 +90,14 @@ serve(async (req) => {
 
     if (!authResponse.ok) {
       const errorText = await authResponse.text();
-      console.error('Authentication failed:', authResponse.status, errorText);
+      console.error('❌ Authentication failed:', authResponse.status, errorText);
       return new Response(JSON.stringify({ 
         error: `Authentication failed: ${authResponse.status} - ${errorText}`,
         posts: [],
         debug: {
           authStatus: authResponse.status,
-          authError: errorText
+          authError: errorText,
+          timestamp: new Date().toISOString()
         }
       }), {
         status: 401,
@@ -98,7 +109,7 @@ serve(async (req) => {
     const accessJwt = authData.accessJwt;
     const did = authData.did;
 
-    console.log('Successfully authenticated with Bluesky, DID:', did);
+    console.log('✅ Successfully authenticated with Bluesky, DID:', did);
 
     // Fetch author feed with a higher limit to account for filtering
     const feedResponse = await fetch(`https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${did}&limit=20`, {
@@ -251,21 +262,26 @@ serve(async (req) => {
         totalFeedItems: feedData.feed.length,
         originalPostsFound: originalPosts.length,
         postsReturned: posts.length,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        functionStatus: 'success'
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error in bluesky-feed function:', error);
+    console.error('💥 Error in bluesky-feed function:', error);
+    console.error('Error stack:', error.stack);
+    
     return new Response(JSON.stringify({ 
       error: error.message,
       posts: [],
       debug: {
         errorType: error.constructor.name,
         errorMessage: error.message,
-        timestamp: new Date().toISOString()
+        errorStack: error.stack,
+        timestamp: new Date().toISOString(),
+        functionStatus: 'error'
       }
     }), {
       status: 500,
