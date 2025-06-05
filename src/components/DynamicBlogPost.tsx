@@ -23,6 +23,20 @@ const DynamicBlogPost = () => {
     });
   };
 
+  // Function to determine if content is HTML or plain text
+  const isHtmlContent = (content: string) => {
+    return /<[a-z][\s\S]*>/i.test(content);
+  };
+
+  // Function to format plain text content for display
+  const formatPlainTextContent = (content: string) => {
+    return content.split('\n\n').map((paragraph, index) => (
+      <p key={index} className="text-lg leading-relaxed mb-6">
+        {paragraph}
+      </p>
+    ));
+  };
+
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
@@ -140,10 +154,13 @@ const DynamicBlogPost = () => {
         )}
 
         {/* Article Content */}
-        <div 
-          className="prose prose-lg prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="prose prose-lg prose-invert max-w-none">
+          {isHtmlContent(post.content) ? (
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          ) : (
+            formatPlainTextContent(post.content)
+          )}
+        </div>
 
         {/* Article Footer */}
         <footer className="border-t border-gray-800 pt-8 mt-12">
