@@ -21,6 +21,10 @@ const Index = () => {
   const featuredPost = posts[0];
   const otherPosts = posts.slice(1);
 
+  const handleRSSClick = () => {
+    window.open('/functions/v1/rss-feed', '_blank');
+  };
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
       {/* Header */}
@@ -52,6 +56,7 @@ const Index = () => {
             <Button
               variant="ghost"
               size="sm"
+              onClick={handleRSSClick}
               className="text-gray-400 hover:text-white"
             >
               <Rss className="w-4 h-4 mr-2" />
