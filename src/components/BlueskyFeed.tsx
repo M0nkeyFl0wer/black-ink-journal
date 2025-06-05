@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { ExternalLink, Heart, MessageCircle, Repeat2, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { BlueskyErrorBoundary } from './BlueskyErrorBoundary';
 
 interface BlueskyPost {
   id: string;
@@ -133,12 +133,24 @@ const QuotedPost = ({ quote }: { quote: BlueskyPost['quotedPost'] }) => {
   );
 };
 
+export default function BlueskyFeedWithErrorBoundary() {
+  return (
+    <BlueskyErrorBoundary>
+      <BlueskyFeed />
+    </BlueskyErrorBoundary>
+  );
+}
+
 export const BlueskyFeed = () => {
+  console.log('🔍 BlueskyFeed component mounting...');
+  
   const [feedData, setFeedData] = useState<BlueskyFeedData>({ posts: [] });
   const [loading, setLoading] = useState(true);
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
+    console.log('🔍 BlueskyFeed useEffect triggered');
+    
     const fetchBlueskyFeed = async () => {
       console.log('🚀 Starting Bluesky feed fetch...');
       
@@ -419,6 +431,11 @@ export const BlueskyFeed = () => {
           {debugInfo.attempt && ` • Succeeded on attempt ${debugInfo.attempt}`}
         </div>
       )}
+      
+      {/* Visible debug info to verify component is rendering */}
+      <div className="text-xs text-green-400 mb-2">
+        🔍 BlueskyFeed component rendered at {new Date().toLocaleTimeString()}
+      </div>
       
       {feedData.posts.map((post) => (
         <div key={post.id} className="p-4 border border-gray-800 rounded-lg hover:border-gray-700 transition-colors">
