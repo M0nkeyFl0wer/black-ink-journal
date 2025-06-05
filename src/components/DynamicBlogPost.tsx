@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useBlogPost } from '@/hooks/useBlogPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
 import SocialShare from './SocialShare';
-import { updateKidsArticle } from '@/utils/updateKidsArticle';
+import { updateSayPleaseArticle } from '@/utils/updateSayPleaseArticle';
 import { useEffect, useState } from 'react';
 
 const DynamicBlogPost = () => {
@@ -11,15 +11,15 @@ const DynamicBlogPost = () => {
   const { post, loading, error } = useBlogPost(slug || '');
   const [updateCompleted, setUpdateCompleted] = useState(false);
 
-  // Execute the update function for the specific article
+  // Execute the update function for the Say Please and Thank You article
   useEffect(() => {
-    if (slug === 'fewer-kids-climate-emergency' && !updateCompleted) {
-      updateKidsArticle()
+    if (slug === 'say-please-and-thank-you' && !updateCompleted) {
+      updateSayPleaseArticle()
         .then(() => {
-          console.log('Article updated successfully');
+          console.log('Say Please and Thank You article updated successfully');
           setUpdateCompleted(true);
         })
-        .catch(err => console.error('Failed to update article:', err));
+        .catch(err => console.error('Failed to update Say Please and Thank You article:', err));
     }
   }, [slug, updateCompleted]);
 
