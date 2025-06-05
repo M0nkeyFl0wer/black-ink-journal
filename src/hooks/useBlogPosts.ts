@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -163,7 +164,7 @@ Working from home doesn't have to make you a cybersecurity liability. With the r
 
 The key is to think of cybersecurity not as a burden or an obstacle, but as an enabler. Good security practices give you the confidence to work from anywhere, knowing that you're protecting yourself, your work, and your organization from the very real threats that exist in our increasingly connected world.
 
-Because in the end, the goal isn't perfect security — it's resilient security. It's building systems and habits that can adapt to new threats, recover from incidents, and continue to protect what matters most as the world of work continues to evolve.
+Because in the end, the goal isn't perfect security — it's resilient security. It's building systems and habits that can adapt to new threats, recover from incidents, and continue to protect what matters most as the world of work continues to evolve.`
           })
           .eq('slug', 'how-not-to-be-the-reason-your-company-has-a-data-breach-because-you-are-working-from-home');
 
