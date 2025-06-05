@@ -13,6 +13,13 @@ const DynamicBlogPost = () => {
     target.src = '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png';
   };
 
+  // Function to format plain text content with proper paragraph breaks
+  const formatContent = (content: string): string => {
+    // Split by double line breaks to create paragraphs
+    const paragraphs = content.split('\n\n').filter(p => p.trim() !== '');
+    return paragraphs.map(paragraph => `<p>${paragraph.trim()}</p>`).join('\n\n');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -34,6 +41,10 @@ const DynamicBlogPost = () => {
       </div>
     );
   }
+
+  // Check if content is already HTML or plain text
+  const isHtml = post.content.includes('<p>') || post.content.includes('<div>') || post.content.includes('<br>');
+  const formattedContent = isHtml ? post.content : formatContent(post.content);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -94,7 +105,7 @@ const DynamicBlogPost = () => {
 
         <div 
           className="prose prose-invert prose-lg max-w-none mb-12"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: formattedContent }}
         />
 
         <SocialShare 
