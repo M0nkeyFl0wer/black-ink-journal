@@ -1,89 +1,69 @@
 
-import { Link } from "react-router-dom";
-import { ExternalLink, Calendar, Tag } from "lucide-react";
-import { BlogPost } from "@/hooks/useBlogPosts";
+import { Link } from 'react-router-dom';
+import { Calendar, Clock, User, Tag } from 'lucide-react';
+import { BlogPost } from '@/hooks/useBlogPosts';
 
 interface BlogPreviewProps {
   post: BlogPost;
-  featured?: boolean;
 }
 
-const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
+const BlogPreview = ({ post }: BlogPreviewProps) => {
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    img.src = "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png";
+    const target = e.target as HTMLImageElement;
+    target.src = '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png';
   };
 
-  if (featured) {
-    return (
-      <article className="mb-16">
-        <Link to={`/post/${post.slug}`} className="group">
-          <div className="relative overflow-hidden rounded-lg mb-6">
-            <img 
-              src={post.featured_image || "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"}
-              alt={post.title}
-              className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={handleImageError}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4">
-              <span className="inline-block px-2 py-1 text-xs bg-red-600 text-white rounded mb-2">
-                <Tag className="w-3 h-3 inline mr-1" />
-                {post.tags?.[0]?.toUpperCase() || 'ESSAYS'}
-              </span>
-              <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-red-400 transition-colors">
-                {post.title}
-              </h2>
-              <p className="text-gray-200 text-sm">
-                {post.excerpt}
-              </p>
+  return (
+    <article className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
+      <Link to={`/post/${post.slug}`} className="block">
+        <div className="aspect-[16/9] overflow-hidden bg-gray-100">
+          <img
+            src={post.featured_image || '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png'}
+            alt={post.title}
+            onError={handleImageError}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        
+        <div className="p-8">
+          <div className="flex items-center space-x-6 text-sm text-gray-500 mb-4">
+            <div className="flex items-center">
+              <Calendar className="w-4 h-4 mr-2" />
+              {new Date(post.publish_date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+            <div className="flex items-center">
+              <User className="w-4 h-4 mr-2" />
+              {post.author}
             </div>
           </div>
-        </Link>
-      </article>
-    );
-  }
-
-  
-  return (
-    <article className="border-b border-gray-800 pb-6 mb-6 last:border-b-0">
-      <Link to={`/post/${post.slug}`} className="group">
-        <div className="flex gap-4">
-          {post.featured_image && (
-            <img 
-              src={post.featured_image}
-              alt={post.title}
-              className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
-              onError={handleImageError}
-            />
-          )}
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs text-gray-500">
-                <Calendar className="w-3 h-3 inline mr-1" />
-                {formatDate(post.publish_date)}
-              </span>
-              {post.tags && post.tags.length > 0 && (
-                <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded">
-                  {post.tags[0]}
-                </span>
-              )}
-            </div>
-            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-red-400 transition-colors">
-              {post.title}
-            </h3>
-            <p className="text-gray-400 text-sm line-clamp-2">
+          
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+            {post.title}
+          </h2>
+          
+          {post.excerpt && (
+            <p className="text-gray-600 mb-6 leading-relaxed line-clamp-3">
               {post.excerpt}
             </p>
-          </div>
+          )}
+          
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex items-center flex-wrap gap-2">
+              <Tag className="w-4 h-4 text-gray-400" />
+              {post.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </Link>
     </article>
