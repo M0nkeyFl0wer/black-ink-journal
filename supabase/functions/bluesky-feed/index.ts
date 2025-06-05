@@ -63,8 +63,8 @@ serve(async (req) => {
 
     console.log('Successfully authenticated with Bluesky');
 
-    // Fetch author feed (posts by the user)
-    const feedResponse = await fetch(`https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${did}&limit=5`, {
+    // Fetch author feed with a higher limit to account for filtering
+    const feedResponse = await fetch(`https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${did}&limit=20`, {
       headers: {
         'Authorization': `Bearer ${accessJwt}`,
         'Content-Type': 'application/json',
@@ -78,8 +78,32 @@ serve(async (req) => {
     const feedData = await feedResponse.json();
     console.log('Successfully fetched feed data');
 
-    // Transform the data to match our interface
-    const posts = feedData.feed.map((item: any) => ({
+    // Filter to only include original posts (no replies or reposts)
+    const originalPosts = feedData.feed.filter((item: any) => {
+      // Filter out reposts (when reason field exists)
+      if (item.reason) {
+        console.log('Filtering out repost:', item.reason);
+        return false;
+      }
+
+      // Filter out replies (when reply field exists)
+      if (item.post.record.reply) {
+        console.log('Filtering out reply to:', item.post.record.reply.parent.uri);
+        return false;
+      }
+
+      // Only include posts where the author is the authenticated user
+      if (item.post.author.did !== did) {
+        console.log('Filtering out post from different author:', item.post.author.handle);
+        return false;
+      }
+
+      console.log('Including original post:', item.post.record.text.substring(0, 50) + '...');
+      return true;
+    });
+
+    // Transform the filtered data to match our interface
+    const posts = originalPosts.slice(0, 5).map((item: any) => ({
       id: item.post.cid,
       text: item.post.record.text,
       createdAt: item.post.record.createdAt,
@@ -94,6 +118,8 @@ serve(async (req) => {
         replies: item.post.replyCount || 0,
       },
     }));
+
+    console.log(`Returning ${posts.length} original posts out of ${feedData.feed.length} total feed items`);
 
     return new Response(JSON.stringify({ posts }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
