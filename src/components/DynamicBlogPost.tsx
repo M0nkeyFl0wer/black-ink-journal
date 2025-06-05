@@ -1,4 +1,3 @@
-
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Calendar, Tag, Share2, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,11 @@ const DynamicBlogPost = () => {
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    img.src = "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png";
   };
 
   if (loading) {
@@ -135,6 +139,7 @@ const DynamicBlogPost = () => {
               src={post.featured_image}
               alt={post.title}
               className="w-full h-96 object-cover rounded-lg"
+              onError={handleImageError}
             />
           </div>
         )}
