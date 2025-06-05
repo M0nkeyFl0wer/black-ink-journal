@@ -1,3 +1,4 @@
+
 import { useParams, Link } from 'react-router-dom';
 import { useBlogPost } from '@/hooks/useBlogPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
@@ -42,7 +43,7 @@ const DynamicBlogPost = () => {
     target.src = '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png';
   };
 
-  // Function to convert markdown-style content to HTML
+  // Enhanced function to convert markdown-style content to HTML (same as admin preview)
   const convertMarkdownToHtml = (content: string): string => {
     return content
       // Convert **bold** to <strong>
@@ -51,13 +52,15 @@ const DynamicBlogPost = () => {
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$1</a>')
       // Convert ## headings to h2
       .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mt-8 mb-4 text-white">$1</h2>')
+      // Convert ### headings to h3
+      .replace(/^### (.+)$/gm, '<h3 class="text-xl font-bold mt-6 mb-3 text-white">$1</h3>')
       // Convert triple dashes to horizontal rules
       .replace(/^---$/gm, '<hr class="border-gray-600 my-8" />')
       // Convert single line breaks to <br> and double line breaks to paragraphs
       .split('\n\n')
       .map(paragraph => {
         if (paragraph.trim() === '') return '';
-        if (paragraph.includes('<h2>') || paragraph.includes('<hr')) return paragraph;
+        if (paragraph.includes('<h2>') || paragraph.includes('<h3>') || paragraph.includes('<hr')) return paragraph;
         return `<p class="mb-4 leading-relaxed">${paragraph.replace(/\n/g, '<br>')}</p>`;
       })
       .join('\n');
@@ -92,9 +95,9 @@ const DynamicBlogPost = () => {
     );
   }
 
-  // Check if content is already HTML, markdown, or plain text
+  // Enhanced content detection and formatting
   const isHtml = post.content.includes('<p>') || post.content.includes('<div>') || post.content.includes('<br>');
-  const hasMarkdown = post.content.includes('**') || post.content.includes('[') || post.content.includes('##');
+  const hasMarkdown = post.content.includes('**') || post.content.includes('[') || post.content.includes('##') || post.content.includes('###');
   
   let formattedContent: string;
   if (isHtml) {

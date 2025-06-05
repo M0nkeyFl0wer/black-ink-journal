@@ -118,6 +118,14 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
             </div>
             <div className="flex items-center space-x-3">
               <Button 
+                onClick={() => window.open('/', '_blank')}
+                variant="outline" 
+                className="rounded-xl border-gray-300 hover:bg-gray-50"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                View Site
+              </Button>
+              <Button 
                 onClick={handleNewPost} 
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl px-6 shadow-lg hover:shadow-xl transition-all duration-200"
               >
@@ -202,6 +210,15 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(`/post/${post.slug}`, '_blank')}
+                        className="rounded-lg border-gray-300 hover:bg-blue-50 hover:border-blue-300"
+                        title="View on live site"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
