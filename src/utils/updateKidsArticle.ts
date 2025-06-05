@@ -2,7 +2,8 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export const updateKidsArticle = async () => {
-  const formattedContent = `<p>One of Professor Kathryn Harrison's posts caught my eye recently. It raised the question of whether having fewer children is an effective response to climate change. Her kids, Sophie and Sam Harrison, have been fighting climate change since they were young—a heartening reminder that the next generation is passionately involved. The post got me thinking about how we frame responsibility for the climate crisis. All too often, we hear that <em>personal</em> choices are the key: drive less, fly less, recycle, even have fewer children.</p>
+  try {
+    const content = `<p>One of Professor Kathryn Harrison's posts caught my eye recently. It raised the question of whether having fewer children is an effective response to climate change. Her kids, Sophie and Sam Harrison, have been fighting climate change since they were young—a heartening reminder that the next generation is passionately involved. The post got me thinking about how we frame responsibility for the climate crisis. All too often, we hear that <em>personal</em> choices are the key: drive less, fly less, recycle, even have fewer children.</p>
 
 <p>Spoiler alert: I don't think focusing on personal choices—<strong>especially</strong> the decision to have kids—is the right way to address this emergency. We need to talk about the bigger picture and the systemic drivers of the crisis.</p>
 
@@ -69,20 +70,23 @@ export const updateKidsArticle = async () => {
 
 <p><em>Ben West is a campaigner, strategist, and writer working at the intersection of climate, justice, and democracy.</em></p>`;
 
-  const { error } = await supabase
-    .from('blog_posts')
-    .update({
-      title: "Is Having Fewer Kids the Best Response to the Climate Emergency? (Spoiler: No)",
-      content: formattedContent,
-      excerpt: "Climate change isn't about individual choices—it's about confronting corporate power, public manipulation, and systemic design.",
-      featured_image: "/lovable-uploads/58592d84-6d39-4136-afd9-c9d9421724fa.png",
-      tags: ["climate", "essays", "systemic-change"]
-    })
-    .eq('slug', 'having-fewer-kids-climate-emergency-spoiler-no');
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .update({ 
+        content: content,
+        featured_image: 'https://www.ecowatch.com/wp-content/uploads/2021/10/1543172645-origin.jpg'
+      })
+      .eq('slug', 'fewer-kids-climate-emergency');
 
-  if (error) {
-    console.error('Error updating kids article:', error);
-  } else {
-    console.log('Kids article updated successfully with correct content');
+    if (error) throw error;
+    
+    console.log('Successfully updated the kids climate article with original content and new featured image');
+    return data;
+  } catch (error) {
+    console.error('Error updating kids climate article:', error);
+    throw error;
   }
 };
+
+// Call the function to update the article
+updateKidsArticle();
