@@ -34,7 +34,7 @@ const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-4 mb-3 text-sm text-gray-400">
+            <div className="flex items-center space-x-4 mb-3 text-sm text-gray-400 dark:text-gray-400">
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1" />
                 {new Date(post.publish_date).toLocaleDateString('en-US', {
@@ -49,14 +49,14 @@ const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
               </div>
             </div>
 
-            <h2 className={`font-bold mb-3 text-white group-hover:text-gray-300 transition-colors ${
+            <h2 className={`font-bold mb-3 group-hover:text-gray-300 transition-colors ${
               isFeatured ? 'text-2xl md:text-3xl' : 'text-xl'
-            }`}>
+            } text-white dark:text-white`}>
               {post.title}
             </h2>
 
             {post.excerpt && (
-              <p className={`text-gray-300 mb-4 line-clamp-3 ${
+              <p className={`mb-4 line-clamp-3 text-gray-300 dark:text-gray-300 ${
                 isFeatured ? 'text-lg' : 'text-base'
               }`}>
                 {post.excerpt}

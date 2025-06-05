@@ -40,7 +40,7 @@ const Index = () => {
           />
           <div>
             <h1 className="text-xl font-bold">Ben West</h1>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Essays & Commentary</p>
+            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>Essays & Commentary</p>
           </div>
         </div>
 
@@ -52,7 +52,7 @@ const Index = () => {
               variant="ghost"
               size="sm"
               onClick={toggleTheme}
-              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-gray-900'}
             >
               {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
@@ -60,7 +60,7 @@ const Index = () => {
               variant="ghost"
               size="sm"
               onClick={handleRSSClick}
-              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-gray-900'}
             >
               <Rss className="w-4 h-4 mr-2" />
               RSS
@@ -72,19 +72,19 @@ const Index = () => {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-8">
         {loading && (
-          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>
             <p>Loading posts...</p>
           </div>
         )}
 
         {error && (
-          <div className="text-center text-red-400">
+          <div className={`text-center ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
             <p>Error loading posts: {error}</p>
           </div>
         )}
 
         {!loading && !error && posts.length === 0 && (
-          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>
             <p>No posts found. Check the database connection and RLS policies.</p>
           </div>
         )}
@@ -119,7 +119,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className={`border-t p-6 text-center ${isDarkMode ? 'border-gray-800 text-gray-400' : 'border-gray-200 text-gray-600'}`}>
+      <footer className={`border-t p-6 text-center ${isDarkMode ? 'border-gray-800 text-gray-400' : 'border-gray-200 text-gray-700'}`}>
         <p>&copy; 2025 Ben West. This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className={isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}>Creative Commons Attribution 4.0 International License</a>.</p>
       </footer>
     </div>
