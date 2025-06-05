@@ -3,14 +3,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Moon, Sun, Rss, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useBlogPosts } from "@/hooks/useBlogPosts";
+import BlogPreview from "@/components/BlogPreview";
 
 const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const { posts, loading, error } = useBlogPosts();
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle('dark');
   };
+
+  // Get the most recent post for featured display
+  const featuredPost = posts[0];
+  const otherPosts = posts.slice(1);
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
@@ -50,52 +57,40 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Featured Post */}
-        <article className="mb-16">
-          <Link to="/post/still-crowned" className="group">
-            <div className="relative overflow-hidden rounded-lg mb-6">
-              <img 
-                src="/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"
-                alt="King Charles III delivering the Speech from the Throne in Parliament"
-                className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <span className="inline-block px-2 py-1 text-xs bg-red-600 text-white rounded mb-2">
-                  ESSAYS
-                </span>
-                <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-red-400 transition-colors">
-                  Still Crowned
-                </h2>
-                <p className="text-gray-200 text-sm">
-                  A country that talks like a democracy but still curtsies like a colony
-                </p>
-              </div>
-            </div>
-          </Link>
-          
-          <div className="prose prose-lg max-w-none">
-            <p className="text-gray-300 leading-relaxed">
-              At the recent swearing-in ceremony for Canada's newest ministers, one detail stood out. 
-              Not the cabinet picks, but the words they were made to say: a solemn pledge of allegiance 
-              to "His Majesty King Charles the Third, his heirs and successors." In 2025. In a modern democracy...
-            </p>
-            <Link 
-              to="/post/still-crowned" 
-              className="inline-flex items-center text-red-400 hover:text-red-300 transition-colors mt-4"
-            >
-              Read more <ExternalLink className="w-4 h-4 ml-1" />
-            </Link>
+        {loading && (
+          <div className="text-center text-gray-400">
+            <p>Loading posts...</p>
           </div>
-        </article>
+        )}
+
+        {error && (
+          <div className="text-center text-red-400">
+            <p>Error loading posts: {error}</p>
+          </div>
+        )}
+
+        {!loading && !error && posts.length === 0 && (
+          <div className="text-center text-gray-400">
+            <p>No posts found.</p>
+          </div>
+        )}
+
+        {/* Featured Post */}
+        {featuredPost && !loading && (
+          <BlogPreview post={featuredPost} featured={true} />
+        )}
 
         {/* Additional Blog Posts Section */}
-        <section className="mb-16">
-          <h3 className="text-xl font-bold mb-6">More Essays</h3>
-          <div className="text-gray-400">
-            <p>More essays coming soon...</p>
-          </div>
-        </section>
+        {otherPosts.length > 0 && (
+          <section className="mb-16">
+            <h3 className="text-xl font-bold mb-6">More Essays</h3>
+            <div className="space-y-6">
+              {otherPosts.map((post) => (
+                <BlogPreview key={post.id} post={post} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Bluesky Feed Section */}
         <section className="border-t border-gray-800 pt-12">
