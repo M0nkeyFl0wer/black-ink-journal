@@ -147,7 +147,7 @@ export const BlueskyFeed = () => {
           setFeedData({ posts: [], error: error.message });
         } else {
           console.log('Successfully fetched Bluesky data:', data);
-          setFeedData(data);
+          setFeedData(data || { posts: [] });
         }
       } catch (error) {
         console.error('Error fetching Bluesky feed:', error);
@@ -161,17 +161,25 @@ export const BlueskyFeed = () => {
   }, []);
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 24) {
-      return `${diffInHours}h`;
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays}d`;
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+      
+      if (diffInHours < 24) {
+        return `${diffInHours}h`;
+      } else {
+        const diffInDays = Math.floor(diffInHours / 24);
+        return `${diffInDays}d`;
+      }
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
     }
   };
+
+  // Debug logging
+  console.log('BlueskyFeed render state:', { loading, feedData, postsCount: feedData.posts?.length });
 
   if (loading) {
     return (
@@ -203,7 +211,7 @@ export const BlueskyFeed = () => {
     );
   }
 
-  if (feedData.posts.length === 0) {
+  if (!feedData.posts || feedData.posts.length === 0) {
     return (
       <div className="space-y-4">
         <div className="p-4 border border-gray-800 rounded-lg">
@@ -243,12 +251,10 @@ export const BlueskyFeed = () => {
               
               <p className="text-gray-300 text-sm leading-relaxed mb-3">{post.text}</p>
               
-              {/* Rich media content */}
               <ImageGallery images={post.images} />
               <ExternalLinkPreview link={post.externalLink} />
               <QuotedPost quote={post.quotedPost} />
               
-              {/* Engagement metrics */}
               <div className="flex items-center space-x-4 text-gray-500 mt-3">
                 <div className="flex items-center space-x-1 hover:text-blue-400 transition-colors">
                   <MessageCircle className="w-4 h-4" />
