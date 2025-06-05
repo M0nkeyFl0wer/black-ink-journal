@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Moon, Sun, Rss, ExternalLink } from "lucide-react";
@@ -98,7 +99,7 @@ const Index = () => {
         {/* Bluesky Feed Section */}
         <section className="border-t border-gray-800 pt-12 mt-12">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold">Latest from Bluesky</h3>
+            <h3 className="text-xl font-bold">Let's Hang Out Where the Sky is Blue</h3>
             <a 
               href="https://bsky.app/profile/benwest.bsky.social"
               target="_blank"
@@ -115,7 +116,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="border-t border-gray-800 p-6 text-center text-gray-400">
-        <p>&copy; 2025 Ben West. All rights reserved.</p>
+        <p>&copy; 2025 Ben West. This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">Creative Commons Attribution 4.0 International License</a>.</p>
       </footer>
     </div>
   );
