@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -169,7 +168,14 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
                 <div key={post.id} className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-200">
                   <div className="flex justify-between items-start">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg text-gray-900 mb-2 truncate">{post.title}</h3>
+                      <button
+                        onClick={() => handleEditPost(post)}
+                        className="text-left w-full group"
+                      >
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2 truncate group-hover:text-blue-600 transition-colors duration-200 cursor-pointer">
+                          {post.title}
+                        </h3>
+                      </button>
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                         {post.excerpt ? post.excerpt.substring(0, 150) + '...' : 'No excerpt available'}
                       </p>
