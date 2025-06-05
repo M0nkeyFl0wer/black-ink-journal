@@ -22,7 +22,7 @@ const Index = () => {
   const otherPosts = posts.slice(1);
 
   const handleRSSClick = () => {
-    window.open('/functions/v1/rss-feed', '_blank');
+    window.open('https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/rss-feed', '_blank');
   };
 
   return (

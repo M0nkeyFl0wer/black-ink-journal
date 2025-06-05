@@ -86,10 +86,9 @@ This isn't about being perfect. It's about being together.
 
 *Ben West is a campaigner, strategist, and writer working at the intersection of climate, justice, and democracy.*`;
 
-    // Now insert the article fresh - using service role bypass if needed
+    // Now insert the article fresh
     console.log('Inserting new article...');
     
-    // Try the insert with proper error handling
     const { data, error } = await supabase
       .from('blog_posts')
       .insert({ 
@@ -107,10 +106,6 @@ This isn't about being perfect. It's about being together.
 
     if (error) {
       console.error('Insert error:', error);
-      // If RLS is blocking, try to inform about the issue
-      if (error.message.includes('row-level security')) {
-        console.log('RLS is blocking insert - this may need admin intervention');
-      }
       throw error;
     }
     
