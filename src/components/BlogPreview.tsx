@@ -19,8 +19,7 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
-    img.src = "/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png";
-    img.className = "w-full h-96 object-contain bg-gray-100 rounded-lg p-8";
+    img.src = "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png";
   };
 
   if (featured) {
@@ -29,7 +28,7 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
         <Link to={`/post/${post.slug}`} className="group">
           <div className="relative overflow-hidden rounded-lg mb-6">
             <img 
-              src={post.featured_image || "/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png"}
+              src={post.featured_image || "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"}
               alt={post.title}
               className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
               onError={handleImageError}
@@ -53,6 +52,7 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
     );
   }
 
+  
   return (
     <article className="border-b border-gray-800 pb-6 mb-6 last:border-b-0">
       <Link to={`/post/${post.slug}`} className="group">
@@ -62,11 +62,7 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
               src={post.featured_image}
               alt={post.title}
               className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
-              onError={(e) => {
-                const img = e.currentTarget;
-                img.src = "/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png";
-                img.className = "w-24 h-24 object-contain bg-gray-100 rounded-lg flex-shrink-0 p-2";
-              }}
+              onError={handleImageError}
             />
           )}
           <div className="flex-1">

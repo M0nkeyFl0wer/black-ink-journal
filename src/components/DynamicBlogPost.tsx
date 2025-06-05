@@ -23,12 +23,6 @@ const DynamicBlogPost = () => {
     });
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    img.src = "/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png";
-    img.className = "w-full h-96 object-contain bg-gray-100 rounded-lg p-8";
-  };
-
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
@@ -141,16 +135,18 @@ const DynamicBlogPost = () => {
               src={post.featured_image}
               alt={post.title}
               className="w-full h-96 object-cover rounded-lg"
-              onError={handleImageError}
             />
           </div>
         )}
 
         {/* Article Content */}
-        <div 
-          className="prose prose-lg prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="prose prose-lg prose-invert max-w-none">
+          {post.content.split('\n\n').map((paragraph, index) => (
+            <p key={index} className="text-lg leading-relaxed mb-6">
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
         {/* Article Footer */}
         <footer className="border-t border-gray-800 pt-8 mt-12">
