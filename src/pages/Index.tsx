@@ -55,9 +55,9 @@ const Index = () => {
           <Link to="/post/still-crowned" className="group">
             <div className="relative overflow-hidden rounded-lg mb-6">
               <img 
-                src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
-                alt="Still Crowned - King Charles III"
-                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                src="/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"
+                alt="King Charles III delivering the Speech from the Throne in Parliament"
+                className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4">
@@ -88,6 +88,14 @@ const Index = () => {
             </Link>
           </div>
         </article>
+
+        {/* Additional Blog Posts Section */}
+        <section className="mb-16">
+          <h3 className="text-xl font-bold mb-6">More Essays</h3>
+          <div className="text-gray-400">
+            <p>More essays coming soon...</p>
+          </div>
+        </section>
 
         {/* Bluesky Feed Section */}
         <section className="border-t border-gray-800 pt-12">
