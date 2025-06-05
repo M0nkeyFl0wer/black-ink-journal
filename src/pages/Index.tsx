@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Moon, Sun, Rss, ExternalLink } from "lucide-react";
@@ -62,7 +61,7 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <main className="max-w-6xl mx-auto px-6 py-8">
         {loading && (
           <div className="text-center text-gray-400">
             <p>Loading posts...</p>
@@ -83,23 +82,25 @@ const Index = () => {
 
         {/* Featured Post */}
         {featuredPost && !loading && (
-          <BlogPreview post={featuredPost} />
+          <div className="mb-8">
+            <BlogPreview post={featuredPost} isFeatured={true} />
+          </div>
         )}
 
-        {/* Visual separator and additional posts */}
+        {/* Other Posts Grid */}
         {otherPosts.length > 0 && (
           <>
             <Separator className="my-8 bg-gray-800" />
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {otherPosts.map((post) => (
-                <BlogPreview key={post.id} post={post} />
+                <BlogPreview key={post.id} post={post} isFeatured={false} />
               ))}
             </div>
           </>
         )}
 
         {/* Bluesky Feed Section */}
-        <section className="border-t border-gray-800 pt-12">
+        <section className="border-t border-gray-800 pt-12 mt-12">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold">Latest from Bluesky</h3>
             <a 
