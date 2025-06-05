@@ -1,3 +1,4 @@
+
 import { useParams, Link } from 'react-router-dom';
 import { useBlogPost } from '@/hooks/useBlogPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
@@ -12,7 +13,7 @@ const DynamicBlogPost = () => {
   // Execute the update function for the specific article
   useEffect(() => {
     if (slug === 'fewer-kids-climate-emergency') {
-      updateKidsArticle();
+      updateKidsArticle().catch(err => console.error('Failed to update article:', err));
     }
   }, [slug]);
 

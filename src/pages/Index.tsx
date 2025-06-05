@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Moon, Sun, Rss, ExternalLink } from "lucide-react";
@@ -82,7 +83,7 @@ const Index = () => {
 
         {/* Featured Post */}
         {featuredPost && !loading && (
-          <div className="mb-8">
+          <div className="mb-8 max-w-2xl">
             <BlogPreview post={featuredPost} isFeatured={true} />
           </div>
         )}
@@ -91,7 +92,7 @@ const Index = () => {
         {otherPosts.length > 0 && (
           <>
             <Separator className="my-8 bg-gray-800" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {otherPosts.map((post) => (
                 <BlogPreview key={post.id} post={post} isFeatured={false} />
               ))}
