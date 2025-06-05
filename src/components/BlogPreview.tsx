@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { ExternalLink, Calendar, Tag } from "lucide-react";
 import { BlogPost } from "@/hooks/useBlogPosts";
@@ -42,22 +41,11 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
             </div>
           </div>
         </Link>
-        
-        <div className="prose prose-lg max-w-none">
-          <p className="text-gray-300 leading-relaxed">
-            {post.content.split('\n\n')[0].substring(0, 200)}...
-          </p>
-          <Link 
-            to={`/post/${post.slug}`}
-            className="inline-flex items-center text-red-400 hover:text-red-300 transition-colors mt-4"
-          >
-            Read more <ExternalLink className="w-4 h-4 ml-1" />
-          </Link>
-        </div>
       </article>
     );
   }
 
+  
   return (
     <article className="border-b border-gray-800 pb-6 mb-6 last:border-b-0">
       <Link to={`/post/${post.slug}`} className="group">
