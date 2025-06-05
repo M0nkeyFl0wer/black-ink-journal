@@ -17,12 +17,10 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
     });
   };
 
-  // Debug logging for image issues
-  console.log('BlogPreview render:', {
-    postTitle: post.title,
-    featuredImage: post.featured_image,
-    featured: featured
-  });
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    img.src = "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png";
+  };
 
   if (featured) {
     return (
@@ -33,11 +31,7 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
               src={post.featured_image || "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"}
               alt={post.title}
               className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-              onLoad={() => console.log('Image loaded successfully:', post.featured_image)}
-              onError={(e) => {
-                console.error('Image failed to load:', post.featured_image);
-                console.error('Error details:', e);
-              }}
+              onError={handleImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-4 left-4 right-4">
@@ -68,6 +62,7 @@ const BlogPreview = ({ post, featured = false }: BlogPreviewProps) => {
               src={post.featured_image}
               alt={post.title}
               className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+              onError={handleImageError}
             />
           )}
           <div className="flex-1">
