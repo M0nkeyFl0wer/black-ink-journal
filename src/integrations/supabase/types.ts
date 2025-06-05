@@ -12,21 +12,90 @@ export type Database = {
       admin_users: {
         Row: {
           created_at: string
+          failed_login_attempts: number | null
           id: string
+          last_login: string | null
+          locked_until: string | null
           password_hash: string
+          reset_token: string | null
+          reset_token_expires: string | null
+          security_answer_hash: string | null
+          security_question: string | null
           username: string
         }
         Insert: {
           created_at?: string
+          failed_login_attempts?: number | null
           id?: string
+          last_login?: string | null
+          locked_until?: string | null
           password_hash: string
+          reset_token?: string | null
+          reset_token_expires?: string | null
+          security_answer_hash?: string | null
+          security_question?: string | null
           username: string
         }
         Update: {
           created_at?: string
+          failed_login_attempts?: number | null
           id?: string
+          last_login?: string | null
+          locked_until?: string | null
           password_hash?: string
+          reset_token?: string | null
+          reset_token_expires?: string | null
+          security_answer_hash?: string | null
+          security_question?: string | null
           username?: string
+        }
+        Relationships: []
+      }
+      blog_drafts: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          is_published: boolean | null
+          metadata: Json | null
+          publish_date: string | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          created_by: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_published?: boolean | null
+          metadata?: Json | null
+          publish_date?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_published?: boolean | null
+          metadata?: Json | null
+          publish_date?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

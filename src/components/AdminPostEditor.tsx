@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,37 +6,61 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Eye, Code, Type } from 'lucide-react';
+import { ArrowLeft, Eye, Code, Type, Save, Clock } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { uploadImage } from '@/utils/imageUpload';
+import { useAutosave } from '@/hooks/useAutosave';
 
 interface AdminPostEditorProps {
   post?: any;
+  draft?: any;
   username: string;
   onSave: () => void;
   onCancel: () => void;
 }
 
-const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorProps) => {
-  const [title, setTitle] = useState(post?.title || '');
-  const [slug, setSlug] = useState(post?.slug || '');
-  const [excerpt, setExcerpt] = useState(post?.excerpt || '');
-  const [content, setContent] = useState(post?.content || '');
-  const [featuredImage, setFeaturedImage] = useState(post?.featured_image || '');
-  const [tags, setTags] = useState(post?.tags?.join(', ') || '');
+const AdminPostEditor = ({ post, draft, username, onSave, onCancel }: AdminPostEditorProps) => {
+  // Initialize with post data, draft data, or empty defaults
+  const initialData = draft || post || {};
+  
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [slug, setSlug] = useState(initialData?.slug || '');
+  const [excerpt, setExcerpt] = useState(initialData?.excerpt || '');
+  const [content, setContent] = useState(initialData?.content || '');
+  const [featuredImage, setFeaturedImage] = useState(initialData?.featured_image || '');
+  const [tags, setTags] = useState(
+    initialData?.tags ? (Array.isArray(initialData.tags) ? initialData.tags.join(', ') : initialData.tags) : ''
+  );
   const [publishDate, setPublishDate] = useState(
-    post?.publish_date ? new Date(post.publish_date).toISOString().slice(0, 16) : 
+    initialData?.publish_date ? new Date(initialData.publish_date).toISOString().slice(0, 16) : 
     new Date().toISOString().slice(0, 16)
   );
-  const [isPublished, setIsPublished] = useState(post?.is_published ?? true);
+  const [isPublished, setIsPublished] = useState(initialData?.is_published ?? true);
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [isMarkdownMode, setIsMarkdownMode] = useState(false);
   const { toast } = useToast();
 
+  // Autosave hook
+  const { saveStatus, saveDraft, deleteDraft } = useAutosave({
+    data: {
+      title,
+      slug,
+      content,
+      excerpt,
+      featuredImage,
+      tags,
+      publishDate,
+      isPublished
+    },
+    username,
+    postId: post?.id,
+    enabled: !showPreview // Disable autosave in preview mode
+  });
+
   // Auto-generate slug from title
   useEffect(() => {
-    if (title && !post) {
+    if (title && !post && !draft) {
       const generatedSlug = title
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
@@ -44,18 +69,19 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
         .trim();
       setSlug(generatedSlug);
     }
-  }, [title, post]);
+  }, [title, post, draft]);
 
   // Detect if content is markdown when loading
   useEffect(() => {
-    if (post?.content) {
-      const hasMarkdown = post.content.includes('**') || post.content.includes('[') || post.content.includes('##');
-      const isHtml = post.content.includes('<p>') || post.content.includes('<div>');
+    const contentToCheck = initialData?.content || '';
+    if (contentToCheck) {
+      const hasMarkdown = contentToCheck.includes('**') || contentToCheck.includes('[') || contentToCheck.includes('##');
+      const isHtml = contentToCheck.includes('<p>') || contentToCheck.includes('<div>');
       if (hasMarkdown && !isHtml) {
         setIsMarkdownMode(true);
       }
     }
-  }, [post]);
+  }, [initialData]);
 
   const handleImageUpload = async (file: File): Promise<string> => {
     try {
@@ -140,6 +166,8 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
         });
       }
 
+      // Delete the draft after successful save
+      await deleteDraft();
       onSave();
     } catch (error: any) {
       toast({
@@ -150,6 +178,32 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
     } finally {
       setLoading(false);
     }
+  };
+
+  const SaveStatusIndicator = () => {
+    const getStatusInfo = () => {
+      switch (saveStatus) {
+        case 'saving':
+          return { icon: Clock, text: 'Saving...', color: 'text-yellow-400' };
+        case 'saved':
+          return { icon: Save, text: 'Saved', color: 'text-green-400' };
+        case 'unsaved':
+          return { icon: Clock, text: 'Unsaved changes', color: 'text-red-400' };
+        default:
+          return { icon: Save, text: '', color: 'text-gray-400' };
+      }
+    };
+
+    const { icon: Icon, text, color } = getStatusInfo();
+
+    if (!text) return null;
+
+    return (
+      <div className={`flex items-center space-x-1 text-sm ${color}`}>
+        <Icon className="w-4 h-4" />
+        <span>{text}</span>
+      </div>
+    );
   };
 
   if (showPreview) {
@@ -195,15 +249,15 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
               Back
             </Button>
             <h1 className="text-3xl font-bold">
-              {post ? 'Edit Post' : 'New Post'}
+              {post ? 'Edit Post' : draft ? 'Continue Draft' : 'New Post'}
             </h1>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-4">
+            <SaveStatusIndicator />
             <Button
               onClick={() => setShowPreview(true)}
               variant="outline"
-              className="mr-4"
             >
               <Eye className="w-4 h-4 mr-2" />
               Preview

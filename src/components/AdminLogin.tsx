@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Lock, User } from 'lucide-react';
 
 interface AdminLoginProps {
@@ -13,37 +13,16 @@ interface AdminLoginProps {
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const { signIn, loading } = useAdminAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      if (username === 'admin' && password === 'admin123') {
-        localStorage.setItem('admin_logged_in', 'true');
-        localStorage.setItem('admin_username', username);
-        onLogin(username);
-        toast({
-          title: "Welcome back!",
-          description: "Successfully logged into admin panel",
-        });
-      } else {
-        toast({
-          title: "Access denied",
-          description: "Please check your credentials and try again",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Something went wrong",
-        description: "Please try again in a moment",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+    
+    const user = await signIn(username, password);
+    if (user) {
+      localStorage.setItem('admin_logged_in', 'true');
+      localStorage.setItem('admin_username', user.username);
+      onLogin(user.username);
     }
   };
 
@@ -95,11 +74,6 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-          <div className="text-center">
-            <p className="text-xs text-gray-500">
-              Default: admin / admin123
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
