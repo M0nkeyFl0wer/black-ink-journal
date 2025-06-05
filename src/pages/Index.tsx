@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Moon, Sun, Rss, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import BlogPreview from "@/components/BlogPreview";
 
@@ -80,16 +81,16 @@ const Index = () => {
           <BlogPreview post={featuredPost} featured={true} />
         )}
 
-        {/* Additional Blog Posts Section */}
+        {/* Visual separator and additional posts */}
         {otherPosts.length > 0 && (
-          <section className="mb-16">
-            <h3 className="text-xl font-bold mb-6">More Essays</h3>
+          <>
+            <Separator className="my-8 bg-gray-800" />
             <div className="space-y-6">
               {otherPosts.map((post) => (
                 <BlogPreview key={post.id} post={post} />
               ))}
             </div>
-          </section>
+          </>
         )}
 
         {/* Bluesky Feed Section */}
