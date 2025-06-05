@@ -2,8 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export const updateKidsArticle = async () => {
-  const formattedContent = `
-<p>One of Professor Kathryn Harrison's posts caught my eye recently. It raised the question of whether having fewer children is an effective response to climate change. Her kids, Sophie and Sam Harrison, have been fighting climate change since they were young—a heartening reminder that the next generation is passionately involved. The post got me thinking about how we frame responsibility for the climate crisis. All too often, we hear that <em>personal</em> choices are the key: drive less, fly less, recycle, even have fewer children.</p>
+  const formattedContent = `<p>One of Professor Kathryn Harrison's posts caught my eye recently. It raised the question of whether having fewer children is an effective response to climate change. Her kids, Sophie and Sam Harrison, have been fighting climate change since they were young—a heartening reminder that the next generation is passionately involved. The post got me thinking about how we frame responsibility for the climate crisis. All too often, we hear that <em>personal</em> choices are the key: drive less, fly less, recycle, even have fewer children.</p>
 
 <p>Spoiler alert: I don't think focusing on personal choices—<strong>especially</strong> the decision to have kids—is the right way to address this emergency. We need to talk about the bigger picture and the systemic drivers of the crisis.</p>
 
@@ -33,7 +32,7 @@ export const updateKidsArticle = async () => {
 
 <p>As <a href="https://orionmagazine.org/article/the-new-abolitionists/">Orion Magazine</a> detailed, industry leaders rebranded waste as a <em>personal</em> problem. They trained the public to blame "litterbugs" instead of questioning the rise of single-use packaging. It worked. The same thing happened when BP pushed the concept of a "carbon footprint." They weren't doing that out of the goodness of their hearts—they wanted to make <em>you</em> feel responsible, not them.</p>
 
-<h2>Bernays, Corporate Personhood &amp; the Consent Machine</h2>
+<h2>Bernays, Corporate Personhood & the Consent Machine</h2>
 
 <p>Edward Bernays—father of modern PR—literally wrote the book on this strategy. He helped sell cigarettes to women by branding smoking as feminist liberation. He invented the idea of bacon as a health food by convincing doctors to endorse it. His playbook: appeal to emotion, manipulate public perception, use "experts" to do your bidding.</p>
 
@@ -68,8 +67,7 @@ export const updateKidsArticle = async () => {
 
 <hr>
 
-<p><em>Ben West is a campaigner, strategist, and writer working at the intersection of climate, justice, and democracy.</em></p>
-  `;
+<p><em>Ben West is a campaigner, strategist, and writer working at the intersection of climate, justice, and democracy.</em></p>`;
 
   const { error } = await supabase
     .from('blog_posts')
@@ -88,5 +86,10 @@ export const updateKidsArticle = async () => {
     console.error('Error updating kids article:', error);
   } else {
     console.log('Kids article updated successfully with correct content');
+    // Trigger a page reload to see the changes
+    window.location.reload();
   }
 };
+
+// Auto-run the update when this file is loaded
+updateKidsArticle();
