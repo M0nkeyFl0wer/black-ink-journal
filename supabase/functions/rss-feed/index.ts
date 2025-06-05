@@ -6,6 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Content-Type': 'application/rss+xml; charset=utf-8',
+  'Cache-Control': 'no-cache, no-store, must-revalidate',
+  'Pragma': 'no-cache',
+  'Expires': '0',
 };
 
 serve(async (req) => {
@@ -15,10 +18,14 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting RSS feed generation...');
+    
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     );
+
+    console.log('Supabase client created, fetching published posts...');
 
     // Fetch published blog posts
     const { data: posts, error } = await supabase
@@ -27,14 +34,28 @@ serve(async (req) => {
       .eq('is_published', true)
       .order('publish_date', { ascending: false });
 
+    console.log('Database query result:', {
+      postsCount: posts?.length || 0,
+      error: error?.message || null,
+      hasData: !!posts
+    });
+
     if (error) {
       console.error('Error fetching posts:', error);
-      throw error;
+      return new Response(`Error generating RSS feed: ${error.message}`, { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
+      });
+    }
+
+    if (!posts || posts.length === 0) {
+      console.log('No published posts found, generating empty RSS feed');
     }
 
     const siteUrl = req.url.split('/functions')[0];
+    console.log('Site URL:', siteUrl);
     
-    const rssItems = posts.map(post => {
+    const rssItems = (posts || []).map(post => {
       const excerpt = post.excerpt || extractTextFromContent(post.content, 200);
       
       return `
@@ -58,13 +79,15 @@ serve(async (req) => {
     <atom:link href="${siteUrl}/functions/v1/rss-feed" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <pubDate>${posts.length > 0 ? new Date(posts[0].publish_date).toUTCString() : new Date().toUTCString()}</pubDate>
+    <pubDate>${posts && posts.length > 0 ? new Date(posts[0].publish_date).toUTCString() : new Date().toUTCString()}</pubDate>
     <ttl>60</ttl>
     <managingEditor>contact@benwest.io (Ben West)</managingEditor>
     <webMaster>contact@benwest.io (Ben West)</webMaster>
     ${rssItems}
   </channel>
 </rss>`;
+
+    console.log('RSS feed generated successfully, length:', rssContent.length);
 
     return new Response(rssContent, { 
       headers: corsHeaders,
@@ -73,7 +96,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('RSS feed error:', error);
-    return new Response('Error generating RSS feed', { 
+    return new Response(`Error generating RSS feed: ${error.message}`, { 
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
     });

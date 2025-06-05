@@ -23,7 +23,9 @@ const Index = () => {
   const otherPosts = posts.slice(1);
 
   const handleRSSClick = () => {
-    window.open('https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/rss-feed', '_blank');
+    // Add cache-busting parameter to RSS feed URL
+    const cacheBust = Date.now();
+    window.open(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/rss-feed?cb=${cacheBust}`, '_blank');
   };
 
   return (
@@ -114,8 +116,8 @@ const Index = () => {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-800 p-6 text-center text-gray-400">
+      {/* Footer with cache-busting key */}
+      <footer key={Date.now()} className="border-t border-gray-800 p-6 text-center text-gray-400">
         <p>&copy; 2025 Ben West. This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">Creative Commons Attribution 4.0 International License</a>.</p>
       </footer>
     </div>

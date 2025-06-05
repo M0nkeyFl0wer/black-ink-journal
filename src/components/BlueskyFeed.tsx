@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ExternalLink, Heart, MessageCircle, Repeat2, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,6 +37,7 @@ interface BlueskyPost {
 interface BlueskyFeedData {
   posts: BlueskyPost[];
   error?: string;
+  debug?: any;
 }
 
 const ImageGallery = ({ images }: { images: BlueskyPost['images'] }) => {
@@ -135,23 +135,70 @@ const QuotedPost = ({ quote }: { quote: BlueskyPost['quotedPost'] }) => {
 export const BlueskyFeed = () => {
   const [feedData, setFeedData] = useState<BlueskyFeedData>({ posts: [] });
   const [loading, setLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   useEffect(() => {
     const fetchBlueskyFeed = async () => {
       try {
-        console.log('Fetching Bluesky feed...');
-        const { data, error } = await supabase.functions.invoke('bluesky-feed');
+        console.log('Fetching Bluesky feed with cache bust...');
+        
+        // Add cache-busting parameter
+        const cacheBust = Date.now();
+        const { data, error } = await supabase.functions.invoke('bluesky-feed', {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          },
+          body: { cacheBust }
+        });
+        
+        console.log('Supabase function response:', { data, error });
         
         if (error) {
           console.error('Supabase function error:', error);
-          setFeedData({ posts: [], error: error.message });
+          setFeedData({ 
+            posts: [], 
+            error: `Function error: ${error.message}`,
+            debug: error
+          });
+          setDebugInfo({ 
+            type: 'supabase_error', 
+            error: error.message,
+            details: error
+          });
+        } else if (data && data.error) {
+          console.error('Bluesky API error:', data.error);
+          setFeedData({ 
+            posts: [], 
+            error: `API error: ${data.error}`,
+            debug: data.debug
+          });
+          setDebugInfo({ 
+            type: 'bluesky_error', 
+            error: data.error,
+            debug: data.debug
+          });
         } else {
           console.log('Successfully fetched Bluesky data:', data);
           setFeedData(data || { posts: [] });
+          if (data && data.debug) {
+            setDebugInfo({ 
+              type: 'success', 
+              debug: data.debug,
+              postsCount: data.posts?.length || 0
+            });
+          }
         }
       } catch (error) {
         console.error('Error fetching Bluesky feed:', error);
-        setFeedData({ posts: [], error: 'Failed to load Bluesky posts' });
+        setFeedData({ 
+          posts: [], 
+          error: `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        });
+        setDebugInfo({ 
+          type: 'network_error', 
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
       } finally {
         setLoading(false);
       }
@@ -179,7 +226,12 @@ export const BlueskyFeed = () => {
   };
 
   // Debug logging
-  console.log('BlueskyFeed render state:', { loading, feedData, postsCount: feedData.posts?.length });
+  console.log('BlueskyFeed render state:', { 
+    loading, 
+    feedData, 
+    postsCount: feedData.posts?.length,
+    debugInfo
+  });
 
   if (loading) {
     return (
@@ -196,6 +248,9 @@ export const BlueskyFeed = () => {
             </div>
           </div>
         </div>
+        <div className="text-center text-xs text-gray-500">
+          Loading Bluesky posts...
+        </div>
       </div>
     );
   }
@@ -206,6 +261,14 @@ export const BlueskyFeed = () => {
         <div className="p-4 border border-red-800 rounded-lg">
           <p className="text-red-400 text-sm">Error loading Bluesky posts: {feedData.error}</p>
           <p className="text-gray-400 text-xs mt-2">Please try refreshing the page.</p>
+          {debugInfo && (
+            <details className="mt-3">
+              <summary className="text-xs text-gray-500 cursor-pointer">Debug Info</summary>
+              <pre className="text-xs text-gray-600 mt-2 overflow-auto">
+                {JSON.stringify(debugInfo, null, 2)}
+              </pre>
+            </details>
+          )}
         </div>
       </div>
     );
@@ -216,6 +279,14 @@ export const BlueskyFeed = () => {
       <div className="space-y-4">
         <div className="p-4 border border-gray-800 rounded-lg">
           <p className="text-gray-300 text-sm">No recent posts found.</p>
+          {debugInfo && (
+            <details className="mt-3">
+              <summary className="text-xs text-gray-500 cursor-pointer">Debug Info</summary>
+              <pre className="text-xs text-gray-600 mt-2 overflow-auto">
+                {JSON.stringify(debugInfo, null, 2)}
+              </pre>
+            </details>
+          )}
         </div>
       </div>
     );
@@ -223,6 +294,14 @@ export const BlueskyFeed = () => {
 
   return (
     <div className="space-y-4">
+      {/* Debug info for development */}
+      {debugInfo && debugInfo.type === 'success' && (
+        <div className="text-xs text-gray-500 mb-2">
+          Last updated: {debugInfo.debug?.timestamp && new Date(debugInfo.debug.timestamp).toLocaleTimeString()}
+          {debugInfo.postsCount && ` • ${debugInfo.postsCount} posts`}
+        </div>
+      )}
+      
       {feedData.posts.map((post) => (
         <div key={post.id} className="p-4 border border-gray-800 rounded-lg hover:border-gray-700 transition-colors">
           <div className="flex items-start space-x-3">

@@ -4,6 +4,9 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Cache-Control': 'no-cache, no-store, must-revalidate',
+  'Pragma': 'no-cache',
+  'Expires': '0',
 };
 
 interface BlueskyPost {
@@ -32,11 +35,30 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Starting Bluesky feed fetch...');
+    
     const blueskyHandle = Deno.env.get('BLUESKY_HANDLE');
     const blueskyPassword = Deno.env.get('BLUESKY_APP_PASSWORD');
 
+    console.log('Environment check:', {
+      hasHandle: !!blueskyHandle,
+      hasPassword: !!blueskyPassword,
+      handleValue: blueskyHandle ? `${blueskyHandle.substring(0, 5)}...` : 'missing'
+    });
+
     if (!blueskyHandle || !blueskyPassword) {
-      throw new Error('Bluesky credentials not configured');
+      console.error('Missing Bluesky credentials');
+      return new Response(JSON.stringify({ 
+        error: 'Bluesky credentials not configured',
+        posts: [],
+        debug: {
+          hasHandle: !!blueskyHandle,
+          hasPassword: !!blueskyPassword
+        }
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     console.log('Authenticating with Bluesky...');
@@ -46,6 +68,7 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'BenWestBlog/1.0',
       },
       body: JSON.stringify({
         identifier: blueskyHandle,
@@ -53,30 +76,59 @@ serve(async (req) => {
       }),
     });
 
+    console.log('Auth response status:', authResponse.status);
+
     if (!authResponse.ok) {
-      throw new Error(`Authentication failed: ${authResponse.status}`);
+      const errorText = await authResponse.text();
+      console.error('Authentication failed:', authResponse.status, errorText);
+      return new Response(JSON.stringify({ 
+        error: `Authentication failed: ${authResponse.status} - ${errorText}`,
+        posts: [],
+        debug: {
+          authStatus: authResponse.status,
+          authError: errorText
+        }
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const authData = await authResponse.json();
     const accessJwt = authData.accessJwt;
     const did = authData.did;
 
-    console.log('Successfully authenticated with Bluesky');
+    console.log('Successfully authenticated with Bluesky, DID:', did);
 
     // Fetch author feed with a higher limit to account for filtering
     const feedResponse = await fetch(`https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${did}&limit=20`, {
       headers: {
         'Authorization': `Bearer ${accessJwt}`,
         'Content-Type': 'application/json',
+        'User-Agent': 'BenWestBlog/1.0',
       },
     });
 
+    console.log('Feed response status:', feedResponse.status);
+
     if (!feedResponse.ok) {
-      throw new Error(`Failed to fetch feed: ${feedResponse.status}`);
+      const errorText = await feedResponse.text();
+      console.error('Failed to fetch feed:', feedResponse.status, errorText);
+      return new Response(JSON.stringify({ 
+        error: `Failed to fetch feed: ${feedResponse.status} - ${errorText}`,
+        posts: [],
+        debug: {
+          feedStatus: feedResponse.status,
+          feedError: errorText
+        }
+      }), {
+        status: feedResponse.status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const feedData = await feedResponse.json();
-    console.log('Successfully fetched feed data');
+    console.log('Successfully fetched feed data, total items:', feedData.feed?.length || 0);
 
     // Filter to only include original posts (no replies or reposts)
     const originalPosts = feedData.feed.filter((item: any) => {
@@ -193,7 +245,15 @@ serve(async (req) => {
 
     console.log(`Returning ${posts.length} original posts out of ${feedData.feed.length} total feed items`);
 
-    return new Response(JSON.stringify({ posts }), {
+    return new Response(JSON.stringify({ 
+      posts,
+      debug: {
+        totalFeedItems: feedData.feed.length,
+        originalPostsFound: originalPosts.length,
+        postsReturned: posts.length,
+        timestamp: new Date().toISOString()
+      }
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
@@ -201,7 +261,12 @@ serve(async (req) => {
     console.error('Error in bluesky-feed function:', error);
     return new Response(JSON.stringify({ 
       error: error.message,
-      posts: [] 
+      posts: [],
+      debug: {
+        errorType: error.constructor.name,
+        errorMessage: error.message,
+        timestamp: new Date().toISOString()
+      }
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
