@@ -92,8 +92,8 @@ const BlogPost = () => {
         {/* Hero Image */}
         <div className="mb-12">
           <img 
-            src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png"
-            alt="Banner image"
+            src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
+            alt="King Charles III - Still here. Still crowned."
             className="w-full h-96 object-cover rounded-lg"
           />
         </div>
