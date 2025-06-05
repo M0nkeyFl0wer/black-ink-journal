@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,33 +6,22 @@ import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Eye, EyeOff, Calendar, Clock, User, LogOut } from 'lucide-react';
-import AdminPostEditor from './AdminPostEditor';
 
 interface AdminDashboardProps {
   username: string;
   onLogout: () => void;
+  onEditPost: (post: any) => void;
+  onNewPost: () => void;
 }
 
-const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
+const AdminDashboard = ({ username, onLogout, onEditPost, onNewPost }: AdminDashboardProps) => {
   const { posts, loading, error } = useBlogPosts();
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingPost, setEditingPost] = useState<any>(null);
   const { toast } = useToast();
 
   const handleLogout = () => {
     localStorage.removeItem('admin_logged_in');
     localStorage.removeItem('admin_username');
     onLogout();
-  };
-
-  const handleNewPost = () => {
-    setEditingPost(null);
-    setShowEditor(true);
-  };
-
-  const handleEditPost = (post: any) => {
-    setEditingPost(post);
-    setShowEditor(true);
   };
 
   const handleDeletePost = async (postId: string) => {
@@ -87,20 +77,6 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
     }
   };
 
-  if (showEditor) {
-    return (
-      <AdminPostEditor
-        post={editingPost}
-        username={username}
-        onSave={() => {
-          setShowEditor(false);
-          window.location.reload();
-        }}
-        onCancel={() => setShowEditor(false)}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
@@ -126,7 +102,7 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
                 View Live Site
               </Button>
               <Button 
-                onClick={handleNewPost} 
+                onClick={onNewPost} 
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl px-6 shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -177,7 +153,7 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
                   <div className="flex justify-between items-start">
                     <div className="flex-1 min-w-0">
                       <button
-                        onClick={() => handleEditPost(post)}
+                        onClick={() => onEditPost(post)}
                         className="text-left w-full group"
                       >
                         <h3 className="font-semibold text-lg text-gray-900 mb-2 truncate group-hover:text-blue-600 transition-colors duration-200 cursor-pointer">
@@ -230,7 +206,7 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleEditPost(post)}
+                        onClick={() => onEditPost(post)}
                         className="rounded-lg border-gray-300 hover:bg-blue-50 hover:border-blue-300"
                       >
                         <Edit className="w-4 h-4" />
@@ -257,7 +233,7 @@ const AdminDashboard = ({ username, onLogout }: AdminDashboardProps) => {
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
                 <p className="text-gray-600 mb-4">Get started by creating your first blog post</p>
                 <Button 
-                  onClick={handleNewPost}
+                  onClick={onNewPost}
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl"
                 >
                   <Plus className="w-4 h-4 mr-2" />
