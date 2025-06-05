@@ -29,9 +29,9 @@ const Index = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-gray-900'}`}>
       {/* Header */}
-      <header className="relative flex items-center justify-between p-6 border-b border-gray-800">
+      <header className={`relative flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
         <div className="flex items-center space-x-4">
           <img 
             src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
@@ -40,19 +40,19 @@ const Index = () => {
           />
           <div>
             <h1 className="text-xl font-bold">Ben West</h1>
-            <p className="text-sm text-gray-400">Essays & Commentary</p>
+            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Essays & Commentary</p>
           </div>
         </div>
 
         <div className="flex items-center space-x-4">
           <NavigationMenu isDarkMode={isDarkMode} />
           
-          <div className="flex items-center space-x-4 border-l border-gray-800 pl-4">
+          <div className={`flex items-center space-x-4 border-l pl-4 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleTheme}
-              className="text-gray-400 hover:text-white"
+              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
             >
               {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
@@ -60,7 +60,7 @@ const Index = () => {
               variant="ghost"
               size="sm"
               onClick={handleRSSClick}
-              className="text-gray-400 hover:text-white"
+              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
             >
               <Rss className="w-4 h-4 mr-2" />
               RSS
@@ -72,7 +72,7 @@ const Index = () => {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-8">
         {loading && (
-          <div className="text-center text-gray-400">
+          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             <p>Loading posts...</p>
           </div>
         )}
@@ -84,7 +84,7 @@ const Index = () => {
         )}
 
         {!loading && !error && posts.length === 0 && (
-          <div className="text-center text-gray-400">
+          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             <p>No posts found. Check the database connection and RLS policies.</p>
           </div>
         )}
@@ -99,14 +99,14 @@ const Index = () => {
         )}
 
         {/* Bluesky Feed Section with Error Boundary */}
-        <section className="border-t border-gray-800 pt-12 mt-12">
+        <section className={`border-t pt-12 mt-12 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-bold">Let's Hang Out Where the Sky is Blue</h3>
             <a 
               href="https://bsky.app/profile/benwest.bsky.social"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
+              className={`transition-colors flex items-center ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}`}
             >
               @benwest.bsky.social <ExternalLink className="w-4 h-4 ml-1" />
             </a>
@@ -119,8 +119,8 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 p-6 text-center text-gray-400">
-        <p>&copy; 2025 Ben West. This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">Creative Commons Attribution 4.0 International License</a>.</p>
+      <footer className={`border-t p-6 text-center ${isDarkMode ? 'border-gray-800 text-gray-400' : 'border-gray-200 text-gray-600'}`}>
+        <p>&copy; 2025 Ben West. This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className={isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}>Creative Commons Attribution 4.0 International License</a>.</p>
       </footer>
     </div>
   );

@@ -61,7 +61,7 @@ const PasswordManager = ({ username }: PasswordManagerProps) => {
         </CardTitle>
         <div className="flex items-center text-sm text-green-400">
           <Shield className="w-4 h-4 mr-1" />
-          Password recovery enabled for authorized emails
+          Password recovery available for authorized users
         </div>
       </CardHeader>
       <CardContent>
@@ -156,10 +156,10 @@ const PasswordManager = ({ username }: PasswordManagerProps) => {
 
           <div className="mt-4 p-3 bg-gray-800 rounded border border-gray-600">
             <p className="text-xs text-gray-400">
-              <strong>Recovery emails:</strong> benw@monkeyflower.ca, ben@elephantroom.ca
+              <strong>Recovery:</strong> Available for authorized users only
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              If you forget your password, you can recover it using these authorized email addresses.
+              If you forget your password, recovery is available through verified channels.
             </p>
           </div>
         </form>

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,20 +19,9 @@ const PasswordRecovery = ({ onBack }: PasswordRecoveryProps) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const { toast } = useToast();
 
-  const authorizedEmails = ['benw@monkeyflower.ca', 'ben@elephantroom.ca'];
-
   const requestPasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!authorizedEmails.includes(email.toLowerCase())) {
-      toast({
-        title: "Access denied",
-        description: "This email is not authorized for password recovery",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -44,14 +32,14 @@ const PasswordRecovery = ({ onBack }: PasswordRecoveryProps) => {
       if (error) throw error;
 
       toast({
-        title: "Recovery email sent",
-        description: "Check your email for the recovery token",
+        title: "Recovery request sent",
+        description: "If this email is authorized, you'll receive a recovery token",
       });
       setStep('token');
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to send recovery email",
+        description: "Failed to process recovery request",
         variant: "destructive",
       });
     } finally {
@@ -120,7 +108,7 @@ const PasswordRecovery = ({ onBack }: PasswordRecoveryProps) => {
             {step === 'request' ? 'Password Recovery' : step === 'token' ? 'Enter Recovery Token' : 'Reset Password'}
           </CardTitle>
           <p className="text-gray-600 text-sm">
-            {step === 'request' ? 'Enter your authorized email address' : 
+            {step === 'request' ? 'Enter your email address' : 
              step === 'token' ? 'Enter the token sent to your email' : 
              'Create a new password'}
           </p>
@@ -139,7 +127,7 @@ const PasswordRecovery = ({ onBack }: PasswordRecoveryProps) => {
                   required
                 />
                 <p className="text-xs text-gray-500">
-                  Only authorized emails can request password recovery
+                  Recovery is only available for authorized users
                 </p>
               </div>
               <Button 
