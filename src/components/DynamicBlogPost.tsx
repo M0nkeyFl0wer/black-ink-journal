@@ -140,13 +140,10 @@ const DynamicBlogPost = () => {
         )}
 
         {/* Article Content */}
-        <div className="prose prose-lg prose-invert max-w-none">
-          {post.content.split('\n\n').map((paragraph, index) => (
-            <p key={index} className="text-lg leading-relaxed mb-6">
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        <div 
+          className="prose prose-lg prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
 
         {/* Article Footer */}
         <footer className="border-t border-gray-800 pt-8 mt-12">
