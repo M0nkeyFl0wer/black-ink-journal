@@ -24,7 +24,8 @@ const DynamicBlogPost = () => {
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
-    img.src = "/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png";
+    img.src = "/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png";
+    img.className = "w-full h-96 object-contain bg-gray-100 rounded-lg p-8";
   };
 
   if (loading) {
