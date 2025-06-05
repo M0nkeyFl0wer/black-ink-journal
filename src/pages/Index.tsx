@@ -11,6 +11,11 @@ const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const { posts, loading, error } = useBlogPosts();
 
+  // Add debugging
+  console.log('Posts loaded:', posts);
+  console.log('Loading state:', loading);
+  console.log('Error state:', error);
+
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle('dark');
@@ -82,6 +87,13 @@ const Index = () => {
         {!loading && !error && posts.length === 0 && (
           <div className="text-center text-gray-400">
             <p>No posts found.</p>
+          </div>
+        )}
+
+        {/* Debug information in development */}
+        {!loading && !error && (
+          <div className="mb-4 text-sm text-gray-500">
+            Found {posts.length} post(s)
           </div>
         )}
 
