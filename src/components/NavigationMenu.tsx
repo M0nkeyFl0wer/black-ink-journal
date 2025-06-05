@@ -24,7 +24,7 @@ const NavigationMenu = ({ isDarkMode }: NavigationMenuProps) => {
         variant="ghost"
         size="sm"
         onClick={toggleMenu}
-        className="md:hidden text-gray-400 hover:text-white"
+        className={`md:hidden ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}
       >
         {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
       </Button>
@@ -35,7 +35,9 @@ const NavigationMenu = ({ isDarkMode }: NavigationMenuProps) => {
           <Link
             key={item.to}
             to={item.to}
-            className="text-gray-400 hover:text-white transition-colors font-medium flex items-center space-x-2"
+            className={`transition-colors font-medium flex items-center space-x-2 ${
+              isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'
+            }`}
           >
             <item.icon className="w-4 h-4" />
             <span>{item.label}</span>
@@ -45,14 +47,18 @@ const NavigationMenu = ({ isDarkMode }: NavigationMenuProps) => {
 
       {/* Mobile navigation menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 bg-black border-t border-gray-800 md:hidden z-50">
+        <div className={`absolute top-full left-0 right-0 border-t md:hidden z-50 ${
+          isDarkMode ? 'bg-black border-gray-800' : 'bg-white border-gray-200'
+        }`}>
           <div className="px-6 py-4 space-y-4">
             {menuItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={() => setIsOpen(false)}
-                className="block text-gray-400 hover:text-white transition-colors font-medium flex items-center space-x-2"
+                className={`block transition-colors font-medium flex items-center space-x-2 ${
+                  isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'
+                }`}
               >
                 <item.icon className="w-4 h-4" />
                 <span>{item.label}</span>

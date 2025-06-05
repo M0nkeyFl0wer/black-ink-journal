@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Calendar, User, Tag } from 'lucide-react';
 import { BlogPost } from '@/hooks/useBlogPosts';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface BlogPreviewProps {
   post: BlogPost;
@@ -9,6 +10,8 @@ interface BlogPreviewProps {
 }
 
 const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
+  const { isDarkMode } = useTheme();
+  
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png';
@@ -34,7 +37,7 @@ const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-4 mb-3 text-sm text-gray-400 dark:text-gray-400">
+            <div className={`flex items-center space-x-4 mb-3 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1" />
                 {new Date(post.publish_date).toLocaleDateString('en-US', {
@@ -49,33 +52,39 @@ const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
               </div>
             </div>
 
-            <h2 className={`font-bold mb-3 group-hover:text-gray-300 transition-colors ${
+            <h2 className={`font-bold mb-3 group-hover:${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors ${
               isFeatured ? 'text-2xl md:text-3xl' : 'text-xl'
-            } text-white dark:text-white`}>
+            } ${isDarkMode ? 'text-white' : 'text-black'}`}>
               {post.title}
             </h2>
 
             {post.excerpt && (
-              <p className={`mb-4 line-clamp-3 text-gray-300 dark:text-gray-300 ${
+              <p className={`mb-4 line-clamp-3 ${
                 isFeatured ? 'text-lg' : 'text-base'
-              }`}>
+              } ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
                 {post.excerpt}
               </p>
             )}
 
             {post.tags && post.tags.length > 0 && (
               <div className="flex items-center flex-wrap gap-2">
-                <Tag className="w-4 h-4 text-gray-400" />
+                <Tag className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
                 {post.tags.slice(0, 3).map((tag, index) => (
                   <span
                     key={index}
-                    className="px-2 py-1 bg-gray-800 text-gray-300 rounded text-xs border border-gray-700"
+                    className={`px-2 py-1 rounded text-xs border ${
+                      isDarkMode 
+                        ? 'bg-gray-800 text-gray-300 border-gray-700' 
+                        : 'bg-gray-100 text-gray-800 border-gray-300'
+                    }`}
                   >
                     {tag}
                   </span>
                 ))}
                 {post.tags.length > 3 && (
-                  <span className="text-gray-400 text-xs">+{post.tags.length - 3} more</span>
+                  <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    +{post.tags.length - 3} more
+                  </span>
                 )}
               </div>
             )}

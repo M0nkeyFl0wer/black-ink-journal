@@ -1,78 +1,24 @@
 
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, Rss, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { ExternalLink } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import BlogPreview from "@/components/BlogPreview";
-import NavigationMenu from "@/components/NavigationMenu";
+import SharedHeader from "@/components/SharedHeader";
 import BlueskyFeedWithErrorBoundary from "@/components/BlueskyFeed";
 
 const Index = () => {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode } = useTheme();
   const { posts, loading, error } = useBlogPosts();
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
-
-  // Get the most recent post for featured display
-  const featuredPost = posts[0];
-  const otherPosts = posts.slice(1);
-
-  const handleRSSClick = () => {
-    // Add cache-busting parameter to RSS feed URL
-    const cacheBust = Date.now();
-    window.open(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/rss-feed?cb=${cacheBust}`, '_blank');
-  };
-
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-gray-900'}`}>
-      {/* Header */}
-      <header className={`relative flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-        <div className="flex items-center space-x-4">
-          <img 
-            src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
-            alt="Ben West" 
-            className="w-12 h-12 rounded-full object-cover"
-          />
-          <div>
-            <h1 className="text-xl font-bold">Ben West</h1>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>Essays & Commentary</p>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <NavigationMenu isDarkMode={isDarkMode} />
-          
-          <div className={`flex items-center space-x-4 border-l pl-4 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-gray-900'}
-            >
-              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleRSSClick}
-              className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-gray-900'}
-            >
-              <Rss className="w-4 h-4 mr-2" />
-              RSS
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
+      <SharedHeader />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-8">
         {loading && (
-          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>
+          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-900'}`}>
             <p>Loading posts...</p>
           </div>
         )}
@@ -84,7 +30,7 @@ const Index = () => {
         )}
 
         {!loading && !error && posts.length === 0 && (
-          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>
+          <div className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-900'}`}>
             <p>No posts found. Check the database connection and RLS policies.</p>
           </div>
         )}
@@ -119,7 +65,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className={`border-t p-6 text-center ${isDarkMode ? 'border-gray-800 text-gray-400' : 'border-gray-200 text-gray-700'}`}>
+      <footer className={`border-t p-6 text-center ${isDarkMode ? 'border-gray-800 text-gray-400' : 'border-gray-200 text-gray-900'}`}>
         <p>&copy; 2025 Ben West. This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className={isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}>Creative Commons Attribution 4.0 International License</a>.</p>
       </footer>
     </div>

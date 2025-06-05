@@ -2,11 +2,14 @@
 import { useParams, Link } from 'react-router-dom';
 import { useBlogPost } from '@/hooks/useBlogPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
+import SharedHeader from '@/components/SharedHeader';
 import SocialShare from './SocialShare';
 
 const DynamicBlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const { post, loading, error } = useBlogPost(slug || '');
+  const { isDarkMode } = useTheme();
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
@@ -19,13 +22,13 @@ const DynamicBlogPost = () => {
       // Convert **bold** to <strong>
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       // Convert markdown links [text](url) to HTML links
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$1</a>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" target="_blank" rel="noopener noreferrer" class="${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'} underline">$1</a>`)
       // Convert ## headings to h2
-      .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mt-8 mb-4 text-white">$1</h2>')
+      .replace(/^## (.+)$/gm, `<h2 class="text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-black'}">${'$1'}</h2>`)
       // Convert ### headings to h3
-      .replace(/^### (.+)$/gm, '<h3 class="text-xl font-bold mt-6 mb-3 text-white">$1</h3>')
+      .replace(/^### (.+)$/gm, `<h3 class="text-xl font-bold mt-6 mb-3 ${isDarkMode ? 'text-white' : 'text-black'}">${'$1'}</h3>`)
       // Convert triple dashes to horizontal rules
-      .replace(/^---$/gm, '<hr class="border-gray-600 my-8" />')
+      .replace(/^---$/gm, `<hr class="${isDarkMode ? 'border-gray-600' : 'border-gray-300'} my-8" />`)
       // Convert single line breaks to <br> and double line breaks to paragraphs
       .split('\n\n')
       .map(paragraph => {
@@ -45,18 +48,18 @@ const DynamicBlogPost = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      <div className={`min-h-screen ${isDarkMode ? 'bg-black' : 'bg-white'} flex items-center justify-center`}>
+        <div className={`animate-spin rounded-full h-12 w-12 border-b-2 ${isDarkMode ? 'border-white' : 'border-black'}`}></div>
       </div>
     );
   }
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className={`min-h-screen ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'} flex items-center justify-center`}>
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
-          <p className="text-gray-400 mb-8">
+          <p className={`mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             This post has been removed or doesn't exist.
             {slug === 'fewer-kids-climate-emergency' && (
               <span className="block mt-2 text-sm">
@@ -64,7 +67,7 @@ const DynamicBlogPost = () => {
               </span>
             )}
           </p>
-          <Link to="/" className="text-blue-400 hover:text-blue-300">
+          <Link to="/" className={isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}>
             ← Back to Home
           </Link>
         </div>
@@ -86,11 +89,13 @@ const DynamicBlogPost = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
+      <SharedHeader />
+      
       <article className="max-w-4xl mx-auto px-6 py-12">
         <Link 
           to="/" 
-          className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors"
+          className={`inline-flex items-center transition-colors mb-8 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Essays
@@ -101,7 +106,7 @@ const DynamicBlogPost = () => {
             {post.title}
           </h1>
           
-          <div className="flex items-center space-x-6 text-gray-400 mb-8">
+          <div className={`flex items-center space-x-6 mb-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             <div className="flex items-center">
               <Calendar className="w-4 h-4 mr-2" />
               {new Date(post.publish_date).toLocaleDateString('en-US', {
@@ -118,11 +123,15 @@ const DynamicBlogPost = () => {
 
           {post.tags && post.tags.length > 0 && (
             <div className="flex items-center flex-wrap gap-2 mb-8">
-              <Tag className="w-4 h-4 text-gray-400" />
+              <Tag className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
               {post.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-sm border border-gray-700"
+                  className={`px-3 py-1 rounded-full text-sm border ${
+                    isDarkMode 
+                      ? 'bg-gray-800 text-gray-300 border-gray-700' 
+                      : 'bg-gray-100 text-gray-800 border-gray-300'
+                  }`}
                 >
                   {tag}
                 </span>
@@ -143,7 +152,7 @@ const DynamicBlogPost = () => {
         </header>
 
         <div 
-          className="prose prose-invert prose-lg max-w-none mb-12"
+          className={`prose prose-lg max-w-none mb-12 ${isDarkMode ? 'prose-invert' : 'prose-gray text-black'}`}
           dangerouslySetInnerHTML={{ __html: formattedContent }}
         />
 
