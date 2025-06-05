@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Moon, Sun, Rss, ExternalLink } from "lucide-react";
@@ -7,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import BlogPreview from "@/components/BlogPreview";
 import NavigationMenu from "@/components/NavigationMenu";
+import { BlueskyFeed } from "@/components/BlueskyFeed";
 
 const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -109,14 +109,7 @@ const Index = () => {
             </a>
           </div>
           
-          <div className="space-y-4">
-            <div className="p-4 border border-gray-800 rounded-lg">
-              <p className="text-gray-300 mb-2">
-                Bluesky feed integration coming soon. Connect your account to display recent posts here.
-              </p>
-              <span className="text-xs text-gray-500">Placeholder for Bluesky API integration</span>
-            </div>
-          </div>
+          <BlueskyFeed />
         </section>
       </main>
 
