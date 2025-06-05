@@ -89,11 +89,11 @@ const BlogPost = () => {
           </div>
         </header>
 
-        {/* Hero Image */}
+        {/* Hero Image - Parliament Screenshot */}
         <div className="mb-12">
           <img 
-            src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
-            alt="King Charles III - Still here. Still crowned."
+            src="/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"
+            alt="King Charles III delivering the Speech from the Throne in Parliament"
             className="w-full h-96 object-cover rounded-lg"
           />
         </div>
@@ -110,12 +110,12 @@ const BlogPost = () => {
 
           <div className="my-12">
             <img 
-              src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
-              alt="Still here. Still crowned."
+              src="/lovable-uploads/453c6f64-8fa5-42fe-acd7-12058b4862ac.png"
+              alt="Canadian minister taking oath of office"
               className="w-full h-96 object-cover rounded-lg"
             />
             <p className="text-center text-gray-400 text-sm mt-4 italic">
-              Still here. Still crowned.
+              The solemn pledge of allegiance to the Crown continues in 2025.
             </p>
           </div>
 
@@ -133,10 +133,13 @@ const BlogPost = () => {
 
           <div className="my-12">
             <img 
-              src="/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"
-              alt="The King in Canada - Speech From the Throne"
+              src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
+              alt="Official portrait of King Charles III"
               className="w-full h-96 object-cover rounded-lg"
             />
+            <p className="text-center text-gray-400 text-sm mt-4 italic">
+              Still here. Still crowned.
+            </p>
           </div>
 
           <p className="text-lg leading-relaxed mb-6">
@@ -150,7 +153,7 @@ const BlogPost = () => {
           <div className="my-12">
             <img 
               src="/lovable-uploads/0d6b2dba-6fa3-4f5b-9d6a-c7a03f4d5aa7.png"
-              alt="King Charles III delivering speech"
+              alt="King Charles III speaking at podium"
               className="w-full h-96 object-cover rounded-lg"
             />
           </div>
@@ -175,16 +178,8 @@ const BlogPost = () => {
 
           <div className="my-12">
             <img 
-              src="/lovable-uploads/453c6f64-8fa5-42fe-acd7-12058b4862ac.png"
-              alt="Minister taking oath"
-              className="w-full h-64 object-cover rounded-lg"
-            />
-          </div>
-
-          <div className="my-12">
-            <img 
               src="/lovable-uploads/6def8f02-867c-4f10-ae29-87a5c29c4322.png"
-              alt="Minister pledging allegiance"
+              alt="Minister pledging allegiance during swearing-in ceremony"
               className="w-full h-64 object-cover rounded-lg"
             />
             <p className="text-center text-gray-400 text-sm mt-4 italic">
