@@ -3,47 +3,17 @@ import { useParams, Link } from 'react-router-dom';
 import { useBlogPost } from '@/hooks/useBlogPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
 import SocialShare from './SocialShare';
-import { updateSayPleaseArticle } from '@/utils/updateSayPleaseArticle';
-import { updateKidsArticle } from '@/utils/updateKidsArticle';
-import { useEffect, useState } from 'react';
 
 const DynamicBlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const { post, loading, error } = useBlogPost(slug || '');
-  const [updateCompleted, setUpdateCompleted] = useState(false);
-
-  // Execute the update function for the Say Please and Thank You article
-  useEffect(() => {
-    if (slug === 'say-please-and-thank-you' && !updateCompleted) {
-      updateSayPleaseArticle()
-        .then(() => {
-          console.log('Say Please and Thank You article updated successfully');
-          setUpdateCompleted(true);
-        })
-        .catch(err => console.error('Failed to update Say Please and Thank You article:', err));
-    }
-  }, [slug, updateCompleted]);
-
-  // Execute the recreation function for the climate article
-  useEffect(() => {
-    if (slug === 'fewer-kids-climate-emergency' && !updateCompleted) {
-      updateKidsArticle()
-        .then(() => {
-          console.log('Climate article recreated successfully');
-          setUpdateCompleted(true);
-          // Force a page reload to show the recreated article
-          window.location.reload();
-        })
-        .catch(err => console.error('Failed to recreate climate article:', err));
-    }
-  }, [slug, updateCompleted]);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png';
   };
 
-  // Enhanced function to convert markdown-style content to HTML (same as admin preview)
+  // Enhanced function to convert markdown-style content to HTML
   const convertMarkdownToHtml = (content: string): string => {
     return content
       // Convert **bold** to <strong>
