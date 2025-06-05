@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Moon, Sun, Rss } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
-import { SubscribeMenu } from "@/components/NavigationMenu";
+import { NavigationMenu, NavigationMenuList, SubscribeMenu } from "@/components/NavigationMenu";
 
 interface SharedHeaderProps {
   showBackLink?: boolean;
@@ -35,7 +35,11 @@ const SharedHeader = ({ showBackLink = false, backLinkText = "Back to Home" }: S
       </div>
 
       <div className="flex items-center space-x-4">
-        <SubscribeMenu />
+        <NavigationMenu>
+          <NavigationMenuList>
+            <SubscribeMenu />
+          </NavigationMenuList>
+        </NavigationMenu>
         
         <div className={`flex items-center space-x-4 border-l pl-4 ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
           <Button
