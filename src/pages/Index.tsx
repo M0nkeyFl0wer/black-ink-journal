@@ -35,25 +35,34 @@ const Index = () => {
             <p className="text-sm text-gray-400">Essays & Commentary</p>
           </div>
         </div>
-        
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleTheme}
-            className="text-gray-400 hover:text-white"
+
+        <nav className="flex items-center space-x-6">
+          <Link 
+            to="/about" 
+            className="text-gray-400 hover:text-white transition-colors font-medium"
           >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-gray-400 hover:text-white"
-          >
-            <Rss className="w-4 h-4 mr-2" />
-            RSS
-          </Button>
-        </div>
+            About
+          </Link>
+          
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="text-gray-400 hover:text-white"
+            >
+              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-400 hover:text-white"
+            >
+              <Rss className="w-4 h-4 mr-2" />
+              RSS
+            </Button>
+          </div>
+        </nav>
       </header>
 
       {/* Main Content */}
