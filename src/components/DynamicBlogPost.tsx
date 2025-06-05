@@ -1,9 +1,10 @@
 
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Calendar, Tag, Share2, Moon, Sun } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useBlogPost } from "@/hooks/useBlogPosts";
+import SocialShare from "@/components/SocialShare";
 
 const DynamicBlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -88,13 +89,11 @@ const DynamicBlogPost = () => {
           >
             {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-gray-400 hover:text-white"
-          >
-            <Share2 className="w-4 h-4" />
-          </Button>
+          <SocialShare 
+            title={post.title}
+            url={`/post/${post.slug}`}
+            description={post.excerpt || undefined}
+          />
         </div>
       </header>
 
@@ -176,10 +175,11 @@ const DynamicBlogPost = () => {
                 <p className="text-gray-400 text-sm">Essays & Commentary</p>
               </div>
             </div>
-            <Button variant="outline" size="sm">
-              <Share2 className="w-4 h-4 mr-2" />
-              Share
-            </Button>
+            <SocialShare 
+              title={post.title}
+              url={`/post/${post.slug}`}
+              description={post.excerpt || undefined}
+            />
           </div>
         </footer>
       </article>

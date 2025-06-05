@@ -9,15 +9,38 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          id: string
+          password_hash: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          password_hash: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          password_hash?: string
+          username?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author: string
           content: string
           created_at: string
+          created_by: string | null
           excerpt: string | null
           featured_image: string | null
           id: string
           is_published: boolean
+          modified_by: string | null
           publish_date: string
           slug: string
           tags: string[] | null
@@ -28,10 +51,12 @@ export type Database = {
           author?: string
           content: string
           created_at?: string
+          created_by?: string | null
           excerpt?: string | null
           featured_image?: string | null
           id?: string
           is_published?: boolean
+          modified_by?: string | null
           publish_date?: string
           slug: string
           tags?: string[] | null
@@ -42,10 +67,12 @@ export type Database = {
           author?: string
           content?: string
           created_at?: string
+          created_by?: string | null
           excerpt?: string | null
           featured_image?: string | null
           id?: string
           is_published?: boolean
+          modified_by?: string | null
           publish_date?: string
           slug?: string
           tags?: string[] | null

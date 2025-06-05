@@ -1,8 +1,20 @@
 
-import { useEffect } from 'react';
+import { useBlogPosts } from '@/hooks/useBlogPosts';
 
 export const generateRSSFeed = () => {
   const siteUrl = window.location.origin;
+  const { posts } = useBlogPosts();
+  
+  const rssItems = posts.map(post => `
+    <item>
+      <title>${escapeXml(post.title)}</title>
+      <description>${escapeXml(post.excerpt || '')}</description>
+      <link>${siteUrl}/post/${post.slug}</link>
+      <guid>${siteUrl}/post/${post.slug}</guid>
+      <pubDate>${new Date(post.publish_date).toUTCString()}</pubDate>
+      <category>${post.tags?.[0] || 'Essays'}</category>
+    </item>`).join('');
+
   const rssContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
@@ -14,19 +26,20 @@ export const generateRSSFeed = () => {
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <pubDate>${new Date().toUTCString()}</pubDate>
     <ttl>60</ttl>
-    
-    <item>
-      <title>Still Crowned</title>
-      <description>A country that talks like a democracy but still curtsies like a colony</description>
-      <link>${siteUrl}/post/still-crowned</link>
-      <guid>${siteUrl}/post/still-crowned</guid>
-      <pubDate>Thu, 16 May 2025 00:00:00 GMT</pubDate>
-      <category>Essays</category>
-    </item>
+    ${rssItems}
   </channel>
 </rss>`;
 
   return rssContent;
+};
+
+const escapeXml = (text: string) => {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 };
 
 export const downloadRSSFeed = () => {

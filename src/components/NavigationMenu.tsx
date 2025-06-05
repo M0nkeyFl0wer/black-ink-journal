@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Home, User, FileText } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NavigationMenuProps {
@@ -14,7 +14,6 @@ const NavigationMenu = ({ isDarkMode }: NavigationMenuProps) => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const menuItems = [
-    { to: "/", label: "Essays", icon: Home },
     { to: "/about", label: "About", icon: User },
   ];
 
