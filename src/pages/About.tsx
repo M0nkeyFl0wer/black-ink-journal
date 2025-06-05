@@ -41,7 +41,7 @@ const About = () => {
         
         <div className="prose prose-invert max-w-none space-y-6">
           <p className="text-lg leading-relaxed text-gray-300">
-            Some of my earliest memories are of taking minutes with crayons during housing co-op meetings. I didn't fully grasp what quorum meant, but I knew decisions mattered—and that if you wanted something to change, you had to get involved.
+            Some of my earliest memories are of taking minutes with crayons during housing co-op meetings. I didn't fully grasp what quorum meant, but I knew decisions mattered and that if you wanted something to change, you had to get involved.
           </p>
 
           <div className="my-8">
@@ -81,7 +81,7 @@ const About = () => {
           </div>
 
           <p className="text-lg leading-relaxed text-gray-300">
-            These days I'm writing a novel called The Monkey Flower Experiment. It's fiction, technically—but also a blueprint, a warning, and a love letter to everyone still trying to build something beautiful in the ruins.
+            These days I'm writing a novel called The Monkey Flower Experiment. It's fiction, technically but also a blueprint, a warning, and a love letter to everyone still trying to build something beautiful in the ruins.
           </p>
 
           <p className="text-lg leading-relaxed text-gray-300">
