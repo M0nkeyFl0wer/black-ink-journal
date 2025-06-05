@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ExternalLink, Heart, MessageCircle, Repeat2, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -141,23 +140,72 @@ export const BlueskyFeed = () => {
   useEffect(() => {
     const fetchBlueskyFeed = async () => {
       try {
-        console.log('Starting Bluesky feed fetch...');
+        console.log('🚀 Starting Bluesky feed fetch...');
         
         const cacheBust = Date.now();
+        console.log('🔍 Cache bust timestamp:', cacheBust);
         
-        console.log('Attempting to invoke bluesky-feed function via Supabase client...');
-        const { data, error } = await supabase.functions.invoke('bluesky-feed', {
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          },
-          body: { cacheBust }
-        });
+        // Method 1: Try Supabase client with minimal configuration
+        console.log('📡 Attempting Supabase client invocation...');
         
-        console.log('Supabase function invoke response:', { data, error });
+        let data, error;
         
+        try {
+          const response = await supabase.functions.invoke('bluesky-feed', {
+            body: { cacheBust }
+          });
+          
+          data = response.data;
+          error = response.error;
+          
+          console.log('✅ Supabase client response received:', { 
+            hasData: !!data, 
+            hasError: !!error,
+            errorType: error?.name,
+            errorMessage: error?.message 
+          });
+          
+        } catch (clientError) {
+          console.error('❌ Supabase client invocation failed:', {
+            name: clientError?.name,
+            message: clientError?.message,
+            stack: clientError?.stack
+          });
+          
+          // Method 2: Fallback to direct fetch with proper authentication
+          console.log('🔄 Attempting direct fetch fallback...');
+          
+          try {
+            const directResponse = await fetch(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/bluesky-feed`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impmc3ZsYWFwb3NzbG1lbmVvdnRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MTY0MzAsImV4cCI6MjA2NDM5MjQzMH0.RWD9DZgty4WVnHMGx3-MHQjgpTRVH9-mszmPPbEDhh4`,
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impmc3ZsYWFwb3NzbG1lbmVvdnRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MTY0MzAsImV4cCI6MjA2NDM5MjQzMH0.RWD9DZgty4WVnHMGx3-MHQjgpTRVH9-mszmPPbEDhh4'
+              },
+              body: JSON.stringify({ cacheBust })
+            });
+            
+            console.log('📊 Direct fetch response status:', directResponse.status);
+            
+            if (directResponse.ok) {
+              data = await directResponse.json();
+              error = null;
+              console.log('✅ Direct fetch successful');
+            } else {
+              const errorText = await directResponse.text();
+              throw new Error(`HTTP ${directResponse.status}: ${errorText}`);
+            }
+            
+          } catch (fetchError) {
+            console.error('❌ Direct fetch also failed:', fetchError);
+            throw new Error(`Both Supabase client and direct fetch failed. Client error: ${clientError?.message}, Fetch error: ${fetchError?.message}`);
+          }
+        }
+        
+        // Process the response
         if (error) {
-          console.error('Function returned error:', error);
+          console.error('🚨 Function returned error:', error);
           setFeedData({ 
             posts: [], 
             error: `Function error: ${error.message || JSON.stringify(error)}`,
@@ -170,7 +218,7 @@ export const BlueskyFeed = () => {
             timestamp: new Date().toISOString()
           });
         } else if (data && data.error) {
-          console.error('API returned error:', data.error);
+          console.error('🚨 API returned error:', data.error);
           setFeedData({ 
             posts: [], 
             error: `API error: ${data.error}`,
@@ -182,8 +230,11 @@ export const BlueskyFeed = () => {
             debug: data.debug,
             timestamp: new Date().toISOString()
           });
-        } else if (data) {
-          console.log('Successfully fetched Bluesky data:', data);
+        } else if (data && data.posts) {
+          console.log('🎉 Successfully fetched Bluesky data:', {
+            postsCount: data.posts.length,
+            hasDebug: !!data.debug
+          });
           setFeedData(data);
           if (data.debug) {
             setDebugInfo({ 
@@ -194,7 +245,7 @@ export const BlueskyFeed = () => {
             });
           }
         } else {
-          console.error('No data received from function');
+          console.error('🚨 No valid data received');
           setFeedData({ 
             posts: [], 
             error: 'No data received from function'
@@ -205,8 +256,9 @@ export const BlueskyFeed = () => {
             timestamp: new Date().toISOString()
           });
         }
+        
       } catch (error) {
-        console.error('Error fetching Bluesky feed:', error);
+        console.error('💥 Critical error in fetchBlueskyFeed:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         setFeedData({ 
           posts: [], 
@@ -244,7 +296,7 @@ export const BlueskyFeed = () => {
     }
   };
 
-  console.log('BlueskyFeed render state:', { 
+  console.log('🎨 BlueskyFeed render state:', { 
     loading, 
     feedData, 
     postsCount: feedData.posts?.length,
