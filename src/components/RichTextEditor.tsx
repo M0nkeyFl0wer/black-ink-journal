@@ -1,4 +1,3 @@
-
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -6,7 +5,8 @@ import Link from '@tiptap/extension-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { Bold, Italic, List, ListOrdered, Quote, Link as LinkIcon, Image as ImageIcon, Undo, Redo, Type } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Quote, Link as LinkIcon, Image as ImageIcon, Undo, Redo, Type, FolderOpen } from 'lucide-react';
+import ImageBrowser from './ImageBrowser';
 
 interface RichTextEditorProps {
   content: string;
@@ -16,6 +16,7 @@ interface RichTextEditorProps {
 
 const RichTextEditor = ({ content, onChange, onImageUpload }: RichTextEditorProps) => {
   const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [showImageBrowser, setShowImageBrowser] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkText, setLinkText] = useState('');
 
@@ -54,6 +55,12 @@ const RichTextEditor = ({ content, onChange, onImageUpload }: RichTextEditorProp
       } catch (error) {
         console.error('Image upload failed:', error);
       }
+    }
+  };
+
+  const handleSelectImageFromBrowser = (url: string) => {
+    if (editor) {
+      editor.chain().focus().setImage({ src: url }).run();
     }
   };
 
@@ -134,7 +141,12 @@ const RichTextEditor = ({ content, onChange, onImageUpload }: RichTextEditorProp
             >
               <LinkIcon className="w-4 h-4" />
             </Button>
-            <Button size="sm" variant="ghost" className="relative rounded-lg h-8 w-8 p-0 hover:bg-gray-200">
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="relative rounded-lg h-8 w-8 p-0 hover:bg-gray-200"
+              title="Upload new image"
+            >
               <ImageIcon className="w-4 h-4" />
               <input
                 type="file"
@@ -142,6 +154,15 @@ const RichTextEditor = ({ content, onChange, onImageUpload }: RichTextEditorProp
                 onChange={handleImageUpload}
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowImageBrowser(true)}
+              className="rounded-lg h-8 w-8 p-0 hover:bg-gray-200"
+              title="Browse existing images"
+            >
+              <FolderOpen className="w-4 h-4" />
             </Button>
           </div>
           
@@ -206,6 +227,14 @@ const RichTextEditor = ({ content, onChange, onImageUpload }: RichTextEditorProp
             </Button>
           </div>
         </div>
+      )}
+
+      {/* Image Browser Modal */}
+      {showImageBrowser && (
+        <ImageBrowser
+          onSelectImage={handleSelectImageFromBrowser}
+          onClose={() => setShowImageBrowser(false)}
+        />
       )}
     </div>
   );

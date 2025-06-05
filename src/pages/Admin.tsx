@@ -5,8 +5,9 @@ import AdminDashboard from '@/components/AdminDashboard';
 import AdminPostEditor from '@/components/AdminPostEditor';
 import DraftsManager from '@/components/DraftsManager';
 import PasswordManager from '@/components/PasswordManager';
+import ImageManager from '@/components/ImageManager';
 
-type AdminView = 'dashboard' | 'editor' | 'drafts' | 'settings';
+type AdminView = 'dashboard' | 'editor' | 'drafts' | 'images' | 'settings';
 
 const Admin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -94,6 +95,16 @@ const Admin = () => {
             Drafts
           </button>
           <button
+            onClick={() => setCurrentView('images')}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              currentView === 'images' 
+                ? 'bg-blue-600 text-white' 
+                : 'text-gray-300 hover:text-white hover:bg-gray-800'
+            }`}
+          >
+            Images
+          </button>
+          <button
             onClick={() => setCurrentView('settings')}
             className={`px-4 py-2 rounded-lg transition-colors ${
               currentView === 'settings' 
@@ -151,6 +162,10 @@ const Admin = () => {
           username={username}
           onEditDraft={handleEditDraft}
         />
+      )}
+      
+      {currentView === 'images' && (
+        <ImageManager />
       )}
       
       {currentView === 'settings' && (
