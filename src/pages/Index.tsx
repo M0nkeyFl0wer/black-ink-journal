@@ -12,13 +12,6 @@ const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const { posts, loading, error } = useBlogPosts();
 
-  // Enhanced debugging
-  console.log('Posts loaded:', posts);
-  console.log('Posts length:', posts?.length);
-  console.log('Loading state:', loading);
-  console.log('Error state:', error);
-  console.log('Individual posts:', posts?.map(p => ({ id: p.id, title: p.title, slug: p.slug })));
-
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle('dark');
@@ -85,26 +78,6 @@ const Index = () => {
         {!loading && !error && posts.length === 0 && (
           <div className="text-center text-gray-400">
             <p>No posts found. Check the database connection and RLS policies.</p>
-          </div>
-        )}
-
-        {/* Enhanced debug information */}
-        {!loading && !error && (
-          <div className="mb-4 p-4 bg-gray-900 rounded-lg text-sm text-gray-300">
-            <h3 className="font-bold mb-2">Debug Info:</h3>
-            <p>Found {posts.length} post(s)</p>
-            <p>Loading: {loading ? 'true' : 'false'}</p>
-            <p>Error: {error || 'none'}</p>
-            {posts.length > 0 && (
-              <div className="mt-2">
-                <p>Posts:</p>
-                <ul className="ml-4 list-disc">
-                  {posts.map(post => (
-                    <li key={post.id}>{post.title} (slug: {post.slug})</li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         )}
 
