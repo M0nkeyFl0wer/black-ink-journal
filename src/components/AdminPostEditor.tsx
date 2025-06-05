@@ -1,11 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Eye } from 'lucide-react';
+import { ArrowLeft, Eye, Code, Type } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { uploadImage } from '@/utils/imageUpload';
 
@@ -30,6 +30,7 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
   const [isPublished, setIsPublished] = useState(post?.is_published ?? true);
   const [loading, setLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isMarkdownMode, setIsMarkdownMode] = useState(false);
   const { toast } = useToast();
 
   // Auto-generate slug from title
@@ -45,6 +46,17 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
     }
   }, [title, post]);
 
+  // Detect if content is markdown when loading
+  useEffect(() => {
+    if (post?.content) {
+      const hasMarkdown = post.content.includes('**') || post.content.includes('[') || post.content.includes('##');
+      const isHtml = post.content.includes('<p>') || post.content.includes('<div>');
+      if (hasMarkdown && !isHtml) {
+        setIsMarkdownMode(true);
+      }
+    }
+  }, [post]);
+
   const handleImageUpload = async (file: File): Promise<string> => {
     try {
       return await uploadImage(file);
@@ -56,6 +68,22 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
       });
       throw error;
     }
+  };
+
+  // Function to convert markdown to HTML for preview
+  const convertMarkdownToHtml = (content: string): string => {
+    return content
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">$1</a>')
+      .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mt-8 mb-4 text-white">$1</h2>')
+      .replace(/^---$/gm, '<hr class="border-gray-600 my-8" />')
+      .split('\n\n')
+      .map(paragraph => {
+        if (paragraph.trim() === '') return '';
+        if (paragraph.includes('<h2>') || paragraph.includes('<hr')) return paragraph;
+        return `<p class="mb-4 leading-relaxed">${paragraph.replace(/\n/g, '<br>')}</p>`;
+      })
+      .join('\n');
   };
 
   const handleSave = async () => {
@@ -85,7 +113,6 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
       };
 
       if (post) {
-        // Update existing post
         const { error } = await supabase
           .from('blog_posts')
           .update(postData)
@@ -98,7 +125,6 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
           description: "The post has been successfully updated",
         });
       } else {
-        // Create new post
         const { error } = await supabase
           .from('blog_posts')
           .insert({
@@ -127,6 +153,8 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
   };
 
   if (showPreview) {
+    const previewContent = isMarkdownMode ? convertMarkdownToHtml(content) : content;
+    
     return (
       <div className="min-h-screen bg-black text-white p-6">
         <div className="max-w-4xl mx-auto">
@@ -146,7 +174,7 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
             {featuredImage && (
               <img src={featuredImage} alt={title} className="w-full rounded-lg" />
             )}
-            <div dangerouslySetInnerHTML={{ __html: content }} />
+            <div dangerouslySetInnerHTML={{ __html: previewContent }} />
           </article>
         </div>
       </div>
@@ -171,21 +199,45 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
             </h1>
           </div>
           
-          <Button
-            onClick={() => setShowPreview(true)}
-            variant="outline"
-            className="mr-4"
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            Preview
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              onClick={() => setShowPreview(true)}
+              variant="outline"
+              className="mr-4"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Preview
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Card className="bg-gray-900 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Content</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-white">Content</CardTitle>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={() => setIsMarkdownMode(false)}
+                      variant={!isMarkdownMode ? "default" : "ghost"}
+                      size="sm"
+                      className="text-xs"
+                    >
+                      <Type className="w-3 h-3 mr-1" />
+                      Rich
+                    </Button>
+                    <Button
+                      onClick={() => setIsMarkdownMode(true)}
+                      variant={isMarkdownMode ? "default" : "ghost"}
+                      size="sm"
+                      className="text-xs"
+                    >
+                      <Code className="w-3 h-3 mr-1" />
+                      Markdown
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
@@ -204,11 +256,20 @@ const AdminPostEditor = ({ post, username, onSave, onCancel }: AdminPostEditorPr
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Content *
                   </label>
-                  <RichTextEditor
-                    content={content}
-                    onChange={setContent}
-                    onImageUpload={handleImageUpload}
-                  />
+                  {isMarkdownMode ? (
+                    <Textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      className="bg-gray-800 border-gray-600 text-white min-h-[400px] font-mono"
+                      placeholder="Write your content in markdown..."
+                    />
+                  ) : (
+                    <RichTextEditor
+                      content={content}
+                      onChange={setContent}
+                      onImageUpload={handleImageUpload}
+                    />
+                  )}
                 </div>
               </CardContent>
             </Card>
