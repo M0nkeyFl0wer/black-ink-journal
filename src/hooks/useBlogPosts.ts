@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -25,6 +24,7 @@ export const useBlogPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        console.log('Fetching blog posts...');
         const { data, error } = await supabase
           .from('blog_posts')
           .select('*')
@@ -32,8 +32,13 @@ export const useBlogPosts = () => {
           .order('publish_date', { ascending: false });
 
         if (error) throw error;
+        
+        console.log('Blog posts fetched:', data);
+        console.log('Featured images in posts:', data?.map(p => ({ title: p.title, featured_image: p.featured_image })));
+        
         setPosts(data || []);
       } catch (err) {
+        console.error('Error fetching posts:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch posts');
       } finally {
         setLoading(false);
