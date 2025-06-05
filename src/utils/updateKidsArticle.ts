@@ -3,9 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const updateKidsArticle = async () => {
   try {
-    console.log('Starting forced article recreation...');
+    console.log('Starting complete article replacement...');
     
-    // First, delete the existing article completely
+    // First, completely delete the existing article
     console.log('Deleting existing article...');
     const { error: deleteError } = await supabase
       .from('blog_posts')
@@ -18,8 +18,8 @@ export const updateKidsArticle = async () => {
       console.log('Article deleted successfully');
     }
 
-    // Wait a moment to ensure deletion is complete
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Wait to ensure deletion is complete
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     const content = `One of Professor Kathryn Harrison's posts caught my eye recently. It raised the question of whether having fewer children is an effective response to climate change. Her kids, Sophie and Sam Harrison, have been fighting climate change since they were young—a heartening reminder that the next generation is passionately involved. The post got me thinking about how we frame responsibility for the climate crisis. All too often, we hear that *personal* choices are the key: drive less, fly less, recycle, even have fewer children.
 
@@ -86,8 +86,8 @@ This isn't about being perfect. It's about being together.
 
 *Ben West is a campaigner, strategist, and writer working at the intersection of climate, justice, and democracy.*`;
 
-    // Now insert the article fresh
-    console.log('Inserting new article...');
+    // Now insert the article with a completely new record
+    console.log('Inserting new article with original content...');
     
     const { data, error } = await supabase
       .from('blog_posts')
@@ -109,11 +109,11 @@ This isn't about being perfect. It's about being together.
       throw error;
     }
     
-    console.log('Article recreated successfully:', data);
+    console.log('Article recreated successfully with original content:', data);
     
     return data;
   } catch (error) {
-    console.error('Error recreating kids climate article:', error);
+    console.error('Error recreating article:', error);
     throw error;
   }
 };

@@ -23,7 +23,7 @@ const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
             isFeatured 
               ? 'w-full aspect-[16/9]' 
               : 'w-48 h-32'
-          } rounded-lg overflow-hidden bg-gray-900 flex-shrink-0`}>
+          } rounded-xl overflow-hidden bg-gray-900 flex-shrink-0`}>
             <img
               src={post.featured_image || '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png'}
               alt={post.title}
