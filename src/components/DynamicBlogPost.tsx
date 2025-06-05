@@ -56,7 +56,14 @@ const DynamicBlogPost = () => {
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Post Not Found</h1>
-          <p className="text-gray-400 mb-8">The post you're looking for doesn't exist.</p>
+          <p className="text-gray-400 mb-8">
+            This post has been removed or doesn't exist.
+            {slug === 'fewer-kids-climate-emergency' && (
+              <span className="block mt-2 text-sm">
+                (This article was permanently deleted)
+              </span>
+            )}
+          </p>
           <Link to="/" className="text-blue-400 hover:text-blue-300">
             ← Back to Home
           </Link>

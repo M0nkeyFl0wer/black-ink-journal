@@ -17,6 +17,9 @@ export interface BlogPost {
   updated_at: string;
 }
 
+// List of permanently deleted articles that should never be recreated
+const DELETED_ARTICLES = ['fewer-kids-climate-emergency'];
+
 export const useBlogPosts = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +36,9 @@ export const useBlogPosts = () => {
 
         if (error) throw error;
         
-        setPosts(data || []);
+        // Filter out any permanently deleted articles
+        const filteredData = (data || []).filter(post => !DELETED_ARTICLES.includes(post.slug));
+        setPosts(filteredData);
       } catch (err) {
         console.error('Error fetching posts:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch posts');
@@ -56,6 +61,13 @@ export const useBlogPost = (slug: string) => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
+        // Check if this is a permanently deleted article
+        if (DELETED_ARTICLES.includes(slug)) {
+          setPost(null);
+          setError('This article has been permanently removed');
+          return;
+        }
+
         const { data, error } = await supabase
           .from('blog_posts')
           .select('*')
