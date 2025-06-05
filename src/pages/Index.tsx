@@ -55,8 +55,8 @@ const Index = () => {
           <Link to="/post/still-crowned" className="group">
             <div className="relative overflow-hidden rounded-lg mb-6">
               <img 
-                src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png"
-                alt="Still Crowned"
+                src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
+                alt="Still Crowned - King Charles III"
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
