@@ -70,24 +70,51 @@ This isn't about being perfect. It's about being together.
 
 *Ben West is a campaigner, strategist, and writer working at the intersection of climate, justice, and democracy.*`;
 
-    // Force update with upsert to ensure it saves
+    // First check if the article exists and what its current content is
+    const { data: currentPost } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', 'fewer-kids-climate-emergency')
+      .single();
+
+    console.log('Current post content length:', currentPost?.content?.length || 0);
+    console.log('New content length:', content.length);
+
+    // Use upsert to ensure the update happens
     const { data, error } = await supabase
       .from('blog_posts')
-      .update({ 
+      .upsert({ 
+        slug: 'fewer-kids-climate-emergency',
+        title: 'Fewer Kids, Climate Emergency? A Critical Look at Personal vs. Systemic Solutions',
         content: content,
         excerpt: "A critical look at why focusing on having fewer children misses the real drivers of climate change - corporate power and systemic inequality.",
         featured_image: 'https://www.ecowatch.com/wp-content/uploads/2021/10/1543172645-origin.jpg',
+        author: 'Ben West',
+        publish_date: '2024-12-15',
+        tags: ['climate change', 'politics', 'corporate responsibility', 'population', 'systemic change'],
+        is_published: true,
         updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'slug'
       })
-      .eq('slug', 'fewer-kids-climate-emergency')
       .select();
 
     if (error) {
-      console.error('Update error:', error);
+      console.error('Upsert error:', error);
       throw error;
     }
     
-    console.log('Article updated successfully:', data);
+    console.log('Article upserted successfully:', data);
+    
+    // Verify the update worked
+    const { data: verifyData } = await supabase
+      .from('blog_posts')
+      .select('content')
+      .eq('slug', 'fewer-kids-climate-emergency')
+      .single();
+    
+    console.log('Verification - content length after update:', verifyData?.content?.length || 0);
+    
     return data;
   } catch (error) {
     console.error('Error updating kids climate article:', error);

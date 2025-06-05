@@ -9,27 +9,19 @@ import { useEffect, useState } from 'react';
 const DynamicBlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const { post, loading, error } = useBlogPost(slug || '');
-  const [forceRefresh, setForceRefresh] = useState(0);
+  const [updateCompleted, setUpdateCompleted] = useState(false);
 
-  // Execute the update function for the specific article and force refresh
+  // Execute the update function for the specific article
   useEffect(() => {
-    if (slug === 'fewer-kids-climate-emergency') {
+    if (slug === 'fewer-kids-climate-emergency' && !updateCompleted) {
       updateKidsArticle()
         .then(() => {
-          console.log('Article updated, forcing refresh...');
-          // Force a refresh of the post data
-          setTimeout(() => setForceRefresh(prev => prev + 1), 1000);
+          console.log('Article updated successfully');
+          setUpdateCompleted(true);
         })
         .catch(err => console.error('Failed to update article:', err));
     }
-  }, [slug]);
-
-  // Re-fetch when forceRefresh changes
-  useEffect(() => {
-    if (forceRefresh > 0) {
-      window.location.reload();
-    }
-  }, [forceRefresh]);
+  }, [slug, updateCompleted]);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
