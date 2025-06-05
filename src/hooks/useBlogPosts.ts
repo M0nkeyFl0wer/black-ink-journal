@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -25,116 +24,68 @@ export const useBlogPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Update the "Still Crowned" article with full HTML content and proper hero image
+        // Update the "Still Crowned" article with the original formatting and your uploaded images
         await supabase
           .from('blog_posts')
           .update({
             content: `<div class="prose prose-lg prose-invert max-w-none">
-              <p>In the pantheon of technological achievements, few devices have commanded as much reverence—and terror—as the smartphone. It arrived not with fanfare but with the quiet confidence of a revolution disguised as convenience. We welcomed it into our pockets, our homes, our most intimate moments, never suspecting that we were crowning a new king.</p>
+              <img src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" alt="Banner image" class="w-full h-64 object-cover rounded-lg mb-8" />
+              
+              <p><strong>By Ben West</strong></p>
+              
+              <p>At the recent swearing-in ceremony for Canada's newest ministers, one detail stood out. Not the cabinet picks (we could talk about that too), but the words they were made to say: a solemn pledge of allegiance to "His Majesty King Charles the Third, his heirs and successors."</p>
+              
+              <p>In 2025. In a modern democracy. In a country where we pride ourselves on being independent, progressive, and self-governing, we are still asking ministers to pledge fealty not to the people, not even to the Constitution, but to a literal king.</p>
               
               <div class="my-8">
-                <img src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Person using smartphone on bed" class="w-full h-64 object-cover rounded-lg" />
+                <img src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png" alt="Still here. Still crowned." class="w-full h-64 object-cover rounded-lg" />
+                <p class="text-sm text-gray-400 italic mt-2">Still here. Still crowned.</p>
               </div>
               
-              <p>Today, more than a decade into this reign, we find ourselves subjects in a kingdom we helped build but no longer recognize. The smartphone sits enthroned not just in our hands but in our minds, dictating the rhythm of our days with the subtle tyranny of the perpetually urgent.</p>
+              <p>And not just a king. This king. The guy who couldn't even get his own pens to work during his coronation tour. The guy who wears jewels stolen from colonized nations and sits atop an institution built on centuries of slavery, imperialism, and violent dispossession.</p>
               
-              <h2 class="text-3xl font-bold mt-12 mb-6 text-white">The Coronation We Didn't See Coming</h2>
+              <p>Let's be clear. This isn't just ceremonial fluff. Canada may pretend to be a modern democracy with a decorative crown, but the reality is more twisted. We are a monarchy pretending not to be one. The consequences of that show up in subtle and not-so-subtle ways.</p>
               
-              <p>The smartphone's ascension wasn't dramatic. There were no coups, no manifestos, no clear moment when power changed hands. Instead, it was a gradual seduction—each new feature, each app, each notification training us to bow a little lower, reach a little faster, depend a little more completely.</p>
+              <p>Today, King Charles III is delivering the Speech from the Throne. This marks the first time in 48 years that a reigning monarch has done so in Canada, and only the third time ever. Queen Elizabeth II read the speech in 1957 and again in 1977, both during symbolic royal tours. But this one hits differently. It is not just a visit. It is a reminder.</p>
+              
+              <p>A symbolic move, sure. But symbols matter. And in the context of a rising authoritarian wave south of the border, the timing feels more than ironic.</p>
+              
+              <p>Because while the Republican Party in the U.S. has rallied behind a man who believes he is a king, here we are in Canada claiming we are not one, while having our ministers swear loyalty to a royal family. It is cosplay constitutionalism. And I say this with respect to cosplay.</p>
+              
+              <p>The irony goes deeper. People who oppose monarchy are often labeled republicans, as if rejecting hereditary power aligns them with the authoritarian brand now controlling the U.S. Republican Party. We need a better word. Because the answer to one totalitarian regime is not to run back to the mothership of imperial institutions and a deeply corrupt family.</p>
+              
+              <p>Now, you might be saying, "Ben, come on. The monarchy doesn't really have power in Canada." But it does. Not in the daily business of government, no. But in moments of crisis, the Crown's representatives, our Governor General and the Lieutenant Governors, hold real reserve powers. They have exercised them before. They could again.</p>
+              
+              <p>Remember 2017? Christy Clark, then Premier of British Columbia, lost the confidence of the Legislature. Rather than dissolve Parliament as she requested, Lieutenant Governor Judith Guichon invited John Horgan to form government. That is not just a ribbon-cutting role. That is power.</p>
+              
+              <p>Or take Stephen Harper's 2008 prorogation crisis. Facing a confidence vote he was likely to lose, he asked the Governor General to prorogue Parliament. Michaëlle Jean agreed. Many framed it as a wise avoidance of crisis. But in truth, a majority of MPs had signed a letter expressing their desire to form an alternative government. The Governor General made a choice. She backed the sitting Prime Minister instead of the stated will of the majority. That is not democratic restraint. That is institutional bias dressed up as neutrality.</p>
+              
+              <p>Mark Carney, now Prime Minister and former head of both the Bank of Canada and the Bank of England, has defended this arrangement as a bulwark of Canadian sovereignty. But is it? Or is it just stability through tradition? Are we clinging to symbols of empire to avoid real conversations about democratic renewal?</p>
+              
+              <p>Then there is the Privy Council, the constitutional club you join when you become a Cabinet Minister. The oath is not about transparency. It includes lifelong secrecy to the monarch, not to the public. There is no mention of whistleblower protections or conscience exceptions. Just loyalty. Just silence.</p>
+              
+              <p>While no minister has likely been prosecuted for breaking that oath, the structure is chilling. The Crown remains the legal embodiment of the state. That is why criminal cases are "R v. You." R for Rex. You are not up against the state. You are up against the King.</p>
+              
+              <p>The spectacle is everywhere. Take the ceremonial mace, or sceptre, that sits in Parliament. It is not just a shiny prop. It is a symbol of royal authority. The House of Commons cannot legally sit without it. Before each session, it is marched in to signal the King's blessing. Yes. Still.</p>
+              
+              <p>Here is the kicker. Changing this is hard. Every province must agree. It is constitutional trench warfare. Abolishing the monarchy would require a kind of national consensus we can barely achieve on anything.</p>
+              
+              <p>But we do not need full abolition to act. There are workarounds.</p>
+              
+              <p>We can amend legislation to remove unnecessary royal language in pledges and oaths. We can emphasize allegiance to the Constitution, to the Charter, or to the people of Canada, rather than to a monarch. We can reform the use of reserve powers to ensure transparency and democratic accountability.</p>
+              
+              <p>Most of all, we can talk about it. The Speech from the Throne is a perfect opportunity. Not just to ask who reads the speech, but who the speech is for.</p>
+              
+              <p>We can respect the King as a human being, especially during a difficult chapter of his life and health. But respect does not require submission. And a modern democracy cannot define its legitimacy through inherited power, even politely.</p>
+              
+              <p>Our sovereignty should reflect our values. It should be rooted in accountability, justice, and the will of the people, not a colonial tradition or a crown passed down by birthright. We are more than a subject nation, and our future depends on acting like it.</p>
               
               <div class="my-8">
-                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Circuit board macro photography" class="w-full h-64 object-cover rounded-lg" />
+                <img src="/lovable-uploads/6def8f02-867c-4f10-ae29-87a5c29c4322.png" alt="Minister pledging allegiance to King Charles III" class="w-full h-64 object-cover rounded-lg" />
+                <p class="text-sm text-gray-400 italic mt-2">Marjorie Michel being sworn in as Minister of Health, pledging "true allegiance" to King Charles III — as seen in CBC's live broadcast of Carney's new cabinet.</p>
               </div>
-              
-              <p>We traded our autonomy for convenience, our attention for entertainment, our presence for connection. The bargain seemed fair at the time. Who wouldn't want the world's information at their fingertips? Who could resist the allure of never being truly alone?</p>
-              
-              <p>But somewhere between the first iPhone and the latest iteration, the relationship shifted. We stopped using our phones and started serving them. The device that was supposed to enhance our lives began to define them.</p>
-              
-              <h2 class="text-3xl font-bold mt-12 mb-6 text-white">The Kingdom's New Rules</h2>
-              
-              <p>In this new realm, the smartphone has established its own set of laws, as insidious as they are effective:</p>
-              
-              <ul class="my-6 space-y-3">
-                <li><strong class="text-red-400">The Law of Immediate Response:</strong> Every ping, buzz, and flash demands instant attention. To ignore a notification is to commit a minor act of rebellion that feels increasingly difficult to sustain.</li>
-                
-                <li><strong class="text-red-400">The Law of Perpetual Availability:</strong> We are always on call, always reachable, always expected to respond. The boundaries between work and rest, public and private, have dissolved into the ether of constant connectivity.</li>
-                
-                <li><strong class="text-red-400">The Law of Manufactured Urgency:</strong> Everything feels urgent because the phone makes it so. The line between what requires immediate attention and what can wait has been deliberately blurred.</li>
-                
-                <li><strong class="text-red-400">The Law of Artificial Intimacy:</strong> We confide in our phones more than we confide in people. They know our secrets, our desires, our fears—and they use this knowledge to keep us coming back for more.</li>
-              </ul>
-              
-              <div class="my-8">
-                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Woman using laptop computer" class="w-full h-64 object-cover rounded-lg" />
-              </div>
-              
-              <h2 class="text-3xl font-bold mt-12 mb-6 text-white">The Psychology of Digital Devotion</h2>
-              
-              <p>The smartphone's power doesn't rest solely in its technology but in its understanding of human psychology. It exploits our deepest needs and vulnerabilities with surgical precision:</p>
-              
-              <p><strong class="text-red-400">The Need for Connection:</strong> We are social creatures, hardwired to seek bonds with others. The smartphone promises connection but delivers a simulation—likes instead of love, comments instead of conversation, followers instead of friends.</p>
-              
-              <p><strong class="text-red-400">The Fear of Missing Out:</strong> FOMO isn't just a millennial affliction; it's a primal anxiety that the smartphone amplifies. Every moment we're not scrolling is a moment we might miss something important, something life-changing, something that defines us as relevant.</p>
-              
-              <p><strong class="text-red-400">The Dopamine Economy:</strong> Each notification, each new piece of content, each social media interaction triggers a small release of dopamine—the brain's reward chemical. The smartphone has become a slot machine we carry everywhere, offering random rewards that keep us pulling the lever.</p>
-              
-              <p><strong class="text-red-400">The Illusion of Productivity:</strong> The smartphone convinces us that being busy is the same as being productive, that having access to everything means we're accomplishing something. We mistake motion for progress, scrolling for learning, consuming for creating.</p>
-              
-              <h2 class="text-3xl font-bold mt-12 mb-6 text-white">Life Under the New Monarchy</h2>
-              
-              <p>Consider how the smartphone has reshaped even our most basic experiences:</p>
-              
-              <p><strong class="text-red-400">Walking:</strong> Once a time for observation, reflection, or simple movement, walking has become another opportunity for consumption. We listen to podcasts, scroll through feeds, or conduct calls, rarely allowing ourselves the luxury of unmediated experience.</p>
-              
-              <p><strong class="text-red-400">Waiting:</strong> The art of waiting—once a space for thought, observation, or rest—has been eliminated. Any pause in activity is immediately filled with the phone's offerings. We've lost the ability to be alone with our thoughts.</p>
-              
-              <div class="my-8">
-                <img src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Laptop computer on desk" class="w-full h-64 object-cover rounded-lg" />
-              </div>
-              
-              <p><strong class="text-red-400">Conversation:</strong> Even our interactions with others are mediated by the phone's presence. It sits on the table during dinner, beeps during intimate conversations, and lurks in our pockets during meetings, always ready to steal our attention from the person in front of us.</p>
-              
-              <p><strong class="text-red-400">Sleep:</strong> The smartphone has colonized even our rest. It's the last thing we see at night and the first thing we reach for in the morning. It tracks our sleep, promises to optimize it, and then disrupts it with blue light and late-night scrolling sessions.</p>
-              
-              <h2 class="text-3xl font-bold mt-12 mb-6 text-white">The Resistance</h2>
-              
-              <p>Yet for all its power, the smartphone's reign is not absolute. Across the kingdom, small acts of rebellion are emerging:</p>
-              
-              <p><strong class="text-red-400">Digital Detoxes:</strong> More people are recognizing the need to step away, even temporarily. Weekend phone fasts, app-free hours, and notification purges are becoming acts of self-preservation.</p>
-              
-              <p><strong class="text-red-400">Intentional Design:</strong> Some are reclaiming agency by redesigning their digital environments—turning phones to grayscale, removing social media apps, using physical alarm clocks instead of phone alarms.</p>
-              
-              <p><strong class="text-red-400">Analog Renaissance:</strong> Books, vinyl records, film cameras, and handwritten letters are experiencing a revival among those seeking experiences that can't be digitized, shared, or optimized.</p>
-              
-              <p><strong class="text-red-400">Mindful Usage:</strong> A growing movement advocates for conscious consumption of digital content—asking not just what we can access, but what we should access, and when.</p>
-              
-              <h2 class="text-3xl font-bold mt-12 mb-6 text-white">The Path Forward</h2>
-              
-              <p>The smartphone is not inherently evil, nor is our relationship with it irredeemably broken. The device itself is merely a tool—extraordinarily sophisticated, undeniably useful, but still just a tool. The problem lies not in the technology but in our abdication of choice over how we use it.</p>
-              
-              <p>Reclaiming our autonomy requires us to:</p>
-              
-              <p><strong class="text-red-400">Acknowledge the Phone's Power:</strong> We can't resist what we don't recognize. Admitting that the smartphone has more influence over our behavior than we'd like to believe is the first step toward regaining control.</p>
-              
-              <p><strong class="text-red-400">Define Our Own Terms:</strong> Instead of letting the phone dictate when and how we interact with it, we must establish our own boundaries. This means deciding when to be available, what notifications deserve our attention, and how much of our mental space we're willing to rent out.</p>
-              
-              <p><strong class="text-red-400">Practice Digital Minimalism:</strong> Not every app needs to be installed, not every notification needs to be enabled, and not every moment needs to be documented or optimized. Sometimes, less is exponentially more.</p>
-              
-              <p><strong class="text-red-400">Cultivate Real-World Richness:</strong> The smartphone's appeal partly stems from the poverty of our offline experiences. By enriching our physical world—through relationships, hobbies, nature, art—we reduce our dependence on digital stimulation.</p>
-              
-              <p><strong class="text-red-400">Remember What We've Lost:</strong> Boredom, solitude, undivided attention, unmediated experience—these aren't bugs in the human experience but features. They're spaces where creativity, reflection, and genuine connection flourish.</p>
-              
-              <h2 class="text-3xl font-bold mt-12 mb-6 text-white">The Long Game</h2>
-              
-              <p>The smartphone revolution is still young, and its ultimate impact on human society remains to be written. We stand at a crossroads where we can either accept our role as subjects in the smartphone's kingdom or work to ensure that technology serves humanity rather than the reverse.</p>
-              
-              <p>This isn't about rejecting progress or returning to a pre-digital age. It's about being intentional, conscious, and selective about how we integrate these powerful tools into our lives. It's about remembering that we are still the ones with the power to choose—if we're willing to exercise it.</p>
-              
-              <p>The smartphone may still be crowned, but we need not kneel. In the end, the most radical act might be the simplest one: putting the phone down and looking up at the world that exists beyond the screen.</p>
-              
-              <p>After all, the kingdom we really want to live in is the one we build with our own hands, our own voices, and our own presence—not the one that fits in our pocket.</p>
             </div>`,
-            featured_image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+            featured_image: '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png'
           })
           .eq('slug', 'still-crowned');
 
