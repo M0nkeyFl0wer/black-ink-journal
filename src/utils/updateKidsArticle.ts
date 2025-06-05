@@ -75,13 +75,18 @@ export const updateKidsArticle = async () => {
     .from('blog_posts')
     .update({
       content: formattedContent,
-      featured_image: '/lovable-uploads/58592d84-6d39-4136-afd9-c9d9421724fa.png'
+      featured_image: '/lovable-uploads/58592d84-6d39-4136-afd9-c9d9421724fa.png',
+      title: 'Is Having Fewer Kids the Best Response to the Climate Emergency? (Spoiler: No)',
+      slug: 'fewer-kids-climate-emergency',
+      publish_date: '2019-05-19 12:00:00+00',
+      excerpt: 'Climate change isn\'t about individual choices—it\'s about confronting corporate power, public manipulation, and systemic design.',
+      tags: ['climate', 'essays', 'systemic-change']
     })
     .eq('slug', 'fewer-kids-climate-emergency');
 
   if (error) {
     console.error('Error updating kids article:', error);
   } else {
-    console.log('Kids article updated successfully');
+    console.log('Kids article updated successfully with correct content');
   }
 };
