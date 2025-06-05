@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import BlogPreview from "@/components/BlogPreview";
 import NavigationMenu from "@/components/NavigationMenu";
-import { BlueskyFeed } from "@/components/BlueskyFeed";
+import BlueskyFeedWithErrorBoundary from "@/components/BlueskyFeed";
 
 const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -113,12 +113,12 @@ const Index = () => {
           </div>
           
           <div className="bluesky-feed-container">
-            <BlueskyFeed />
+            <BlueskyFeedWithErrorBoundary />
           </div>
         </section>
       </main>
 
-      {/* Footer without problematic key */}
+      {/* Footer */}
       <footer className="border-t border-gray-800 p-6 text-center text-gray-400">
         <p>&copy; 2025 Ben West. This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">Creative Commons Attribution 4.0 International License</a>.</p>
       </footer>
