@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Lock, User } from 'lucide-react';
+import PasswordRecovery from './PasswordRecovery';
 
 interface AdminLoginProps {
   onLogin: (username: string) => void;
@@ -13,6 +14,7 @@ interface AdminLoginProps {
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showRecovery, setShowRecovery] = useState(false);
   const { signIn, loading } = useAdminAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,6 +27,10 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
       onLogin(user.username);
     }
   };
+
+  if (showRecovery) {
+    return <PasswordRecovery onBack={() => setShowRecovery(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-6">
@@ -74,6 +80,16 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
+
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              onClick={() => setShowRecovery(true)}
+              className="text-sm text-gray-600 hover:text-gray-800"
+            >
+              Forgot your password?
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

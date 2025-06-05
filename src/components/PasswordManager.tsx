@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import { Lock, Eye, EyeOff } from 'lucide-react';
+import { Lock, Eye, EyeOff, Shield } from 'lucide-react';
 
 interface PasswordManagerProps {
   username: string;
@@ -59,6 +59,10 @@ const PasswordManager = ({ username }: PasswordManagerProps) => {
           <Lock className="w-5 h-5 mr-2" />
           Change Password
         </CardTitle>
+        <div className="flex items-center text-sm text-green-400">
+          <Shield className="w-4 h-4 mr-1" />
+          Password recovery enabled for authorized emails
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -148,6 +152,15 @@ const PasswordManager = ({ username }: PasswordManagerProps) => {
               <li>Mix of uppercase and lowercase letters</li>
               <li>Include numbers and special characters</li>
             </ul>
+          </div>
+
+          <div className="mt-4 p-3 bg-gray-800 rounded border border-gray-600">
+            <p className="text-xs text-gray-400">
+              <strong>Recovery emails:</strong> benw@monkeyflower.ca, ben@elephantroom.ca
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              If you forget your password, you can recover it using these authorized email addresses.
+            </p>
           </div>
         </form>
       </CardContent>
