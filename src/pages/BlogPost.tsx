@@ -1,51 +1,15 @@
-
 import { Link } from "react-router-dom";
-import { ArrowLeft, Calendar, Tag, Share2, Moon, Sun } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
+import SharedHeader from "@/components/SharedHeader";
 
 const BlogPost = () => {
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
+  const { isDarkMode } = useTheme();
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
-      {/* Header */}
-      <header className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
-        <Link to="/" className="flex items-center space-x-4">
-          <img 
-            src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
-            alt="Ben West" 
-            className="w-12 h-12 rounded-full"
-          />
-          <div>
-            <h1 className="text-xl font-bold">Ben West</h1>
-            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Essays & Commentary</p>
-          </div>
-        </Link>
-        
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleTheme}
-            className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}
-          >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}
-          >
-            <Share2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </header>
+      <SharedHeader />
 
       {/* Article */}
       <article className="max-w-4xl mx-auto px-6 py-12">

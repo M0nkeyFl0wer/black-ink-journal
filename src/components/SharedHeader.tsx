@@ -13,11 +13,6 @@ interface SharedHeaderProps {
 const SharedHeader = ({ showBackLink = false, backLinkText = "Back to Home" }: SharedHeaderProps) => {
   const { isDarkMode, toggleTheme } = useTheme();
 
-  const handleRSSClick = () => {
-    const cacheBust = Date.now();
-    window.open(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/rss-feed?cb=${cacheBust}`, '_blank');
-  };
-
   return (
     <header className={`relative flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-200'}`}>
       <div className="flex items-center space-x-4">
@@ -35,6 +30,19 @@ const SharedHeader = ({ showBackLink = false, backLinkText = "Back to Home" }: S
       </div>
 
       <div className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-6">
+          <Link 
+            to="/about" 
+            className={`text-sm font-medium transition-colors ${
+              isDarkMode 
+                ? 'text-gray-400 hover:text-white' 
+                : 'text-gray-600 hover:text-black'
+            }`}
+          >
+            About
+          </Link>
+        </nav>
+
         <NavigationMenu>
           <NavigationMenuList>
             <SubscribeMenu />
@@ -49,15 +57,6 @@ const SharedHeader = ({ showBackLink = false, backLinkText = "Back to Home" }: S
             className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
           >
             {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleRSSClick}
-            className={isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-          >
-            <Rss className="w-4 h-4 mr-2" />
-            RSS
           </Button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
 import { cva } from "class-variance-authority"
@@ -121,6 +122,11 @@ interface SubscribeMenuProps {}
 const SubscribeMenu: React.FC<SubscribeMenuProps> = () => {
   const { isDarkMode } = useTheme();
 
+  const handleRSSClick = () => {
+    const cacheBust = Date.now();
+    window.open(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/rss-feed?cb=${cacheBust}`, '_blank');
+  };
+
   return (
     <NavigationMenuItem>
       <NavigationMenuTrigger className={`text-sm font-medium transition-colors ${
@@ -133,18 +139,16 @@ const SubscribeMenu: React.FC<SubscribeMenuProps> = () => {
       <NavigationMenuContent>
         <div className={`p-4 w-48 ${isDarkMode ? 'bg-black' : 'bg-white'}`}>
           <div className="space-y-3">
-            <a 
-              href="/functions/v1/rss-feed"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`block text-sm transition-colors ${
+            <button 
+              onClick={handleRSSClick}
+              className={`block w-full text-left text-sm transition-colors ${
                 isDarkMode 
                   ? 'text-gray-400 hover:text-white' 
                   : 'text-gray-600 hover:text-black'
               }`}
             >
               RSS Feed
-            </a>
+            </button>
             <a 
               href="https://bsky.app/profile/benwest.bsky.social"
               target="_blank"
