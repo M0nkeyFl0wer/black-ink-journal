@@ -1,4 +1,3 @@
-
 import { useParams, Link } from 'react-router-dom';
 import { useBlogPost } from '@/hooks/useBlogPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
@@ -18,6 +17,8 @@ const DynamicBlogPost = () => {
         .then(() => {
           console.log('Article updated successfully');
           setUpdateCompleted(true);
+          // Force a page refresh to show the updated content
+          window.location.reload();
         })
         .catch(err => console.error('Failed to update article:', err));
     }

@@ -86,7 +86,7 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
     <article className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group mb-4">
       <Link to={`/post/${post.slug}`} className="block">
         <div className="flex">
-          <div className="w-24 h-16 flex-shrink-0 overflow-hidden bg-gray-100">
+          <div className="w-32 h-24 flex-shrink-0 overflow-hidden bg-gray-100">
             <img
               src={post.featured_image || '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png'}
               alt={post.title}

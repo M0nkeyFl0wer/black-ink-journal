@@ -3,8 +3,24 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const updateKidsArticle = async () => {
   try {
-    console.log('Starting article update...');
+    console.log('Starting forced article recreation...');
     
+    // First, delete the existing article completely
+    console.log('Deleting existing article...');
+    const { error: deleteError } = await supabase
+      .from('blog_posts')
+      .delete()
+      .eq('slug', 'fewer-kids-climate-emergency');
+
+    if (deleteError) {
+      console.error('Delete error:', deleteError);
+    } else {
+      console.log('Article deleted successfully');
+    }
+
+    // Wait a moment to ensure deletion is complete
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const content = `One of Professor Kathryn Harrison's posts caught my eye recently. It raised the question of whether having fewer children is an effective response to climate change. Her kids, Sophie and Sam Harrison, have been fighting climate change since they were young—a heartening reminder that the next generation is passionately involved. The post got me thinking about how we frame responsibility for the climate crisis. All too often, we hear that *personal* choices are the key: drive less, fly less, recycle, even have fewer children.
 
 Spoiler alert: I don't think focusing on personal choices—**especially** the decision to have kids—is the right way to address this emergency. We need to talk about the bigger picture and the systemic drivers of the crisis.
@@ -70,20 +86,11 @@ This isn't about being perfect. It's about being together.
 
 *Ben West is a campaigner, strategist, and writer working at the intersection of climate, justice, and democracy.*`;
 
-    // First check if the article exists and what its current content is
-    const { data: currentPost } = await supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('slug', 'fewer-kids-climate-emergency')
-      .single();
-
-    console.log('Current post content length:', currentPost?.content?.length || 0);
-    console.log('New content length:', content.length);
-
-    // Use upsert to ensure the update happens
+    // Now insert the article fresh
+    console.log('Inserting new article...');
     const { data, error } = await supabase
       .from('blog_posts')
-      .upsert({ 
+      .insert({ 
         slug: 'fewer-kids-climate-emergency',
         title: 'Fewer Kids, Climate Emergency? A Critical Look at Personal vs. Systemic Solutions',
         content: content,
@@ -92,32 +99,20 @@ This isn't about being perfect. It's about being together.
         author: 'Ben West',
         publish_date: '2024-12-15',
         tags: ['climate change', 'politics', 'corporate responsibility', 'population', 'systemic change'],
-        is_published: true,
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'slug'
+        is_published: true
       })
       .select();
 
     if (error) {
-      console.error('Upsert error:', error);
+      console.error('Insert error:', error);
       throw error;
     }
     
-    console.log('Article upserted successfully:', data);
-    
-    // Verify the update worked
-    const { data: verifyData } = await supabase
-      .from('blog_posts')
-      .select('content')
-      .eq('slug', 'fewer-kids-climate-emergency')
-      .single();
-    
-    console.log('Verification - content length after update:', verifyData?.content?.length || 0);
+    console.log('Article recreated successfully:', data);
     
     return data;
   } catch (error) {
-    console.error('Error updating kids climate article:', error);
+    console.error('Error recreating kids climate article:', error);
     throw error;
   }
 };
