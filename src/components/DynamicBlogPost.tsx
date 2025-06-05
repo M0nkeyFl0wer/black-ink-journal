@@ -100,7 +100,6 @@ const DynamicBlogPost = () => {
         <SocialShare 
           url={window.location.href}
           title={post.title}
-          excerpt={post.excerpt || ''}
         />
       </article>
     </div>

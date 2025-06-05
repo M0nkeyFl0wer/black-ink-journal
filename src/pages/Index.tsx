@@ -29,7 +29,7 @@ const Index = () => {
           <img 
             src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
             alt="Ben West" 
-            className="w-12 h-12 rounded-full"
+            className="w-12 h-12 rounded-full object-cover"
           />
           <div>
             <h1 className="text-xl font-bold">Ben West</h1>
@@ -83,7 +83,7 @@ const Index = () => {
 
         {/* Featured Post */}
         {featuredPost && !loading && (
-          <BlogPreview post={featuredPost} featured={true} />
+          <BlogPreview post={featuredPost} />
         )}
 
         {/* Visual separator and additional posts */}
