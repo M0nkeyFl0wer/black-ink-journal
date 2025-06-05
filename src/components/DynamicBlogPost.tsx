@@ -1,4 +1,3 @@
-
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Calendar, Tag, Share2, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -147,10 +146,13 @@ const DynamicBlogPost = () => {
         )}
 
         {/* Article Content */}
-        <div 
-          className="prose prose-lg prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="prose prose-lg prose-invert max-w-none">
+          {post.content.split('\n\n').map((paragraph, index) => (
+            <p key={index} className="text-lg leading-relaxed mb-6">
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
         {/* Article Footer */}
         <footer className="border-t border-gray-800 pt-8 mt-12">
