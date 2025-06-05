@@ -25,6 +25,14 @@ export const useBlogPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        // First, let's update the cybersecurity article with a proper image
+        await supabase
+          .from('blog_posts')
+          .update({
+            featured_image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=800&fit=crop'
+          })
+          .eq('slug', 'the-future-of-cybersecurity');
+
         const { data, error } = await supabase
           .from('blog_posts')
           .select('*')
