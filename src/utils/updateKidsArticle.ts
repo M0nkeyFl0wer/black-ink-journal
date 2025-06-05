@@ -88,5 +88,9 @@ export const updateKidsArticle = async () => {
   }
 };
 
-// Call the function to update the article
-updateKidsArticle();
+// Actually execute the update immediately
+updateKidsArticle().then(() => {
+  console.log('Article update completed');
+}).catch((error) => {
+  console.error('Failed to update article:', error);
+});

@@ -1,12 +1,20 @@
-
 import { useParams, Link } from 'react-router-dom';
 import { useBlogPost } from '@/hooks/useBlogPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
 import SocialShare from './SocialShare';
+import { updateKidsArticle } from '@/utils/updateKidsArticle';
+import { useEffect } from 'react';
 
 const DynamicBlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const { post, loading, error } = useBlogPost(slug || '');
+
+  // Execute the update function for the specific article
+  useEffect(() => {
+    if (slug === 'fewer-kids-climate-emergency') {
+      updateKidsArticle();
+    }
+  }, [slug]);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
