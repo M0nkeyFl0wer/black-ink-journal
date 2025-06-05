@@ -102,22 +102,94 @@ serve(async (req) => {
       return true;
     });
 
+    // Helper function to extract embed data
+    const extractEmbeds = (post: any) => {
+      const embeds: any = {};
+      
+      // Check for embeds in both post.embed and post.record.embed
+      const embed = post.embed || post.record.embed;
+      
+      if (embed) {
+        console.log('Found embed data:', JSON.stringify(embed, null, 2));
+        
+        // Handle images
+        if (embed.$type === 'app.bsky.embed.images#view' && embed.images) {
+          embeds.images = embed.images.map((img: any) => ({
+            url: img.fullsize || img.thumb,
+            alt: img.alt || '',
+            aspectRatio: img.aspectRatio || { width: 1, height: 1 }
+          }));
+          console.log('Extracted images:', embeds.images);
+        }
+        
+        // Handle external links
+        if (embed.$type === 'app.bsky.embed.external#view' && embed.external) {
+          embeds.externalLink = {
+            url: embed.external.uri,
+            title: embed.external.title || '',
+            description: embed.external.description || '',
+            thumb: embed.external.thumb || ''
+          };
+          console.log('Extracted external link:', embeds.externalLink);
+        }
+        
+        // Handle quote posts
+        if (embed.$type === 'app.bsky.embed.record#view' && embed.record) {
+          const quotedRecord = embed.record;
+          if (quotedRecord.value && quotedRecord.author) {
+            embeds.quotedPost = {
+              text: quotedRecord.value.text || '',
+              author: quotedRecord.author.displayName || quotedRecord.author.handle,
+              handle: quotedRecord.author.handle
+            };
+            console.log('Extracted quoted post:', embeds.quotedPost);
+          }
+        }
+        
+        // Handle record with media (quote post with images)
+        if (embed.$type === 'app.bsky.embed.recordWithMedia#view') {
+          if (embed.record && embed.record.record) {
+            const quotedRecord = embed.record.record;
+            embeds.quotedPost = {
+              text: quotedRecord.value?.text || '',
+              author: quotedRecord.author?.displayName || quotedRecord.author?.handle,
+              handle: quotedRecord.author?.handle
+            };
+          }
+          if (embed.media && embed.media.images) {
+            embeds.images = embed.media.images.map((img: any) => ({
+              url: img.fullsize || img.thumb,
+              alt: img.alt || '',
+              aspectRatio: img.aspectRatio || { width: 1, height: 1 }
+            }));
+          }
+        }
+      }
+      
+      return embeds;
+    };
+
     // Transform the filtered data to match our interface - limit to 3 posts
-    const posts = originalPosts.slice(0, 3).map((item: any) => ({
-      id: item.post.cid,
-      text: item.post.record.text,
-      createdAt: item.post.record.createdAt,
-      author: {
-        displayName: item.post.author.displayName || item.post.author.handle,
-        handle: item.post.author.handle,
-        avatar: item.post.author.avatar,
-      },
-      engagement: {
-        likes: item.post.likeCount || 0,
-        reposts: item.post.repostCount || 0,
-        replies: item.post.replyCount || 0,
-      },
-    }));
+    const posts = originalPosts.slice(0, 3).map((item: any) => {
+      const embeds = extractEmbeds(item.post);
+      
+      return {
+        id: item.post.cid,
+        text: item.post.record.text,
+        createdAt: item.post.record.createdAt,
+        author: {
+          displayName: item.post.author.displayName || item.post.author.handle,
+          handle: item.post.author.handle,
+          avatar: item.post.author.avatar,
+        },
+        engagement: {
+          likes: item.post.likeCount || 0,
+          reposts: item.post.repostCount || 0,
+          replies: item.post.replyCount || 0,
+        },
+        ...embeds // Spread the embed data (images, externalLink, quotedPost)
+      };
+    });
 
     console.log(`Returning ${posts.length} original posts out of ${feedData.feed.length} total feed items`);
 
