@@ -24,13 +24,13 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
       : textContent;
   };
 
-  const excerpt = post.excerpt || getTextExcerpt(post.content, isFeatured ? 200 : 150);
+  const excerpt = post.excerpt || getTextExcerpt(post.content, isFeatured ? 200 : 120);
 
   if (isFeatured) {
     return (
-      <article className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group">
+      <article className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group mb-6">
         <Link to={`/post/${post.slug}`} className="block">
-          <div className="aspect-[16/9] overflow-hidden bg-gray-100">
+          <div className="aspect-[2/1] overflow-hidden bg-gray-100">
             <img
               src={post.featured_image || '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png'}
               alt={post.title}
@@ -39,10 +39,10 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
             />
           </div>
           
-          <div className="p-6">
-            <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+          <div className="p-4">
+            <div className="flex items-center space-x-3 text-sm text-gray-500 mb-3">
               <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-2" />
+                <Calendar className="w-4 h-4 mr-1" />
                 {new Date(post.publish_date).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -50,16 +50,16 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
                 })}
               </div>
               <div className="flex items-center">
-                <User className="w-4 h-4 mr-2" />
+                <User className="w-4 h-4 mr-1" />
                 {post.author}
               </div>
             </div>
             
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+            <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
               {post.title}
             </h2>
             
-            <p className="text-gray-600 mb-4 leading-relaxed">
+            <p className="text-gray-600 mb-3 leading-relaxed text-sm">
               {excerpt}
             </p>
             
@@ -69,7 +69,7 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
                 {post.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
+                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors"
                   >
                     {tag}
                   </span>
@@ -83,9 +83,9 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
   }
 
   return (
-    <article className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+    <article className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group mb-4">
       <Link to={`/post/${post.slug}`} className="block">
-        <div className="aspect-[16/10] overflow-hidden bg-gray-100">
+        <div className="aspect-[3/1] overflow-hidden bg-gray-100">
           <img
             src={post.featured_image || '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png'}
             alt={post.title}
@@ -94,10 +94,10 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
           />
         </div>
         
-        <div className="p-5">
-          <div className="flex items-center space-x-3 text-sm text-gray-500 mb-3">
+        <div className="p-3">
+          <div className="flex items-center space-x-3 text-xs text-gray-500 mb-2">
             <div className="flex items-center">
-              <Calendar className="w-4 h-4 mr-2" />
+              <Calendar className="w-3 h-3 mr-1" />
               {new Date(post.publish_date).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
@@ -105,26 +105,26 @@ const BlogPreview = ({ post, isFeatured = false }: BlogPreviewProps) => {
               })}
             </div>
             <div className="flex items-center">
-              <User className="w-4 h-4 mr-2" />
+              <User className="w-3 h-3 mr-1" />
               {post.author}
             </div>
           </div>
           
-          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
+          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 leading-tight">
             {post.title}
           </h3>
           
-          <p className="text-gray-600 leading-relaxed mb-3">
+          <p className="text-gray-600 leading-relaxed mb-2 text-sm">
             {excerpt}
           </p>
           
           {post.tags && post.tags.length > 0 && (
-            <div className="flex items-center flex-wrap gap-2">
-              <Tag className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center flex-wrap gap-1">
+              <Tag className="w-3 h-3 text-gray-400" />
               {post.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
+                  className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors"
                 >
                   {tag}
                 </span>
