@@ -102,8 +102,8 @@ serve(async (req) => {
       return true;
     });
 
-    // Transform the filtered data to match our interface
-    const posts = originalPosts.slice(0, 5).map((item: any) => ({
+    // Transform the filtered data to match our interface - limit to 3 posts
+    const posts = originalPosts.slice(0, 3).map((item: any) => ({
       id: item.post.cid,
       text: item.post.record.text,
       createdAt: item.post.record.createdAt,
