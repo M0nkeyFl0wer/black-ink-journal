@@ -6,15 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import BlogPreview from "@/components/BlogPreview";
+import NavigationMenu from "@/components/NavigationMenu";
 
 const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const { posts, loading, error } = useBlogPosts();
 
-  // Add debugging
+  // Enhanced debugging
   console.log('Posts loaded:', posts);
+  console.log('Posts length:', posts?.length);
   console.log('Loading state:', loading);
   console.log('Error state:', error);
+  console.log('Individual posts:', posts?.map(p => ({ id: p.id, title: p.title, slug: p.slug })));
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -28,7 +31,7 @@ const Index = () => {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
       {/* Header */}
-      <header className="flex items-center justify-between p-6 border-b border-gray-800">
+      <header className="relative flex items-center justify-between p-6 border-b border-gray-800">
         <div className="flex items-center space-x-4">
           <img 
             src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
@@ -41,15 +44,10 @@ const Index = () => {
           </div>
         </div>
 
-        <nav className="flex items-center space-x-6">
-          <Link 
-            to="/about" 
-            className="text-gray-400 hover:text-white transition-colors font-medium"
-          >
-            About
-          </Link>
+        <div className="flex items-center space-x-4">
+          <NavigationMenu isDarkMode={isDarkMode} />
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 border-l border-gray-800 pl-4">
             <Button
               variant="ghost"
               size="sm"
@@ -67,7 +65,7 @@ const Index = () => {
               RSS
             </Button>
           </div>
-        </nav>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -86,14 +84,27 @@ const Index = () => {
 
         {!loading && !error && posts.length === 0 && (
           <div className="text-center text-gray-400">
-            <p>No posts found.</p>
+            <p>No posts found. Check the database connection and RLS policies.</p>
           </div>
         )}
 
-        {/* Debug information in development */}
+        {/* Enhanced debug information */}
         {!loading && !error && (
-          <div className="mb-4 text-sm text-gray-500">
-            Found {posts.length} post(s)
+          <div className="mb-4 p-4 bg-gray-900 rounded-lg text-sm text-gray-300">
+            <h3 className="font-bold mb-2">Debug Info:</h3>
+            <p>Found {posts.length} post(s)</p>
+            <p>Loading: {loading ? 'true' : 'false'}</p>
+            <p>Error: {error || 'none'}</p>
+            {posts.length > 0 && (
+              <div className="mt-2">
+                <p>Posts:</p>
+                <ul className="ml-4 list-disc">
+                  {posts.map(post => (
+                    <li key={post.id}>{post.title} (slug: {post.slug})</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 
