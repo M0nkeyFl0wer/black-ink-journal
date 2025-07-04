@@ -37,7 +37,7 @@ export const BlueskyPostCard = ({ post }: BlueskyPostCardProps) => {
           />
         ) : (
           <img 
-            src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png"
+            src="/images/82867a2d-c687-4042-992d-c0841d74606e.png"
             alt={post.author.displayName}
             className="w-8 h-8 rounded-full"
           />

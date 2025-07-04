@@ -14,7 +14,7 @@ const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
   
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
-    target.src = '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png';
+    target.src = '/images/82867a2d-c687-4042-992d-c0841d74606e.png';
   };
 
   return (
@@ -28,7 +28,7 @@ const BlogPreview = ({ post, isFeatured }: BlogPreviewProps) => {
               : 'w-48 h-32'
           } rounded-xl overflow-hidden bg-gray-900 flex-shrink-0`}>
             <img
-              src={post.featured_image || '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png'}
+              src={post.featured_image || '/images/82867a2d-c687-4042-992d-c0841d74606e.png'}
               alt={post.title}
               onError={handleImageError}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

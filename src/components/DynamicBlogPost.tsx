@@ -13,7 +13,7 @@ const DynamicBlogPost = () => {
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
-    target.src = '/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png';
+    target.src = '/images/82867a2d-c687-4042-992d-c0841d74606e.png';
   };
 
   // Enhanced function to convert markdown-style content to HTML

@@ -45,7 +45,7 @@ const BlogPost = () => {
           
           <div className="flex items-center">
             <img 
-              src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
+              src="/images/82867a2d-c687-4042-992d-c0841d74606e.png" 
               alt="Ben West" 
               className="w-8 h-8 rounded-full mr-3"
             />
@@ -56,7 +56,7 @@ const BlogPost = () => {
         {/* Hero Image - Parliament Screenshot */}
         <div className="mb-12">
           <img 
-            src="/lovable-uploads/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"
+            src="/images/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png"
             alt="King Charles III delivering the Speech from the Throne in Parliament"
             className="w-full h-96 object-cover rounded-lg"
           />
@@ -74,7 +74,7 @@ const BlogPost = () => {
 
           <div className="my-12">
             <img 
-              src="/lovable-uploads/453c6f64-8fa5-42fe-acd7-12058b4862ac.png"
+              src="/images/453c6f64-8fa5-42fe-acd7-12058b4862ac.png"
               alt="Canadian minister taking oath of office"
               className="w-full h-96 object-cover rounded-lg"
             />
@@ -97,7 +97,7 @@ const BlogPost = () => {
 
           <div className="my-12">
             <img 
-              src="/lovable-uploads/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
+              src="/images/df044dcd-032f-40de-9ec9-74a2eee4d38a.png"
               alt="Official portrait of King Charles III"
               className="w-full h-96 object-cover rounded-lg"
             />
@@ -116,7 +116,7 @@ const BlogPost = () => {
 
           <div className="my-12">
             <img 
-              src="/lovable-uploads/0d6b2dba-6fa3-4f5b-9d6a-c7a03f4d5aa7.png"
+              src="/images/0d6b2dba-6fa3-4f5b-9d6a-c7a03f4d5aa7.png"
               alt="King Charles III speaking at podium"
               className="w-full h-96 object-cover rounded-lg"
             />
@@ -142,7 +142,7 @@ const BlogPost = () => {
 
           <div className="my-12">
             <img 
-              src="/lovable-uploads/6def8f02-867c-4f10-ae29-87a5c29c4322.png"
+              src="/images/6def8f02-867c-4f10-ae29-87a5c29c4322.png"
               alt="Minister pledging allegiance during swearing-in ceremony"
               className="w-full h-64 object-cover rounded-lg"
             />
@@ -165,7 +165,7 @@ const BlogPost = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <img 
-                src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
+                src="/images/82867a2d-c687-4042-992d-c0841d74606e.png" 
                 alt="Ben West" 
                 className="w-12 h-12 rounded-full"
               />

@@ -18,7 +18,7 @@ const SharedHeader = ({ showBackLink = false, backLinkText = "Back to Home" }: S
       <div className="flex items-center space-x-4">
         <Link to="/" className="flex items-center space-x-4">
           <img 
-            src="/lovable-uploads/82867a2d-c687-4042-992d-c0841d74606e.png" 
+            src="/images/82867a2d-c687-4042-992d-c0841d74606e.png" 
             alt="Ben West" 
             className="w-12 h-12 rounded-full object-cover"
           />
