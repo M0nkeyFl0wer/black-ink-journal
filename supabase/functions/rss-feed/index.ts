@@ -128,3 +128,7 @@ function extractTextFromContent(htmlContent: string, maxLength: number = 200): s
     ? textContent.substring(0, maxLength) + '...'
     : textContent;
 }
+// ✅ Add this here
+export const config = {
+  auth: false,
+};
