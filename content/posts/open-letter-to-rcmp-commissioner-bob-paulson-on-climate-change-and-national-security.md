@@ -6,7 +6,7 @@ author: "Ben West"
 excerpt: "Originally published 2/20/2015 - Georgia Straight. A letter to RCMP Commissioner Bob Paulson regarding climate change, national security, and the RCMP's controversial intelligence assessment report on the anti-petroleum movement."
 tags: ["climate change", "national security", "RCMP", "fossil fuels", "activism", "policy"]
 published: true
-featured_image: "/images/Bob-Paulson-2.jpg"
+featured_image: "/images/rcmp-letter/Bob-Paulson-2.jpg"
 id: 175
 ---
 

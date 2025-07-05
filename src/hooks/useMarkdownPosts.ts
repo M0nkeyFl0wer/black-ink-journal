@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import matter from 'gray-matter';
 
 export interface MarkdownPost {
   id: string;
@@ -44,19 +45,20 @@ export const useMarkdownPosts = () => {
                 return null;
               }
               
-              const content = await contentResponse.text();
+              const raw = await contentResponse.text();
+              const { content, data } = matter(raw);
               
               return {
                 id: post.slug,
-                title: post.title,
+                title: data.title || post.title,
                 slug: post.slug,
                 content: content,
-                excerpt: post.excerpt || '',
-                publish_date: post.date,
-                author: post.author || 'Ben West',
-                tags: post.tags || [],
-                is_published: post.published,
-                featured_image: post.featured_image
+                excerpt: data.excerpt || post.excerpt || '',
+                publish_date: data.date || post.date,
+                author: data.author || post.author || 'Ben West',
+                tags: data.tags || post.tags || [],
+                is_published: data.published ?? post.published,
+                featured_image: data.featured_image || post.featured_image
               };
             } catch (err) {
               console.warn(`Error loading post ${post.slug}:`, err);
