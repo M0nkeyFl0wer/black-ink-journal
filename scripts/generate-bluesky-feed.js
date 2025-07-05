@@ -10,6 +10,8 @@ const __dirname = path.dirname(__filename);
 const BLUESKY_HANDLE = process.env.BLUESKY_HANDLE || 'benwest.bsky.social';
 const BLUESKY_APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD;
 
+console.log('BLUESKY_APP_PASSWORD:', process.env.BLUESKY_APP_PASSWORD ? 'SET' : 'NOT SET');
+
 // Output directory
 const outputDir = path.join(__dirname, '..', 'public', 'data');
 
