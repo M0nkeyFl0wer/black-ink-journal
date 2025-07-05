@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ben West - Essays &amp; Commentary</title>
+    <description>Essays and commentary by Ben West on climate change, politics, and social justice</description>
+    <link>https://benwest.blog</link>
+    <atom:link href="https://benwest.blog/rss.xml" rel="self" type="application/rss+xml"/>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 16 May 2025 00:00:00 GMT</lastBuildDate>
+    <pubDate>Sat, 05 Jul 2025 00:48:06 GMT</pubDate>
+    <ttl>300</ttl>
+    <managingEditor>contact@benwest.io (Ben West)</managingEditor>
+    <webMaster>contact@benwest.io (Ben West)</webMaster>
+    <generator>Static RSS Generator</generator>
+    <item>
+      <title>Still Crowned</title>
+      <description>A country that talks like a democracy but still curtsies like a colony</description>
+      <link>https://benwest.blog/post/still-crowned</link>
+      <guid isPermaLink="true">https://benwest.blog/post/still-crowned</guid>
+      <pubDate>Fri, 16 May 2025 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+    <item>
+      <title>Is Not Having Kids an Effective Climate Solution?</title>
+      <description>Climate change isn&#39;t about individual choices—it&#39;s about confronting corporate power, public manipulation, and systemic design.</description>
+      <link>https://benwest.blog/post/is-not-having-kids-an-effective-climate-solution</link>
+      <guid isPermaLink="true">https://benwest.blog/post/is-not-having-kids-an-effective-climate-solution</guid>
+      <pubDate>Mon, 05 May 2025 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+    <item>
+      <title>Say Please and Thank You to Alexa, Ok Google?</title>
+      <description>Our evolving relationship with AI assistants and the importance of how, and what, we ask it to do.</description>
+      <link>https://benwest.blog/post/say-please-thank-you-alexa-ok-google</link>
+      <guid isPermaLink="true">https://benwest.blog/post/say-please-thank-you-alexa-ok-google</guid>
+      <pubDate>Thu, 05 Dec 2024 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+    <item>
+      <title>How Not to be the Reason Your Company Has a Data Breach Because You are Working From Home</title>
+      <description>Personal infosec tips and tools for you and your company to stay secure while working from home.</description>
+      <link>https://benwest.blog/post/how-not-to-be-the-reason-your-company-has-a-data-breach-because-you-are-working-from-home</link>
+      <guid isPermaLink="true">https://benwest.blog/post/how-not-to-be-the-reason-your-company-has-a-data-breach-because-you-are-working-from-home</guid>
+      <pubDate>Wed, 05 Jun 2024 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+    <item>
+      <title>Unlocking Climate Solutions Built With Open Source Tech</title>
+      <description>Much of the discussion around blockchain technology is often focused on cryptocurrencies or the plethora of meme coins and scams that are often built on top. Yet as the world struggles to address the urgency of the climate crisis, blockchain has the potential to be a game-changer in the murky waters of international coordination, resource allocation, and international accountability.</description>
+      <link>https://benwest.blog/post/blockchain-climate-solutions</link>
+      <guid isPermaLink="true">https://benwest.blog/post/blockchain-climate-solutions</guid>
+      <pubDate>Wed, 07 Jun 2023 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+    <item>
+      <title>Reflecting On Year One Of The Great Climate Race</title>
+      <description>It&#39;s interesting to reflect on where we were when something started, what was motivating us and then consider how our plans turned out.</description>
+      <link>https://benwest.blog/post/reflecting-year-one-great-climate-race</link>
+      <guid isPermaLink="true">https://benwest.blog/post/reflecting-year-one-great-climate-race</guid>
+      <pubDate>Sun, 20 Mar 2016 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+    <item>
+      <title>Rail Vs Pipelines, Are Those Really Our Only Choice?</title>
+      <description>I never thought I would say this, but I think oil pipeline proponents are going to be happy about our new website that went live last week.</description>
+      <link>https://benwest.blog/post/rail-vs-pipelines-are-those-really-our-only-choice</link>
+      <guid isPermaLink="true">https://benwest.blog/post/rail-vs-pipelines-are-those-really-our-only-choice</guid>
+      <pubDate>Wed, 23 Jul 2014 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+    <item>
+      <title>Standing With Chief Rueben George: Indigenous Leadership Against Tar Sands</title>
+      <description>Earlier this summer it filled my heart with pride and joy to watch my good friend Chief Rueben George, stand before the sacred tree in the Arbor of a Sun Dance ceremony in Lakota territory, South Dakota and read a declaration of indigenous spiritual leaders against tar sands pipelines and tankers.</description>
+      <link>https://benwest.blog/post/standing-with-chief-rueben-george-indigenous-leadership-against-tar-sands</link>
+      <guid isPermaLink="true">https://benwest.blog/post/standing-with-chief-rueben-george-indigenous-leadership-against-tar-sands</guid>
+      <pubDate>Mon, 28 Jan 2013 00:00:00 GMT</pubDate>
+      <author>contact@benwest.io (Ben West)</author>
+    </item>
+  </channel>
+</rss>

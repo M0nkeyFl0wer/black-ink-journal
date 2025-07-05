@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2025-07-04T23:55:33.876Z",
+  "totalPosts": 4,
+  "posts": [
+    {
+      "id": "bafyreicwowobenykih47fkgk44uturm5ojqnk3wsblzvm74p5f6aekk2t4",
+      "text": "👀...",
+      "createdAt": "2025-07-04T20:04:34.906Z",
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lt622gduwk22",
+      "hasImages": false,
+      "hasExternalLink": false,
+      "engagement": {
+        "likes": 1,
+        "reposts": 0,
+        "replies": 0
+      }
+    },
+    {
+      "id": "bafyreidn7osn73djnjrj4njlufoghzsgmvk5vb4jfc33rujin366umjyee",
+      "text": "The G7 condemned transnational repression, but will Canada meet its own commitments? \n\nGood question...",
+      "createdAt": "2025-07-04T20:03:35.747Z",
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lt5zynwjh222",
+      "hasImages": false,
+      "hasExternalLink": true,
+      "engagement": {
+        "likes": 1,
+        "reposts": 0,
+        "replies": 0
+      }
+    },
+    {
+      "id": "bafyreicxzyrh6egjmxg2dqwkjfswu4z26t6gfpifirmlgkmvirc3rgqyma",
+      "text": "Killer Whales Make Their Own Tools, Scientists Discover\n\nThey are so much smarter than we realize. \n...",
+      "createdAt": "2025-06-28T16:46:27.312Z",
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lsom6motfc2k",
+      "hasImages": false,
+      "hasExternalLink": true,
+      "engagement": {
+        "likes": 3,
+        "reposts": 0,
+        "replies": 1
+      }
+    },
+    {
+      "id": "bafyreifksfwbrdlexdau3xds2vc33ktl6oh22aup25p4pth4dqfh2zaezu",
+      "text": "We have to stop bill C2! Come on Canada. 😡\n\n&quot;... Bill C-2 would significantly expand law enfor...",
+      "createdAt": "2025-06-27T19:50:48.027Z",
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lsmfzdkcv22z",
+      "hasImages": false,
+      "hasExternalLink": true,
+      "engagement": {
+        "likes": 6,
+        "reposts": 9,
+        "replies": 1
+      }
+    }
+  ]
+}

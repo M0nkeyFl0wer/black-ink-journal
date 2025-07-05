@@ -1,4 +1,3 @@
-
 export interface BlueskyPost {
   id: string;
   text: string;
@@ -13,6 +12,7 @@ export interface BlueskyPost {
     reposts: number;
     replies: number;
   };
+  blueskyUrl?: string;
   images?: Array<{
     url: string;
     alt?: string;

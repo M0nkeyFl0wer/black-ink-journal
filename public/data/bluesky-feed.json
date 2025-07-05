@@ -1,0 +1,97 @@
+{
+  "posts": [
+    {
+      "id": "bafyreicwowobenykih47fkgk44uturm5ojqnk3wsblzvm74p5f6aekk2t4",
+      "text": "👀",
+      "createdAt": "2025-07-04T20:04:34.906Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 1,
+        "reposts": 0,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lt622gduwk22",
+      "quotedPost": {
+        "text": "The Best-Selling Apps Made By Israeli Spies",
+        "author": "John Wunderlich",
+        "handle": "privacycdn.bsky.social"
+      }
+    },
+    {
+      "id": "bafyreidn7osn73djnjrj4njlufoghzsgmvk5vb4jfc33rujin366umjyee",
+      "text": "The G7 condemned transnational repression, but will Canada meet its own commitments? \n\nGood question @rondeibert.bsky.social 🙏🏽\n\nwww.theglobeandmail.com/opinion/arti...\n\n#cdnpoli #infosec",
+      "createdAt": "2025-07-04T20:03:35.747Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 1,
+        "reposts": 0,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lt5zynwjh222",
+      "externalLink": {
+        "url": "https://www.theglobeandmail.com/opinion/article-g7-transnational-repression-bill-c-2-carney/?intcmp=gift_share",
+        "title": "Opinion: The G7 condemned transnational repression, but will Canada meet its own commitments?",
+        "description": "A statement against this practice was a welcome sight, but will mean very little without concrete action",
+        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreibb6yn372sabztjsb76qm2xlxgd52352k2bpy77n2bp3ejybf36wy@jpeg"
+      }
+    },
+    {
+      "id": "bafyreicxzyrh6egjmxg2dqwkjfswu4z26t6gfpifirmlgkmvirc3rgqyma",
+      "text": "Killer Whales Make Their Own Tools, Scientists Discover\n\nThey are so much smarter than we realize. \n\n@404media.co 🐋🫶🏽\n\nwww.404media.co/killer-whale...",
+      "createdAt": "2025-06-28T16:46:27.312Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 3,
+        "reposts": 0,
+        "replies": 1
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lsom6motfc2k",
+      "externalLink": {
+        "url": "https://www.404media.co/killer-whales-make-their-own-tools-scientists-discover/",
+        "title": "Killer Whales Make Their Own Tools, Scientists Discover",
+        "description": "It’s the first observed instance of a marine mammal manufacturing tools.",
+        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreihyudx3dquxle45teqwsy2g2oxn6hvkbggq3niqdxwucbyqieldxa@jpeg"
+      }
+    },
+    {
+      "id": "bafyreifksfwbrdlexdau3xds2vc33ktl6oh22aup25p4pth4dqfh2zaezu",
+      "text": "We have to stop bill C2! Come on Canada. 😡\n\n&quot;... Bill C-2 would significantly expand law enforcement surveillance powers, by eliminating or watering down existing protections in Canadian law.&quot;\n\n@citizenlab.ca \n\ncitizenlab.ca/2025/06/a-pr... \n\n#cdnpoli #infosec #privacy #surveillance",
+      "createdAt": "2025-06-27T19:50:48.027Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 6,
+        "reposts": 9,
+        "replies": 1
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lsmfzdkcv22z",
+      "externalLink": {
+        "url": "https://citizenlab.ca/2025/06/a-preliminary-analysis-of-bill-c-2/",
+        "title": "Unspoken Implications: A Preliminary Analysis of Bill C-2 and Canada’s Potential Data-Sharing Obligations Towards the United States and Other Countries - The Citizen Lab",
+        "description": "On June 3, 2025, the Canadian government tabled Bill C-2, omnibus legislation that, if passed, would introduce a wide array of new federal agency and law enforcement powers, and would significantly re...",
+        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreiclyyecwmvckcjvi2okkb4apnumdb5t3ciu6wheewxa74ygqsqmde@jpeg"
+      }
+    }
+  ],
+  "generatedAt": "2025-07-04T23:55:33.870Z",
+  "totalPosts": 4,
+  "author": {
+    "handle": "benwest.bsky.social",
+    "displayName": "Ben West 🦋"
+  }
+}

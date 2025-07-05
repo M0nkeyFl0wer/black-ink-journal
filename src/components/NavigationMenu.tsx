@@ -2,10 +2,11 @@
 import * as React from "react"
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
 import { cva } from "class-variance-authority"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Rss } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { useTheme } from "@/contexts/ThemeContext";
+import { useToast } from "@/hooks/use-toast";
 
 const NavigationMenu = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Root>,
@@ -121,10 +122,26 @@ interface SubscribeMenuProps {}
 
 const SubscribeMenu: React.FC<SubscribeMenuProps> = () => {
   const { isDarkMode } = useTheme();
+  const { toast } = useToast();
 
   const handleRSSClick = () => {
-    const cacheBust = Date.now();
-    window.open(`https://jfsvlaaposslmeneovtp.supabase.co/functions/v1/rss-feed?cb=${cacheBust}`, '_blank');
+    const rssUrl = 'https://benwest.blog/rss.xml';
+    
+    // Try to copy to clipboard first
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(rssUrl).then(() => {
+        toast({
+          title: "RSS Feed URL Copied!",
+          description: "Add this URL to your RSS reader: " + rssUrl,
+        });
+      }).catch(() => {
+        // Fallback to opening in new tab
+        window.open(rssUrl, '_blank');
+      });
+    } else {
+      // Fallback for older browsers
+      window.open(rssUrl, '_blank');
+    }
   };
 
   return (
@@ -141,12 +158,13 @@ const SubscribeMenu: React.FC<SubscribeMenuProps> = () => {
           <div className="space-y-3">
             <button 
               onClick={handleRSSClick}
-              className={`block w-full text-left text-sm transition-colors ${
+              className={`flex items-center w-full text-left text-sm transition-colors ${
                 isDarkMode 
                   ? 'text-gray-400 hover:text-white' 
                   : 'text-gray-600 hover:text-black'
               }`}
             >
+              <Rss className="w-4 h-4 mr-2" />
               RSS Feed
             </button>
             <a 

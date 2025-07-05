@@ -1,4 +1,3 @@
-
 import { Heart, MessageCircle, Repeat2 } from 'lucide-react';
 import { BlueskyPost } from './types';
 import { ImageGallery, ExternalLinkPreview, QuotedPost } from './BlueskyPostMedia';
@@ -23,6 +22,13 @@ export const BlueskyPostCard = ({ post }: BlueskyPostCardProps) => {
     } catch (error) {
       console.error('Error formatting date:', error);
       return '';
+    }
+  };
+
+  const handleEngagementClick = (action: 'like' | 'repost' | 'reply') => {
+    if (post.blueskyUrl) {
+      // Open the post on Bluesky - users can then like/repost/reply there
+      window.open(post.blueskyUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -59,18 +65,39 @@ export const BlueskyPostCard = ({ post }: BlueskyPostCardProps) => {
           <QuotedPost quote={post.quotedPost} />
           
           <div className="flex items-center space-x-4 text-gray-500 mt-3">
-            <div className="flex items-center space-x-1 hover:text-blue-400 transition-colors">
+            <button 
+              onClick={() => handleEngagementClick('reply')}
+              className="flex items-center space-x-1 hover:text-blue-400 transition-colors cursor-pointer group"
+              title="Reply on Bluesky"
+            >
               <MessageCircle className="w-4 h-4" />
               <span className="text-xs">{post.engagement.replies}</span>
-            </div>
-            <div className="flex items-center space-x-1 hover:text-green-400 transition-colors">
+              <svg className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </button>
+            <button 
+              onClick={() => handleEngagementClick('repost')}
+              className="flex items-center space-x-1 hover:text-green-400 transition-colors cursor-pointer group"
+              title="Repost on Bluesky"
+            >
               <Repeat2 className="w-4 h-4" />
               <span className="text-xs">{post.engagement.reposts}</span>
-            </div>
-            <div className="flex items-center space-x-1 hover:text-red-400 transition-colors">
+              <svg className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </button>
+            <button 
+              onClick={() => handleEngagementClick('like')}
+              className="flex items-center space-x-1 hover:text-red-400 transition-colors cursor-pointer group"
+              title="Like on Bluesky"
+            >
               <Heart className="w-4 h-4" />
               <span className="text-xs">{post.engagement.likes}</span>
-            </div>
+              <svg className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </button>
           </div>
         </div>
       </div>

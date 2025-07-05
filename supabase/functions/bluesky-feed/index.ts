@@ -1,12 +1,61 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+// Restrict CORS to only your domain
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://benwest.blog',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Cache-Control': 'no-cache, no-store, must-revalidate',
+  'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
   'Pragma': 'no-cache',
   'Expires': '0',
 };
+
+// Simple rate limiting (in production, use Redis or similar)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const windowMs = 60000; // 1 minute window
+  const maxRequests = 10; // Max 10 requests per minute
+  
+  const record = rateLimitMap.get(ip);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  
+  if (record.count >= maxRequests) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
+// Sanitize text content to prevent XSS
+function sanitizeText(text: string): string {
+  return text
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .trim();
+}
+
+// Sanitize URLs to prevent open redirects
+function sanitizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    // Only allow HTTPS URLs from trusted domains
+    if (parsed.protocol !== 'https:') {
+      return '';
+    }
+    // Add more domain restrictions if needed
+    return url;
+  } catch {
+    return '';
+  }
+}
 
 interface BlueskyPost {
   uri: string;
@@ -36,6 +85,19 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Rate limiting
+  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+  if (!checkRateLimit(clientIP)) {
+    console.log(`Rate limit exceeded for IP: ${clientIP}`);
+    return new Response(JSON.stringify({ 
+      error: 'Rate limit exceeded. Please try again later.',
+      posts: []
+    }), {
+      status: 429,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   try {
@@ -165,7 +227,7 @@ serve(async (req) => {
       return true;
     });
 
-    // Helper function to extract embed data
+    // Helper function to extract embed data with sanitization
     const extractEmbeds = (post: any) => {
       const embeds: any = {};
       
@@ -178,22 +240,25 @@ serve(async (req) => {
         // Handle images
         if (embed.$type === 'app.bsky.embed.images#view' && embed.images) {
           embeds.images = embed.images.map((img: any) => ({
-            url: img.fullsize || img.thumb,
-            alt: img.alt || '',
+            url: sanitizeUrl(img.fullsize || img.thumb),
+            alt: sanitizeText(img.alt || ''),
             aspectRatio: img.aspectRatio || { width: 1, height: 1 }
-          }));
+          })).filter(img => img.url); // Remove invalid URLs
           console.log('Extracted images:', embeds.images);
         }
         
         // Handle external links
         if (embed.$type === 'app.bsky.embed.external#view' && embed.external) {
-          embeds.externalLink = {
-            url: embed.external.uri,
-            title: embed.external.title || '',
-            description: embed.external.description || '',
-            thumb: embed.external.thumb || ''
-          };
-          console.log('Extracted external link:', embeds.externalLink);
+          const sanitizedUrl = sanitizeUrl(embed.external.uri);
+          if (sanitizedUrl) {
+            embeds.externalLink = {
+              url: sanitizedUrl,
+              title: sanitizeText(embed.external.title || ''),
+              description: sanitizeText(embed.external.description || ''),
+              thumb: sanitizeUrl(embed.external.thumb || '')
+            };
+            console.log('Extracted external link:', embeds.externalLink);
+          }
         }
         
         // Handle quote posts
@@ -201,9 +266,9 @@ serve(async (req) => {
           const quotedRecord = embed.record;
           if (quotedRecord.value && quotedRecord.author) {
             embeds.quotedPost = {
-              text: quotedRecord.value.text || '',
-              author: quotedRecord.author.displayName || quotedRecord.author.handle,
-              handle: quotedRecord.author.handle
+              text: sanitizeText(quotedRecord.value.text || ''),
+              author: sanitizeText(quotedRecord.author.displayName || quotedRecord.author.handle),
+              handle: sanitizeText(quotedRecord.author.handle)
             };
             console.log('Extracted quoted post:', embeds.quotedPost);
           }
@@ -214,17 +279,17 @@ serve(async (req) => {
           if (embed.record && embed.record.record) {
             const quotedRecord = embed.record.record;
             embeds.quotedPost = {
-              text: quotedRecord.value?.text || '',
-              author: quotedRecord.author?.displayName || quotedRecord.author?.handle,
-              handle: quotedRecord.author?.handle
+              text: sanitizeText(quotedRecord.value?.text || ''),
+              author: sanitizeText(quotedRecord.author?.displayName || quotedRecord.author?.handle),
+              handle: sanitizeText(quotedRecord.author?.handle)
             };
           }
           if (embed.media && embed.media.images) {
             embeds.images = embed.media.images.map((img: any) => ({
-              url: img.fullsize || img.thumb,
-              alt: img.alt || '',
+              url: sanitizeUrl(img.fullsize || img.thumb),
+              alt: sanitizeText(img.alt || ''),
               aspectRatio: img.aspectRatio || { width: 1, height: 1 }
-            }));
+            })).filter(img => img.url); // Remove invalid URLs
           }
         }
       }
@@ -238,12 +303,12 @@ serve(async (req) => {
       
       return {
         id: item.post.cid,
-        text: item.post.record.text,
+        text: sanitizeText(item.post.record.text),
         createdAt: item.post.record.createdAt,
         author: {
-          displayName: item.post.author.displayName || item.post.author.handle,
-          handle: item.post.author.handle,
-          avatar: item.post.author.avatar,
+          displayName: sanitizeText(item.post.author.displayName || item.post.author.handle),
+          handle: sanitizeText(item.post.author.handle),
+          avatar: sanitizeUrl(item.post.author.avatar || ''),
         },
         engagement: {
           likes: item.post.likeCount || 0,
@@ -289,3 +354,8 @@ serve(async (req) => {
     });
   }
 });
+
+// Export config to disable authentication (since we're using rate limiting)
+export const config = {
+  auth: false,
+};

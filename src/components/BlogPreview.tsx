@@ -1,11 +1,11 @@
 
 import { Link } from 'react-router-dom';
 import { Calendar, User, Tag } from 'lucide-react';
-import { BlogPost } from '@/hooks/useBlogPosts';
+import { MarkdownPost } from '@/hooks/useMarkdownPosts';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface BlogPreviewProps {
-  post: BlogPost;
+  post: MarkdownPost;
   isFeatured?: boolean;
 }
 

@@ -1,19 +1,18 @@
-
 import { ExternalLink } from 'lucide-react';
 import { BlueskyErrorBoundary } from './BlueskyErrorBoundary';
 import { BlueskyPostCard } from './bluesky/BlueskyPostCard';
-import { useBlueskyFeed } from '@/hooks/useBlueskyFeed';
+import { useStaticBlueskyFeed } from '@/hooks/useStaticBlueskyFeed';
 
 export const BlueskyFeed = () => {
   console.log('🔍 BlueskyFeed component mounting...');
   
-  const { feedData, loading, debugInfo } = useBlueskyFeed();
+  const { feedData, loading, error } = useStaticBlueskyFeed();
 
   console.log('🎨 BlueskyFeed render state:', { 
     loading, 
     feedData, 
     postsCount: feedData.posts?.length,
-    debugInfo
+    error
   });
 
   if (loading) {
@@ -38,12 +37,12 @@ export const BlueskyFeed = () => {
     );
   }
 
-  if (feedData.error) {
+  if (error) {
     return (
       <div className="space-y-4">
         <div className="p-4 border border-red-800 rounded-lg">
           <p className="text-red-400 text-sm mb-2">Error loading Bluesky posts</p>
-          <p className="text-gray-400 text-xs">Please try refreshing the page.</p>
+          <p className="text-gray-400 text-xs">{error}</p>
         </div>
       </div>
     );

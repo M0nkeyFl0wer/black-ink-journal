@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -47,9 +46,8 @@ serve(async (req) => {
       });
     }
 
-    // Get the site URL from the request origin or environment
-    const url = new URL(req.url);
-    const siteUrl = `${url.protocol}//${url.host}`.replace('/functions/v1/rss-feed', '');
+    // Use the actual site URL instead of trying to construct it from the request
+    const siteUrl = 'https://benwest.blog';
     console.log('🌐 Site URL:', siteUrl);
     
     const rssItems = (posts || []).map(post => {
@@ -128,7 +126,8 @@ function extractTextFromContent(htmlContent: string, maxLength: number = 200): s
     ? textContent.substring(0, maxLength) + '...'
     : textContent;
 }
-// ✅ Add this here
+
+// Export config to disable authentication
 export const config = {
   auth: false,
 };

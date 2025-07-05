@@ -1,49 +1,21 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { useBlogPost } from '@/hooks/useBlogPosts';
+import { useMarkdownPosts } from '@/hooks/useMarkdownPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import SharedHeader from '@/components/SharedHeader';
 import SocialShare from './SocialShare';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const DynamicBlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { post, loading, error } = useBlogPost(slug || '');
+  const { posts, loading, error, getPostBySlug } = useMarkdownPosts();
+  const post = slug ? getPostBySlug(slug) : undefined;
   const { isDarkMode } = useTheme();
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = '/images/82867a2d-c687-4042-992d-c0841d74606e.png';
-  };
-
-  // Enhanced function to convert markdown-style content to HTML
-  const convertMarkdownToHtml = (content: string): string => {
-    return content
-      // Convert **bold** to <strong>
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Convert markdown links [text](url) to HTML links
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" target="_blank" rel="noopener noreferrer" class="${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'} underline">$1</a>`)
-      // Convert ## headings to h2
-      .replace(/^## (.+)$/gm, `<h2 class="text-2xl font-bold mt-8 mb-4 ${isDarkMode ? 'text-white' : 'text-black'}">${'$1'}</h2>`)
-      // Convert ### headings to h3
-      .replace(/^### (.+)$/gm, `<h3 class="text-xl font-bold mt-6 mb-3 ${isDarkMode ? 'text-white' : 'text-black'}">${'$1'}</h3>`)
-      // Convert triple dashes to horizontal rules
-      .replace(/^---$/gm, `<hr class="${isDarkMode ? 'border-gray-600' : 'border-gray-300'} my-8" />`)
-      // Convert single line breaks to <br> and double line breaks to paragraphs
-      .split('\n\n')
-      .map(paragraph => {
-        if (paragraph.trim() === '') return '';
-        if (paragraph.includes('<h2>') || paragraph.includes('<h3>') || paragraph.includes('<hr')) return paragraph;
-        return `<p class="mb-4 leading-relaxed">${paragraph.replace(/\n/g, '<br>')}</p>`;
-      })
-      .join('\n');
-  };
-
-  // Function to format plain text content with proper paragraph breaks
-  const formatContent = (content: string): string => {
-    // Split by double line breaks to create paragraphs
-    const paragraphs = content.split('\n\n').filter(p => p.trim() !== '');
-    return paragraphs.map(paragraph => `<p class="mb-4 leading-relaxed">${paragraph.trim()}</p>`).join('\n\n');
   };
 
   if (loading) {
@@ -75,18 +47,7 @@ const DynamicBlogPost = () => {
     );
   }
 
-  // Enhanced content detection and formatting
-  const isHtml = post.content.includes('<p>') || post.content.includes('<div>') || post.content.includes('<br>');
-  const hasMarkdown = post.content.includes('**') || post.content.includes('[') || post.content.includes('##') || post.content.includes('###');
-  
-  let formattedContent: string;
-  if (isHtml) {
-    formattedContent = post.content;
-  } else if (hasMarkdown) {
-    formattedContent = convertMarkdownToHtml(post.content);
-  } else {
-    formattedContent = formatContent(post.content);
-  }
+  // Use the markdown renderer for all content
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
@@ -151,10 +112,9 @@ const DynamicBlogPost = () => {
           )}
         </header>
 
-        <div 
-          className={`prose prose-lg max-w-none mb-12 ${isDarkMode ? 'prose-invert' : 'prose-gray text-black'}`}
-          dangerouslySetInnerHTML={{ __html: formattedContent }}
-        />
+        <div className="mb-12">
+          <MarkdownRenderer content={post.content} />
+        </div>
 
         <SocialShare 
           url={window.location.href}
