@@ -1,4 +1,3 @@
-
 import { useBlogPosts } from '@/hooks/useBlogPosts';
 
 export const generateRSSFeed = () => {
