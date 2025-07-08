@@ -1,63 +1,187 @@
 {
-  "exported_at": "2025-07-05T20:25:03.204Z",
-  "total_posts": 8,
-  "exported_posts": 8,
+  "exported_at": "2025-07-08T04:24:31.736Z",
+  "total_posts": 10,
+  "exported_posts": 10,
   "posts": [
+    {
+      "title": "How to Create New Blog Posts",
+      "slug": "how-to-create-new-blog-posts",
+      "content_length": 1800,
+      "publish_date": "2025-07-08T04:17:56.547Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "A guide to creating new pages for your blog",
+      "tags": [
+        "tutorial",
+        "blogging"
+      ],
+      "featured_image": "",
+      "created_at": "2025-07-08T04:17:56.547Z",
+      "updated_at": "2025-07-08T04:17:56.547Z"
+    },
     {
       "title": "Still Crowned",
       "slug": "still-crowned",
-      "content_length": 5609,
-      "publish_date": "2025-05-16T00:00:00+00:00",
-      "is_published": true
+      "content_length": 5622,
+      "publish_date": "2025-05-16T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "A country that talks like a democracy but still curtsies like a colony",
+      "tags": [
+        "essays",
+        "politics",
+        "monarchy",
+        "canada"
+      ],
+      "featured_image": "/images/61703bd2-7bd9-4d04-b4af-f6e6d12cc735.png",
+      "created_at": "2025-05-16T00:00:00.000Z",
+      "updated_at": "2025-05-16T00:00:00.000Z"
     },
     {
       "title": "Is Not Having Kids an Effective Climate Solution?",
       "slug": "is-not-having-kids-an-effective-climate-solution",
-      "content_length": 7551,
-      "publish_date": "2025-05-05T08:46:00+00:00",
-      "is_published": true
+      "content_length": 9776,
+      "publish_date": "2025-05-05T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "Climate change isn't about individual choices—it's about confronting corporate power, public manipulation, and systemic design.",
+      "tags": [
+        "climate",
+        "ethics"
+      ],
+      "featured_image": "/images/1543172645-origin.jpg",
+      "created_at": "2025-05-05T00:00:00.000Z",
+      "updated_at": "2025-05-05T00:00:00.000Z"
     },
     {
       "title": "Say Please and Thank You to Alexa, Ok Google?",
       "slug": "say-please-thank-you-alexa-ok-google",
-      "content_length": 5131,
-      "publish_date": "2024-12-05T00:00:00+00:00",
-      "is_published": true
+      "content_length": 6998,
+      "publish_date": "2024-12-05T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "Our evolving relationship with AI assistants and the importance of how, and what, we ask it to do.",
+      "tags": [
+        "technology",
+        "ai",
+        "voice assistants",
+        "commentary"
+      ],
+      "featured_image": "/images/8-MkzmeO_400x400.jpg",
+      "created_at": "2024-12-05T00:00:00.000Z",
+      "updated_at": "2024-12-05T00:00:00.000Z"
     },
     {
       "title": "How Not to be the Reason Your Company Has a Data Breach Because You are Working From Home",
       "slug": "how-not-to-be-the-reason-your-company-has-a-data-breach-because-you-are-working-from-home",
-      "content_length": 24806,
-      "publish_date": "2024-06-05T12:00:00+00:00",
-      "is_published": true
+      "content_length": 25788,
+      "publish_date": "2024-06-05T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "Personal infosec tips and tools for you and your company to stay secure while working from home.",
+      "tags": [
+        "infosec",
+        "privacy",
+        "security",
+        "remote-work"
+      ],
+      "featured_image": "/images/ben-at-rally.jpg",
+      "created_at": "2024-06-05T00:00:00.000Z",
+      "updated_at": "2024-06-05T00:00:00.000Z"
     },
     {
       "title": "Unlocking Climate Solutions Built With Open Source Tech",
       "slug": "blockchain-climate-solutions",
-      "content_length": 5287,
-      "publish_date": "2023-06-07T00:00:00+00:00",
-      "is_published": true
+      "content_length": 7678,
+      "publish_date": "2023-06-07T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "Much of the discussion around blockchain technology is often focused on cryptocurrencies or the plethora of meme coins and scams that are often built on top. Yet as the world struggles to address the urgency of the climate crisis, blockchain has the potential to be a game-changer in the murky waters of international coordination, resource allocation, and international accountability.",
+      "tags": [
+        "technology",
+        "climate"
+      ],
+      "featured_image": "https://www.benwest.blog/wp-content/uploads/2023/12/Roundup-67-1024x532.jpeg",
+      "created_at": "2023-06-07T00:00:00.000Z",
+      "updated_at": "2023-06-07T00:00:00.000Z"
     },
     {
       "title": "Reflecting On Year One Of The Great Climate Race",
       "slug": "reflecting-year-one-great-climate-race",
-      "content_length": 3517,
-      "publish_date": "2016-03-20T00:00:00+00:00",
-      "is_published": true
+      "content_length": 5463,
+      "publish_date": "2016-03-20T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "It's interesting to reflect on where we were when something started, what was motivating us and then consider how our plans turned out.",
+      "tags": [
+        "climate",
+        "environment",
+        "community",
+        "activism",
+        "running"
+      ],
+      "featured_image": "/images/benwestgcr.jpg",
+      "created_at": "2016-03-20T00:00:00.000Z",
+      "updated_at": "2016-03-20T00:00:00.000Z"
+    },
+    {
+      "title": "Open Letter to RCMP Commissioner Bob Paulson on Climate Change and National Security",
+      "slug": "open-letter-to-rcmp-commissioner-bob-paulson-on-climate-change-and-national-security",
+      "content_length": 7846,
+      "publish_date": "2015-02-20T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "Originally published 2/20/2015 - Georgia Straight. A letter to RCMP Commissioner Bob Paulson regarding climate change, national security, and the RCMP's controversial intelligence assessment report on the anti-petroleum movement.",
+      "tags": [
+        "climate change",
+        "national security",
+        "RCMP",
+        "fossil fuels",
+        "activism",
+        "policy"
+      ],
+      "featured_image": "/images/rcmp-letter/Bob-Paulson-2.jpg",
+      "created_at": "2015-02-20T00:00:00.000Z",
+      "updated_at": "2015-02-20T00:00:00.000Z"
     },
     {
       "title": "Rail Vs Pipelines, Are Those Really Our Only Choice?",
       "slug": "rail-vs-pipelines-are-those-really-our-only-choice",
-      "content_length": 4942,
-      "publish_date": "2014-07-23T00:00:00+00:00",
-      "is_published": true
+      "content_length": 6947,
+      "publish_date": "2014-07-23T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "I never thought I would say this, but I think oil pipeline proponents are going to be happy about our new website that went live last week.",
+      "tags": [
+        "environment",
+        "energy",
+        "pipelines",
+        "transportation",
+        "policy"
+      ],
+      "featured_image": "/images/FEA_Trains6_2431.jpg",
+      "created_at": "2014-07-23T00:00:00.000Z",
+      "updated_at": "2014-07-23T00:00:00.000Z"
     },
     {
       "title": "Standing With Chief Rueben George: Indigenous Leadership Against Tar Sands",
       "slug": "standing-with-chief-rueben-george-indigenous-leadership-against-tar-sands",
-      "content_length": 6028,
-      "publish_date": "2013-01-28T00:00:00+00:00",
-      "is_published": true
+      "content_length": 8459,
+      "publish_date": "2013-01-28T00:00:00.000Z",
+      "is_published": true,
+      "author": "Ben West",
+      "excerpt": "Earlier this summer it filled my heart with pride and joy to watch my good friend Chief Rueben George, stand before the sacred tree in the Arbor of a Sun Dance ceremony in Lakota territory, South Dakota and read a declaration of indigenous spiritual leaders against tar sands pipelines and tankers.",
+      "tags": [
+        "indigenous",
+        "activism",
+        "pipelines",
+        "ceremony",
+        "solidarity",
+        "environment"
+      ],
+      "featured_image": "/images/Rueben-George.png",
+      "created_at": "2013-01-28T00:00:00.000Z",
+      "updated_at": "2013-01-28T00:00:00.000Z"
     }
   ]
 }

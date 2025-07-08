@@ -1,82 +1,77 @@
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Get current directory for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function updateExportSummary() {
-  const postsDir = path.join(__dirname, '..', 'content', 'posts');
-  const summaryPath = path.join(__dirname, '..', 'content', 'export-summary.json');
+// Function to extract metadata from HTML file
+function extractMetadataFromHtml(htmlContent) {
+  const metadataMatch = htmlContent.match(/<script type="application\/json" id="post-metadata">([\s\S]*?)<\/script>/);
+  if (!metadataMatch) return null;
   
   try {
-    const files = await fs.readdir(postsDir);
-    const posts = [];
-    
-    for (const file of files) {
-      if (!file.endsWith('.md')) continue;
-      
-      const filePath = path.join(postsDir, file);
-      const content = await fs.readFile(filePath, 'utf8');
-      
-      // Extract frontmatter
-      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-      if (!frontmatterMatch) {
-        console.log(`⚠️ No frontmatter found in ${file}`);
-        continue;
-      }
-      
-      const frontmatter = frontmatterMatch[1];
-      
-      // Extract fields from frontmatter
-      const title = frontmatter.match(/title:\s*"([^"]+)"/)?.[1] || '';
-      const slug = frontmatter.match(/slug:\s*"([^"]+)"/)?.[1] || '';
-      const date = frontmatter.match(/date:\s*"([^"]+)"/)?.[1] || '';
-      const author = frontmatter.match(/author:\s*"([^"]+)"/)?.[1] || 'Ben West';
-      const excerpt = frontmatter.match(/excerpt:\s*"([^"]+)"/)?.[1] || '';
-      const published = frontmatter.match(/published:\s*(true|false)/)?.[1] === 'true';
-      const featuredImage = frontmatter.match(/featured_image:\s*"([^"]+)"/)?.[1] || '';
-      
-      // Extract tags
-      const tagsMatch = frontmatter.match(/tags:\s*\[(.*?)\]/);
-      let tags = [];
-      if (tagsMatch) {
-        tags = tagsMatch[1]
-          .split(',')
-          .map(tag => tag.trim().replace(/"/g, ''))
-          .filter(tag => tag.length > 0);
-      }
-      
-      posts.push({
-        title,
-        slug,
-        filename: file,
-        published,
-        date: date ? new Date(date).toISOString() : new Date().toISOString(),
-        author,
-        excerpt,
-        tags,
-        featured_image: featuredImage
-      });
-    }
-    
-    // Sort by date (newest first)
-    posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
-    const summary = {
-      totalPosts: posts.length,
-      exportedAt: new Date().toISOString(),
-      posts
-    };
-    
-    await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
-    console.log(`✅ Updated export summary with ${posts.length} posts`);
-    console.log(`📁 Saved to: ${summaryPath}`);
-    
-  } catch (error) {
-    console.error('❌ Error updating export summary:', error.message);
-    process.exit(1);
+    return JSON.parse(metadataMatch[1]);
+  } catch (e) {
+    console.warn('Could not parse metadata from HTML file');
+    return null;
   }
+}
+
+// Function to update export summary
+function updateExportSummary() {
+  const postsDir = path.join(__dirname, '..', 'public', 'content', 'posts');
+  const summaryPath = path.join(__dirname, '..', 'public', 'content', 'export-summary.json');
+  
+  if (!fs.existsSync(postsDir)) {
+    console.error('Posts directory not found:', postsDir);
+    return;
+  }
+  
+  const htmlFiles = fs.readdirSync(postsDir).filter(file => file.endsWith('.html'));
+  console.log(`Found ${htmlFiles.length} HTML files`);
+  
+  const posts = [];
+  
+  for (const file of htmlFiles) {
+    const filePath = path.join(postsDir, file);
+    const htmlContent = fs.readFileSync(filePath, 'utf8');
+    const metadata = extractMetadataFromHtml(htmlContent);
+    
+    if (metadata) {
+      posts.push({
+        title: metadata.title,
+        slug: metadata.slug,
+        content_length: htmlContent.length,
+        publish_date: metadata.publish_date,
+        is_published: metadata.is_published,
+        author: metadata.author,
+        excerpt: metadata.excerpt,
+        tags: metadata.tags,
+        featured_image: metadata.featured_image,
+        created_at: metadata.created_at,
+        updated_at: metadata.updated_at
+      });
+      console.log(`✅ Added: ${metadata.title}`);
+    } else {
+      console.warn(`⚠️ Could not extract metadata from: ${file}`);
+    }
+  }
+  
+  // Sort posts by publish date (newest first)
+  posts.sort((a, b) => new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime());
+  
+  const summary = {
+    exported_at: new Date().toISOString(),
+    total_posts: posts.length,
+    exported_posts: posts.length,
+    posts: posts
+  };
+  
+  fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
+  console.log(`\n🎉 Updated export summary with ${posts.length} posts`);
+  console.log(`📁 Saved to: ${summaryPath}`);
 }
 
 updateExportSummary(); 
