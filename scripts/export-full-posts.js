@@ -48,7 +48,7 @@ async function exportFullPosts() {
     
     for (const post of posts) {
       console.log(`\n📝 Processing: ${post.title}`);
-      console.log(`   Content length: ${post.content?.length || 0} characters`);
+      console.log(`   Content length: ${(post.content && post.content.length) || 0} characters`);
       
       // Create frontmatter metadata
       const frontmatter = {
@@ -120,7 +120,7 @@ ${JSON.stringify(frontmatter, null, 2)}
       posts: posts.map(post => ({
         title: post.title,
         slug: post.slug,
-        content_length: post.content?.length || 0,
+        content_length: (post.content && post.content.length) || 0,
         publish_date: post.publish_date,
         is_published: post.is_published
       }))
