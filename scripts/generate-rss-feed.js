@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 // Configuration
 const siteUrl = 'https://benwest.blog';
 const outputDir = path.join(__dirname, '..', 'public');
+const postsDir = path.join(__dirname, '..', 'public', 'content', 'posts');
 
 async function ensureDirectoryExists(dir) {
   try {
@@ -41,6 +42,23 @@ function extractTextFromContent(content, maxLength = 200) {
     : textContent;
 }
 
+function parsePostMetadata(htmlContent) {
+  try {
+    // Extract the JSON metadata from the script tag
+    const metadataMatch = htmlContent.match(/<script type="application\/json" id="post-metadata">([\s\S]*?)<\/script>/);
+    if (!metadataMatch) {
+      console.warn('⚠️ No metadata found in post');
+      return null;
+    }
+    
+    const metadata = JSON.parse(metadataMatch[1]);
+    return metadata;
+  } catch (error) {
+    console.error('❌ Error parsing post metadata:', error.message);
+    return null;
+  }
+}
+
 async function generateRSSFeed() {
   try {
     console.log('🚀 Starting RSS feed generation...');
@@ -48,32 +66,51 @@ async function generateRSSFeed() {
     // Ensure output directory exists
     await ensureDirectoryExists(outputDir);
     
-    // Read the export summary to get post information
-    const summaryPath = path.join(__dirname, '..', 'content', 'export-summary.json');
-    let summary;
+    // Read all HTML files from the posts directory
+    const files = await fs.readdir(postsDir);
+    const htmlFiles = files.filter(file => file.endsWith('.html'));
     
-    try {
-      const summaryData = await fs.readFile(summaryPath, 'utf8');
-      summary = JSON.parse(summaryData);
-      console.log(`📊 Found ${summary.posts.length} posts in summary`);
-    } catch (error) {
-      console.error('❌ Could not read export summary:', error.message);
-      console.log('💡 Please run the markdown export script first: npm run export-posts');
-      return;
+    console.log(`📁 Found ${htmlFiles.length} HTML files in posts directory`);
+    
+    const posts = [];
+    
+    // Process each HTML file
+    for (const file of htmlFiles) {
+      const filePath = path.join(postsDir, file);
+      const htmlContent = await fs.readFile(filePath, 'utf8');
+      
+      const metadata = parsePostMetadata(htmlContent);
+      if (!metadata) {
+        console.warn(`⚠️ Skipping ${file} - no valid metadata`);
+        continue;
+      }
+      
+      // Only include published posts
+      if (metadata.is_published) {
+        posts.push({
+          title: metadata.title,
+          slug: metadata.slug,
+          excerpt: metadata.excerpt,
+          publish_date: metadata.publish_date,
+          author: metadata.author,
+          tags: metadata.tags || []
+        });
+      }
     }
     
-    // Filter to only published posts
-    const publishedPosts = summary.posts.filter(post => post.published);
-    console.log(`📝 Found ${publishedPosts.length} published posts`);
+    // Sort posts by publish date (newest first)
+    posts.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
     
-    if (publishedPosts.length === 0) {
+    console.log(`📝 Found ${posts.length} published posts`);
+    
+    if (posts.length === 0) {
       console.log('⚠️ No published posts found');
       return;
     }
     
     // Generate RSS items
-    const rssItems = publishedPosts.map(post => {
-      const pubDate = new Date(post.date).toUTCString();
+    const rssItems = posts.map(post => {
+      const pubDate = new Date(post.publish_date).toUTCString();
       
       return `    <item>
       <title>${escapeXml(post.title)}</title>
@@ -86,7 +123,7 @@ async function generateRSSFeed() {
     }).join('\n');
 
     const now = new Date().toUTCString();
-    const lastBuildDate = publishedPosts.length > 0 ? new Date(publishedPosts[0].date).toUTCString() : now;
+    const lastBuildDate = posts.length > 0 ? new Date(posts[0].publish_date).toUTCString() : now;
 
     const rssContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -110,7 +147,7 @@ ${rssItems}
     const rssPath = path.join(outputDir, 'rss.xml');
     await fs.writeFile(rssPath, rssContent, 'utf8');
     
-    console.log(`✅ Generated RSS feed with ${publishedPosts.length} posts`);
+    console.log(`✅ Generated RSS feed with ${posts.length} posts`);
     console.log(`📁 Saved to: ${rssPath}`);
     console.log('🎉 RSS feed generation complete!');
     
@@ -118,11 +155,11 @@ ${rssItems}
     const jsonPath = path.join(outputDir, 'rss-feed.json');
     const rssData = {
       generatedAt: new Date().toISOString(),
-      totalPosts: publishedPosts.length,
-      posts: publishedPosts.map(post => ({
+      totalPosts: posts.length,
+      posts: posts.map(post => ({
         title: post.title,
         slug: post.slug,
-        date: post.date,
+        date: post.publish_date,
         url: `${siteUrl}/post/${post.slug}`
       }))
     };
