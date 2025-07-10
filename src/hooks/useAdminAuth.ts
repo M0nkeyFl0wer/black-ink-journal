@@ -2,6 +2,8 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import bcrypt from 'bcryptjs';
+import { CSRFProtection } from '@/utils/csrf';
 
 interface AdminUser {
   id: string;
@@ -13,10 +15,23 @@ export const useAdminAuth = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const signIn = useCallback(async (username: string, password: string): Promise<AdminUser | null> => {
+  const signIn = useCallback(async (username: string, password: string, csrfToken?: string): Promise<AdminUser | null> => {
     setLoading(true);
 
     try {
+      // Validate CSRF token if provided
+      if (csrfToken) {
+        const isValidToken = await CSRFProtection.validateToken(csrfToken);
+        if (!isValidToken) {
+          toast({
+            title: "Security Error",
+            description: "Invalid or expired security token",
+            variant: "destructive",
+          });
+          return null;
+        }
+      }
+
       // First check if account is locked
       const { data: user, error: userError } = await supabase
         .from('admin_users')
@@ -157,16 +172,12 @@ export const useAdminAuth = () => {
   };
 };
 
-// Simple password hashing (in production, use proper bcrypt)
+// Secure password hashing using bcrypt
 async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + 'admin_salt_2024');
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const saltRounds = 12; // Recommended for production
+  return await bcrypt.hash(password, saltRounds);
 }
 
 async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const passwordHash = await hashPassword(password);
-  return passwordHash === hash;
+  return await bcrypt.compare(password, hash);
 }

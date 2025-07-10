@@ -8,8 +8,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Supabase configuration
-const supabaseUrl = 'https://jfsvlaaposslmeneovtp.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impmc3ZsYWFwb3NzbG1lbmVvdnRwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODgxNjQzMCwiZXhwIjoyMDY0MzkyNDMwfQ.GwLR3PAQBkXtqjWZQtXZeB5KIixgTx8bMPvvzkNnfOc';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://jfsvlaaposslmeneovtp.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseKey) {
+  console.error('❌ SUPABASE_SERVICE_ROLE_KEY environment variable is required');
+  console.log('💡 Set this environment variable to run this script');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 

@@ -126,7 +126,9 @@ async function generateBlueskyFeed() {
     console.log('🚀 Starting Bluesky feed generation...');
     
     if (!BLUESKY_APP_PASSWORD) {
-      throw new Error('BLUESKY_APP_PASSWORD environment variable is required');
+      console.log('⚠️  BLUESKY_APP_PASSWORD environment variable not set - skipping Bluesky feed generation');
+      console.log('💡 This is normal for local development. Bluesky feed will be generated in production.');
+      return;
     }
     
     // Ensure output directory exists

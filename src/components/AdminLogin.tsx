@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Lock, User } from 'lucide-react';
 import PasswordRecovery from './PasswordRecovery';
+import { useCSRF } from '@/utils/csrf';
 
 interface AdminLoginProps {
   onLogin: (username: string) => void;
@@ -16,14 +17,16 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [password, setPassword] = useState('');
   const [showRecovery, setShowRecovery] = useState(false);
   const { signIn, loading } = useAdminAuth();
+  const { token: csrfToken } = useCSRF();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const user = await signIn(username, password);
+    const user = await signIn(username, password, csrfToken);
     if (user) {
       localStorage.setItem('admin_logged_in', 'true');
       localStorage.setItem('admin_username', user.username);
+      localStorage.setItem('csrf_token', csrfToken);
       onLogin(user.username);
     }
   };
