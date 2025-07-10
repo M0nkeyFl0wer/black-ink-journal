@@ -32,7 +32,7 @@ const About = () => {
 
           <div className="my-8">
             <img 
-              src="https://www.benwest.blog/wp-content/uploads/2019/05/8-MkzmeO_400x400-300x300.jpg" 
+              src="/images/8-MkzmeO_400x400.jpg" 
               alt="Ben West profile" 
               className="w-72 h-72 object-cover rounded-lg mx-auto"
             />
@@ -48,7 +48,7 @@ const About = () => {
 
           <div className="my-8">
             <img 
-              src="https://www.benwest.blog/wp-content/uploads/2019/05/1489115_10152490458492571_1128582089_n-300x169.jpg" 
+              src="/images/1489115_10152490458492571_1128582089_n.jpg" 
               alt="Ben West speaking" 
               className="w-full max-w-md object-cover rounded-lg mx-auto"
             />
@@ -60,7 +60,7 @@ const About = () => {
 
           <div className="my-8">
             <img 
-              src="https://www.benwest.blog/wp-content/uploads/2019/05/urban-interventions-300x235.jpg" 
+              src="/images/urban-interventions.jpg" 
               alt="Urban interventions" 
               className="w-full max-w-md object-cover rounded-lg mx-auto"
             />
@@ -76,7 +76,7 @@ const About = () => {
 
           <div className="my-8">
             <img 
-              src="https://www.benwest.blog/wp-content/uploads/2019/05/benwestgcr-300x185.jpg" 
+              src="/images/benwestgcr.jpg" 
               alt="Ben West at event" 
               className="w-full max-w-md object-cover rounded-lg mx-auto"
             />
