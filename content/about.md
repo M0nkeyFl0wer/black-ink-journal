@@ -20,6 +20,6 @@ I care a lot about infosec, OSINT, decentralized governance, and the weird ways 
 
 These days I'm writing a novel called The Monkey Flower Experiment. It's fiction, technically but also a blueprint, a warning, and a love letter to everyone still trying to build something beautiful in the ruins.
 
-And yeah, I'm Canadian. So, sorry if this bio got too real.
+As a Canadian I am required to apologize at least once in this page... sorry about that. 
 
 ![Ben West at event](https://www.benwest.blog/wp-content/uploads/2019/05/benwestgcr-300x185.jpg) 
