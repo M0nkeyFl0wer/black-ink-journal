@@ -1,15 +1,15 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { useHtmlPosts } from '@/hooks/useHtmlPosts';
+import { useMarkdownPosts } from '@/hooks/useMarkdownPosts';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import SharedHeader from '@/components/SharedHeader';
 import SocialShare from './SocialShare';
-import HtmlRenderer from './HtmlRenderer';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const DynamicBlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { posts, loading, error, getPostBySlug } = useHtmlPosts();
+  const { posts, loading, error, getPostBySlug } = useMarkdownPosts();
   const post = slug ? getPostBySlug(slug) : undefined;
   const { isDarkMode } = useTheme();
 
@@ -113,7 +113,7 @@ const DynamicBlogPost = () => {
         </header>
 
         <div className="mb-12">
-          <HtmlRenderer content={post.content} />
+          <MarkdownRenderer content={post.content} />
         </div>
 
         <SocialShare 

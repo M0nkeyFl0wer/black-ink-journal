@@ -2,14 +2,14 @@
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useHtmlPosts } from "@/hooks/useHtmlPosts";
+import { useMarkdownPosts } from "@/hooks/useMarkdownPosts";
 import BlogPreview from "@/components/BlogPreview";
 import SharedHeader from "@/components/SharedHeader";
 import BlueskyFeedWithErrorBoundary from "@/components/BlueskyFeed";
 
 const Index = () => {
   const { isDarkMode } = useTheme();
-  const { posts, loading, error } = useHtmlPosts();
+  const { posts, loading, error } = useMarkdownPosts();
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>

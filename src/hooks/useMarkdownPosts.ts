@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import matter from 'gray-matter';
 
 export interface MarkdownPost {
   id: string;
@@ -11,7 +12,21 @@ export interface MarkdownPost {
   tags: string[];
   is_published: boolean;
   featured_image?: string;
+  created_at?: string;
+  updated_at?: string;
 }
+
+// List of available markdown posts - this will be dynamically loaded in production
+const AVAILABLE_POSTS = [
+  'still-crowned',
+  'is-not-having-kids-an-effective-climate-solution',
+  'say-please-thank-you-alexa-ok-google',
+  'how-not-to-be-the-reason-your-company-has-a-data-breach-because-you-are-working-from-home',
+  'blockchain-climate-solutions',
+  'reflecting-year-one-great-climate-race',
+  'rail-vs-pipelines-are-those-really-our-only-choice',
+  'standing-with-chief-rueben-george-indigenous-leadership-against-tar-sands'
+];
 
 export const useMarkdownPosts = () => {
   const [posts, setPosts] = useState<MarkdownPost[]>([]);
@@ -23,43 +38,42 @@ export const useMarkdownPosts = () => {
       try {
         setLoading(true);
         
-        // Read the export summary to get post metadata
-        const summaryResponse = await fetch('/content/export-summary.json');
-        if (!summaryResponse.ok) {
-          throw new Error('Failed to load posts summary');
-        }
-        
-        const summary = await summaryResponse.json();
-        
-        // Filter to only published posts
-        const publishedPosts = summary.posts.filter((post: any) => post.published);
-        
-        // Load the actual markdown content for each post
         const postsWithContent = await Promise.all(
-          publishedPosts.map(async (post: any) => {
+          AVAILABLE_POSTS.map(async (slug) => {
             try {
-              const contentResponse = await fetch(`/content/posts/${post.slug}.md`);
-              if (!contentResponse.ok) {
-                console.warn(`Could not load content for ${post.slug}`);
+              const response = await fetch(`/content/posts/${slug}.md`);
+              if (!response.ok) {
+                console.warn(`Could not load content for ${slug}`);
                 return null;
               }
               
-              const raw = await contentResponse.text();
+              const rawMarkdown = await response.text();
+              const parsed = matter(rawMarkdown);
               
+              // Extract frontmatter data
+              const frontmatter = parsed.data;
+              
+              // Only include published posts
+              if (!frontmatter.is_published) {
+                return null;
+              }
+
               return {
-                id: post.slug,
-                title: post.title,
-                slug: post.slug,
-                content: raw,
-                excerpt: post.excerpt || '',
-                publish_date: post.date,
-                author: post.author || 'Ben West',
-                tags: post.tags || [],
-                is_published: post.published,
-                featured_image: post.featured_image
+                id: slug,
+                title: frontmatter.title || slug,
+                slug: frontmatter.slug || slug,
+                content: parsed.content,
+                excerpt: frontmatter.excerpt || '',
+                publish_date: frontmatter.publish_date || frontmatter.date || new Date().toISOString(),
+                author: frontmatter.author || 'Ben West',
+                tags: frontmatter.tags || [],
+                is_published: frontmatter.is_published || false,
+                featured_image: frontmatter.featured_image,
+                created_at: frontmatter.created_at || '',
+                updated_at: frontmatter.updated_at || ''
               };
             } catch (err) {
-              console.warn(`Error loading post ${post.slug}:`, err);
+              console.warn(`Error loading post ${slug}:`, err);
               return null;
             }
           })
@@ -67,7 +81,7 @@ export const useMarkdownPosts = () => {
         
         // Filter out null posts and sort by date
         const validPosts = postsWithContent
-          .filter((post): post is MarkdownPost => post !== null)
+          .filter((post) => post !== null) as MarkdownPost[]
           .sort((a, b) => new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime());
         
         setPosts(validPosts);
@@ -93,4 +107,4 @@ export const useMarkdownPosts = () => {
     error,
     getPostBySlug
   };
-}; 
+};

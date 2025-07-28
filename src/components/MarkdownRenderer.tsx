@@ -1,3 +1,4 @@
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -7,97 +8,73 @@ interface MarkdownRendererProps {
   className?: string;
 }
 
-const MarkdownRenderer = ({ content, className = '' }: MarkdownRendererProps) => {
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className = '' }) => {
   const { isDarkMode } = useTheme();
 
   return (
-    <div className={`prose prose-lg max-w-none ${isDarkMode ? 'prose-invert' : 'prose-gray'} ${className}`}>
+    <div className={`markdown-content prose prose-lg max-w-none ${
+      isDarkMode 
+        ? 'prose-invert prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-a:text-blue-400 prose-blockquote:text-gray-300 prose-code:text-gray-300' 
+        : 'prose-headings:text-black prose-p:text-gray-800 prose-strong:text-black prose-a:text-blue-600 prose-blockquote:text-gray-800 prose-code:text-gray-800'
+    } ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          // Custom styling for different elements
-          h1: ({ children }) => (
-            <h1 className={`text-3xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-black'}`}>
-              {children}
-            </h1>
+          img: ({ src, alt, ...props }) => (
+            <img
+              src={src}
+              alt={alt}
+              className="rounded-lg shadow-lg mx-auto my-8 max-w-full"
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/images/82867a2d-c687-4042-992d-c0841d74606e.png';
+              }}
+              {...props}
+            />
           ),
-          h2: ({ children }) => (
-            <h2 className={`text-2xl font-bold mb-4 mt-8 ${isDarkMode ? 'text-white' : 'text-black'}`}>
-              {children}
-            </h2>
-          ),
-          h3: ({ children }) => (
-            <h3 className={`text-xl font-bold mb-3 mt-6 ${isDarkMode ? 'text-white' : 'text-black'}`}>
-              {children}
-            </h3>
-          ),
-          p: ({ children }) => (
-            <p className={`mb-4 leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              {children}
-            </p>
-          ),
-          a: ({ href, children }) => (
-            <a 
-              href={href} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={`underline ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}`}
+          a: ({ href, children, ...props }) => (
+            <a
+              href={href}
+              target={href?.startsWith('http') ? '_blank' : undefined}
+              rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+              className={isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}
+              {...props}
             >
               {children}
             </a>
           ),
-          strong: ({ children }) => (
-            <strong className="font-bold">{children}</strong>
-          ),
-          em: ({ children }) => (
-            <em className="italic">{children}</em>
-          ),
-          blockquote: ({ children }) => (
-            <blockquote className={`border-l-4 pl-4 italic my-6 ${isDarkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'}`}>
+          blockquote: ({ children, ...props }) => (
+            <blockquote
+              className={`border-l-4 pl-4 my-6 italic ${
+                isDarkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
+              }`}
+              {...props}
+            >
               {children}
             </blockquote>
           ),
-          ul: ({ children }) => (
-            <ul className={`list-disc list-inside mb-4 space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              {children}
-            </ul>
-          ),
-          ol: ({ children }) => (
-            <ol className={`list-decimal list-inside mb-4 space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
-              {children}
-            </ol>
-          ),
-          li: ({ children }) => (
-            <li className="leading-relaxed">{children}</li>
-          ),
-          code: ({ children, className }) => {
+          code: ({ children, className, ...props }) => {
             const isInline = !className;
-            if (isInline) {
-              return (
-                <code className={`px-1 py-0.5 rounded text-sm ${isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-gray-100 text-gray-800'}`}>
-                  {children}
-                </code>
-              );
-            }
-            return (
-              <code className={className}>{children}</code>
+            return isInline ? (
+              <code
+                className={`px-1 py-0.5 rounded text-sm font-mono ${
+                  isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-800'
+                }`}
+                {...props}
+              >
+                {children}
+              </code>
+            ) : (
+              <code
+                className={`block p-4 rounded-lg text-sm font-mono overflow-x-auto ${
+                  isDarkMode ? 'bg-gray-900 text-gray-300' : 'bg-gray-50 text-gray-800'
+                }`}
+                {...props}
+              >
+                {children}
+              </code>
             );
-          },
-          pre: ({ children }) => (
-            <pre className={`p-4 rounded-lg overflow-x-auto mb-4 ${isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-gray-100 text-gray-800'}`}>
-              {children}
-            </pre>
-          ),
-          hr: () => (
-            <hr className={`my-8 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`} />
-          ),
-          img: ({ src, alt }) => (
-            <img 
-              src={src} 
-              alt={alt} 
-              className="max-w-full h-auto rounded-lg my-6"
-            />
-          ),
+          }
         }}
       >
         {content}
@@ -106,4 +83,4 @@ const MarkdownRenderer = ({ content, className = '' }: MarkdownRendererProps) =>
   );
 };
 
-export default MarkdownRenderer; 
+export default MarkdownRenderer;

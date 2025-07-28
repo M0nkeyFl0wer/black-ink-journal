@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
-import About from "./pages/About";
+import MarkdownAboutPage from "./components/MarkdownAboutPage";
 import Admin from "./pages/Admin";
 import DynamicBlogPost from "./components/DynamicBlogPost";
 import NotFound from "./pages/NotFound";
@@ -23,7 +23,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/about" element={<MarkdownAboutPage />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/post/:slug" element={<DynamicBlogPost />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

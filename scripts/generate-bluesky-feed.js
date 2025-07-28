@@ -54,7 +54,7 @@ function sanitizeUrl(url) {
 function extractEmbeds(post) {
   const embeds = {};
   
-  const embed = post.embed || post.record?.embed;
+  const embed = post.embed || (post.record && post.record.embed);
   
   if (embed) {
     // Handle images
@@ -96,9 +96,9 @@ function extractEmbeds(post) {
       if (embed.record && embed.record.record) {
         const quotedRecord = embed.record.record;
         embeds.quotedPost = {
-          text: sanitizeText(quotedRecord.value?.text || ''),
-          author: sanitizeText(quotedRecord.author?.displayName || quotedRecord.author?.handle),
-          handle: sanitizeText(quotedRecord.author?.handle)
+          text: sanitizeText((quotedRecord.value && quotedRecord.value.text) || ''),
+          author: sanitizeText((quotedRecord.author && quotedRecord.author.displayName) || (quotedRecord.author && quotedRecord.author.handle)),
+          handle: sanitizeText((quotedRecord.author && quotedRecord.author.handle))
         };
       }
       if (embed.media && embed.media.images) {
@@ -176,7 +176,7 @@ async function generateBlueskyFeed() {
     }
 
     const feedData = await feedResponse.json();
-    console.log(`📊 Fetched ${feedData.feed?.length || 0} total feed items`);
+    console.log(`📊 Fetched ${(feedData.feed && feedData.feed.length) || 0} total feed items`);
 
     // Filter to only include original posts (no replies or reposts)
     const originalPosts = feedData.feed.filter(item => {
@@ -230,7 +230,7 @@ async function generateBlueskyFeed() {
       totalPosts: posts.length,
       author: {
         handle: BLUESKY_HANDLE,
-        displayName: posts[0]?.author.displayName || BLUESKY_HANDLE
+        displayName: (posts[0] && posts[0].author.displayName) || BLUESKY_HANDLE
       }
     };
 

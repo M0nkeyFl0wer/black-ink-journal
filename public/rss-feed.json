@@ -1,59 +1,53 @@
 {
-  "generatedAt": "2025-07-10T20:08:02.391Z",
-  "totalPosts": 9,
+  "generatedAt": "2025-07-28T01:58:23.015Z",
+  "totalPosts": 8,
   "posts": [
     {
       "title": "Still Crowned",
       "slug": "still-crowned",
-      "date": "2025-05-16T00:00:00.000Z",
+      "date": "2025-05-16",
       "url": "https://benwest.blog/post/still-crowned"
     },
     {
       "title": "Is Not Having Kids an Effective Climate Solution?",
       "slug": "is-not-having-kids-an-effective-climate-solution",
-      "date": "2025-05-05T08:46:00.000Z",
+      "date": "2025-05-05",
       "url": "https://benwest.blog/post/is-not-having-kids-an-effective-climate-solution"
     },
     {
       "title": "Say Please and Thank You to Alexa, Ok Google?",
       "slug": "say-please-thank-you-alexa-ok-google",
-      "date": "2024-12-05T00:00:00.000Z",
+      "date": "2024-12-05",
       "url": "https://benwest.blog/post/say-please-thank-you-alexa-ok-google"
     },
     {
-      "title": "How Not to be the Reason Your Company Has a Data Breach Because You are Working From Home",
+      "title": "How Not to Be the Reason Your Company Has a Data Breach Because You Are Working From Home",
       "slug": "how-not-to-be-the-reason-your-company-has-a-data-breach-because-you-are-working-from-home",
-      "date": "2024-06-05T12:00:00.000Z",
+      "date": "2024-06-05",
       "url": "https://benwest.blog/post/how-not-to-be-the-reason-your-company-has-a-data-breach-because-you-are-working-from-home"
     },
     {
       "title": "Unlocking Climate Solutions Built With Open Source Tech",
       "slug": "blockchain-climate-solutions",
-      "date": "2023-06-07T00:00:00.000Z",
+      "date": "2023-06-07",
       "url": "https://benwest.blog/post/blockchain-climate-solutions"
     },
     {
       "title": "Reflecting On Year One Of The Great Climate Race",
       "slug": "reflecting-year-one-great-climate-race",
-      "date": "2016-03-20T00:00:00.000Z",
+      "date": "2016-03-20",
       "url": "https://benwest.blog/post/reflecting-year-one-great-climate-race"
-    },
-    {
-      "title": "Open Letter to RCMP Commissioner Bob Paulson on Climate Change and National Security",
-      "slug": "open-letter-to-rcmp-commissioner-bob-paulson-on-climate-change-and-national-security",
-      "date": "2015-02-20T00:00:00.000Z",
-      "url": "https://benwest.blog/post/open-letter-to-rcmp-commissioner-bob-paulson-on-climate-change-and-national-security"
     },
     {
       "title": "Rail Vs Pipelines, Are Those Really Our Only Choice?",
       "slug": "rail-vs-pipelines-are-those-really-our-only-choice",
-      "date": "2014-07-23T00:00:00.000Z",
+      "date": "2014-07-23",
       "url": "https://benwest.blog/post/rail-vs-pipelines-are-those-really-our-only-choice"
     },
     {
       "title": "Standing With Chief Rueben George: Indigenous Leadership Against Tar Sands",
       "slug": "standing-with-chief-rueben-george-indigenous-leadership-against-tar-sands",
-      "date": "2013-01-28T00:00:00.000Z",
+      "date": "2013-01-28",
       "url": "https://benwest.blog/post/standing-with-chief-rueben-george-indigenous-leadership-against-tar-sands"
     }
   ]

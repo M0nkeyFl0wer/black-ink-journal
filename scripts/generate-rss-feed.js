@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import matter from 'gray-matter';
 
 // Get current directory for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -9,7 +10,7 @@ const __dirname = path.dirname(__filename);
 // Configuration
 const siteUrl = 'https://benwest.blog';
 const outputDir = path.join(__dirname, '..', 'public');
-const postsDir = path.join(__dirname, '..', 'public', 'content', 'posts');
+const postsDir = path.join(__dirname, '..', 'content', 'posts');
 
 async function ensureDirectoryExists(dir) {
   try {
@@ -30,33 +31,18 @@ function escapeXml(text) {
     .replace(/'/g, '&#39;');
 }
 
-function extractTextFromContent(content, maxLength = 200) {
+function extractTextFromMarkdown(content, maxLength = 200) {
   // Simple text extraction for RSS description
   const textContent = content
-    .replace(/<[^>]*>/g, ' ') // Remove HTML tags
+    .replace(/!\[.*?\]\(.*?\)/g, '') // Remove image markdown
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // Convert links to text
+    .replace(/[#*_`]/g, '') // Remove markdown formatting
     .replace(/\s+/g, ' ') // Normalize whitespace
     .trim();
   
   return textContent.length > maxLength 
     ? textContent.substring(0, maxLength) + '...'
     : textContent;
-}
-
-function parsePostMetadata(htmlContent) {
-  try {
-    // Extract the JSON metadata from the script tag
-    const metadataMatch = htmlContent.match(/<script type="application\/json" id="post-metadata">([\s\S]*?)<\/script>/);
-    if (!metadataMatch) {
-      console.warn('⚠️ No metadata found in post');
-      return null;
-    }
-    
-    const metadata = JSON.parse(metadataMatch[1]);
-    return metadata;
-  } catch (error) {
-    console.error('❌ Error parsing post metadata:', error.message);
-    return null;
-  }
 }
 
 async function generateRSSFeed() {
@@ -66,35 +52,37 @@ async function generateRSSFeed() {
     // Ensure output directory exists
     await ensureDirectoryExists(outputDir);
     
-    // Read all HTML files from the posts directory
+    // Read all markdown files from the posts directory
     const files = await fs.readdir(postsDir);
-    const htmlFiles = files.filter(file => file.endsWith('.html'));
+    const markdownFiles = files.filter(file => file.endsWith('.md'));
     
-    console.log(`📁 Found ${htmlFiles.length} HTML files in posts directory`);
+    console.log(`📁 Found ${markdownFiles.length} markdown files in posts directory`);
     
     const posts = [];
     
-    // Process each HTML file
-    for (const file of htmlFiles) {
+    // Process each markdown file
+    for (const file of markdownFiles) {
       const filePath = path.join(postsDir, file);
-      const htmlContent = await fs.readFile(filePath, 'utf8');
+      const markdownContent = await fs.readFile(filePath, 'utf8');
       
-      const metadata = parsePostMetadata(htmlContent);
-      if (!metadata) {
-        console.warn(`⚠️ Skipping ${file} - no valid metadata`);
-        continue;
-      }
-      
-      // Only include published posts
-      if (metadata.is_published) {
-        posts.push({
-          title: metadata.title,
-          slug: metadata.slug,
-          excerpt: metadata.excerpt,
-          publish_date: metadata.publish_date,
-          author: metadata.author,
-          tags: metadata.tags || []
-        });
+      try {
+        const parsed = matter(markdownContent);
+        const frontmatter = parsed.data;
+        
+        // Only include published posts
+        if (frontmatter.is_published) {
+          posts.push({
+            title: frontmatter.title,
+            slug: frontmatter.slug || file.replace('.md', ''),
+            excerpt: frontmatter.excerpt || extractTextFromMarkdown(parsed.content),
+            publish_date: frontmatter.publish_date || frontmatter.date,
+            author: frontmatter.author || 'Ben West',
+            tags: frontmatter.tags || [],
+            content: parsed.content
+          });
+        }
+      } catch (error) {
+        console.warn(`⚠️ Error parsing ${file}:`, error.message);
       }
     }
     
@@ -114,7 +102,7 @@ async function generateRSSFeed() {
       
       return `    <item>
       <title>${escapeXml(post.title)}</title>
-      <description>${escapeXml(post.excerpt || '')}</description>
+      <description>${escapeXml(post.excerpt)}</description>
       <link>${siteUrl}/post/${post.slug}</link>
       <guid isPermaLink="true">${siteUrl}/post/${post.slug}</guid>
       <pubDate>${pubDate}</pubDate>
@@ -174,4 +162,4 @@ ${rssItems}
 }
 
 // Run the generation
-generateRSSFeed(); 
+generateRSSFeed();
