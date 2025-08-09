@@ -50,7 +50,7 @@ export const useHtmlPosts = () => {
               
               // Extract metadata from the HTML file
               const metadataMatch = htmlContent.match(/<script type="application\/json" id="post-metadata">([\s\S]*?)<\/script>/);
-              let metadata = {};
+              let metadata: any = {};
               
               if (metadataMatch) {
                 try {

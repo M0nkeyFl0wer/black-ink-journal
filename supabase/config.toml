@@ -1,0 +1,12 @@
+project_id = "jfsvlaaposslmeneovtp"
+
+[functions]
+
+[functions.password-recovery]
+verify_jwt = false
+
+[functions.admin-login]
+verify_jwt = false
+
+[functions.admin-change-password]
+verify_jwt = false

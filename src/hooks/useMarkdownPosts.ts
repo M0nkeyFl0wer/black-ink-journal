@@ -80,9 +80,10 @@ export const useMarkdownPosts = () => {
         );
         
         // Filter out null posts and sort by date
-        const validPosts = postsWithContent
-          .filter((post) => post !== null) as MarkdownPost[]
-          .sort((a, b) => new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime());
+        const validPosts = (
+          postsWithContent
+            .filter((post) => post !== null) as MarkdownPost[]
+        ).sort((a, b) => new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime());
         
         setPosts(validPosts);
         setError(null);
