@@ -5,6 +5,11 @@ import { useTheme } from "@/contexts/ThemeContext";
 import SharedHeader from "@/components/SharedHeader";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import matter from 'gray-matter';
+import { Buffer } from 'buffer';
+
+if (typeof window !== 'undefined' && !(window as any).Buffer) {
+  (window as any).Buffer = Buffer;
+}
 
 const MarkdownAboutPage = () => {
   const { isDarkMode } = useTheme();
