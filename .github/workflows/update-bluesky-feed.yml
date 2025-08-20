@@ -2,8 +2,8 @@ name: Update Bluesky Feed
 
 on:
   schedule:
-    # Run every 6 hours
-    - cron: '0 */6 * * *'
+    # Run every hour
+    - cron: '0 * * * *'
   push:
     branches:
       - main
