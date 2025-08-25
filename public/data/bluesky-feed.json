@@ -1,52 +1,72 @@
 {
   "posts": [
     {
-      "id": "bafyreicwowobenykih47fkgk44uturm5ojqnk3wsblzvm74p5f6aekk2t4",
-      "text": "👀",
-      "createdAt": "2025-07-04T20:04:34.906Z",
+      "id": "bafyreies4wg3asdlm5n2zyp55ub57ulutj3aj3cl273iemjceuywqy4j6q",
+      "text": "this",
+      "createdAt": "2025-08-20T15:15:12.676Z",
       "author": {
         "displayName": "Ben West 🦋",
         "handle": "benwest.bsky.social",
         "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
       },
       "engagement": {
-        "likes": 1,
+        "likes": 0,
         "reposts": 0,
         "replies": 0
       },
-      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lt622gduwk22",
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lwtpsb3w722l",
       "quotedPost": {
-        "text": "The Best-Selling Apps Made By Israeli Spies",
+        "text": "Zero Knowledge Proofs Alone Are Not a Digital ID Solution to Protecting User Privacy",
         "author": "John Wunderlich",
         "handle": "privacycdn.bsky.social"
       }
     },
     {
-      "id": "bafyreidn7osn73djnjrj4njlufoghzsgmvk5vb4jfc33rujin366umjyee",
-      "text": "The G7 condemned transnational repression, but will Canada meet its own commitments? \n\nGood question @rondeibert.bsky.social 🙏🏽\n\nwww.theglobeandmail.com/opinion/arti...\n\n#cdnpoli #infosec",
-      "createdAt": "2025-07-04T20:03:35.747Z",
+      "id": "bafyreicnoye4bmmn46k6ldufyd6hude3vav3ev5hsxxbfsflf2dl75lkvu",
+      "text": "Uuuuuuugh 😡",
+      "createdAt": "2025-08-06T13:56:38.460Z",
       "author": {
         "displayName": "Ben West 🦋",
         "handle": "benwest.bsky.social",
         "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
       },
       "engagement": {
-        "likes": 1,
+        "likes": 2,
         "reposts": 0,
         "replies": 0
       },
-      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lt5zynwjh222",
-      "externalLink": {
-        "url": "https://www.theglobeandmail.com/opinion/article-g7-transnational-repression-bill-c-2-carney/?intcmp=gift_share",
-        "title": "Opinion: The G7 condemned transnational repression, but will Canada meet its own commitments?",
-        "description": "A statement against this practice was a welcome sight, but will mean very little without concrete action",
-        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreibb6yn372sabztjsb76qm2xlxgd52352k2bpy77n2bp3ejybf36wy@jpeg"
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lvqeuuswns2w",
+      "quotedPost": {
+        "text": "&quot;Executives anticipated hundreds in millions of dollars in revenue and &#39;an incredibly powerful brand moment&#39; for Azure, according to the files.&quot;",
+        "author": "Spencer Ackerman",
+        "handle": "attackerman.bsky.social"
       }
     },
     {
-      "id": "bafyreicxzyrh6egjmxg2dqwkjfswu4z26t6gfpifirmlgkmvirc3rgqyma",
-      "text": "Killer Whales Make Their Own Tools, Scientists Discover\n\nThey are so much smarter than we realize. \n\n@404media.co 🐋🫶🏽\n\nwww.404media.co/killer-whale...",
-      "createdAt": "2025-06-28T16:46:27.312Z",
+      "id": "bafyreigln3t6dlnbvgkbpvd3o5bckf74lcgmgqhgiyg2b2eaxbqvlvhsou",
+      "text": "Arguably the most dangerous company in America.\n\nIf someone is weaponizing your data Thiel is probably involved.\n\n#surveillance #USpoli #infosec #military #Palantir",
+      "createdAt": "2025-08-01T12:33:58.916Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 2,
+        "reposts": 0,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lvdnwhpwx22t",
+      "quotedPost": {
+        "text": "&quot;The U.S. Army issued Palantir a contract Thursday worth up to $10 billion over the course of the next decade. The new contract, the largest ever awarded to the software and data analysis company, cements Palantir’s role as a major processor of data for the military.&quot; wapo.st/41gmXEy",
+        "author": "Justin Hendrix",
+        "handle": "justinhendrix.bsky.social"
+      }
+    },
+    {
+      "id": "bafyreigfc4soqle6tk6pji6fgmus5pus6aqvylfzuydhnrom62iye7obze",
+      "text": "Bravo @bellingcat.com using OSINT in important ways.\n\n&quot;Monitoring US Immigration Raids&quot; with Bellingcat, Evident and CalMatters\n\nEpisode webpage: rss.com/podcasts/bel...\n\nMedia file: media.rss.com/bellingcatst...\n\n#OSINT #ICE #surveillance #uspoli #trump #fascism #immigration #humanRights",
+      "createdAt": "2025-07-24T17:03:03.394Z",
       "author": {
         "displayName": "Ben West 🦋",
         "handle": "benwest.bsky.social",
@@ -54,41 +74,19 @@
       },
       "engagement": {
         "likes": 3,
-        "reposts": 0,
-        "replies": 1
+        "reposts": 1,
+        "replies": 0
       },
-      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lsom6motfc2k",
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lupzaamcqk2x",
       "externalLink": {
-        "url": "https://www.404media.co/killer-whales-make-their-own-tools-scientists-discover/",
-        "title": "Killer Whales Make Their Own Tools, Scientists Discover",
-        "description": "It’s the first observed instance of a marine mammal manufacturing tools.",
-        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreihyudx3dquxle45teqwsy2g2oxn6hvkbggq3niqdxwucbyqieldxa@jpeg"
-      }
-    },
-    {
-      "id": "bafyreifksfwbrdlexdau3xds2vc33ktl6oh22aup25p4pth4dqfh2zaezu",
-      "text": "We have to stop bill C2! Come on Canada. 😡\n\n&quot;... Bill C-2 would significantly expand law enforcement surveillance powers, by eliminating or watering down existing protections in Canadian law.&quot;\n\n@citizenlab.ca \n\ncitizenlab.ca/2025/06/a-pr... \n\n#cdnpoli #infosec #privacy #surveillance",
-      "createdAt": "2025-06-27T19:50:48.027Z",
-      "author": {
-        "displayName": "Ben West 🦋",
-        "handle": "benwest.bsky.social",
-        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
-      },
-      "engagement": {
-        "likes": 6,
-        "reposts": 9,
-        "replies": 1
-      },
-      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lsmfzdkcv22z",
-      "externalLink": {
-        "url": "https://citizenlab.ca/2025/06/a-preliminary-analysis-of-bill-c-2/",
-        "title": "Unspoken Implications: A Preliminary Analysis of Bill C-2 and Canada’s Potential Data-Sharing Obligations Towards the United States and Other Countries - The Citizen Lab",
-        "description": "On June 3, 2025, the Canadian government tabled Bill C-2, omnibus legislation that, if passed, would introduce a wide array of new federal agency and law enforcement powers, and would significantly re...",
-        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreiclyyecwmvckcjvi2okkb4apnumdb5t3ciu6wheewxa74ygqsqmde@jpeg"
+        "url": "https://rss.com/podcasts/bellingcatstagetalk/2119928",
+        "title": "&quot;Monitoring US Immigration Raids&quot; with Bellingcat, Evident and CalMatters | Podcast Episode on RSS.com",
+        "description": "This week we were joined by  Bellingcat researcher Kolina Koltai and our long-standing publishing partners Kevin Clancy, cofounder of Evident Media and Sergio Olmos, an investigator from CalMatters. T...",
+        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreick326bgx7o2we3gkoqpl47aps7iaexfajkxtu36mlxq3sbv4lfgu@jpeg"
       }
     }
   ],
-  "generatedAt": "2025-07-04T23:55:33.870Z",
+  "generatedAt": "2025-08-25T16:34:04.302Z",
   "totalPosts": 4,
   "author": {
     "handle": "benwest.bsky.social",
