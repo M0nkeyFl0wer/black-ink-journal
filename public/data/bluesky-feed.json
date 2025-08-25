@@ -1,6 +1,27 @@
 {
   "posts": [
     {
+      "id": "bafyreia4ta2ufzjs7zmkemhyzbgrwgt2ho5tme45uv5fusrfwjyzyv4mw4",
+      "text": "Wow, this is such a mess. Siiigh. Thanks for sharing @evacide.bsky.social",
+      "createdAt": "2025-08-25T17:59:48.841Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lxald72clc2f",
+      "quotedPost": {
+        "text": "Stalkerware app TheTruthSpy has a security flaw that allows anyone to reset the password of any user. \n\n&quot;the spyware operation’s director Van (Vardy) Thieu said he “lost” the source code and cannot fix the bug.&quot;\n\ntechcrunch.com/2025/08/25/a...",
+        "author": "evacide",
+        "handle": "evacide.bsky.social"
+      }
+    },
+    {
       "id": "bafyreies4wg3asdlm5n2zyp55ub57ulutj3aj3cl273iemjceuywqy4j6q",
       "text": "this",
       "createdAt": "2025-08-20T15:15:12.676Z",
@@ -62,31 +83,9 @@
         "author": "Justin Hendrix",
         "handle": "justinhendrix.bsky.social"
       }
-    },
-    {
-      "id": "bafyreigfc4soqle6tk6pji6fgmus5pus6aqvylfzuydhnrom62iye7obze",
-      "text": "Bravo @bellingcat.com using OSINT in important ways.\n\n&quot;Monitoring US Immigration Raids&quot; with Bellingcat, Evident and CalMatters\n\nEpisode webpage: rss.com/podcasts/bel...\n\nMedia file: media.rss.com/bellingcatst...\n\n#OSINT #ICE #surveillance #uspoli #trump #fascism #immigration #humanRights",
-      "createdAt": "2025-07-24T17:03:03.394Z",
-      "author": {
-        "displayName": "Ben West 🦋",
-        "handle": "benwest.bsky.social",
-        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
-      },
-      "engagement": {
-        "likes": 3,
-        "reposts": 1,
-        "replies": 0
-      },
-      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lupzaamcqk2x",
-      "externalLink": {
-        "url": "https://rss.com/podcasts/bellingcatstagetalk/2119928",
-        "title": "&quot;Monitoring US Immigration Raids&quot; with Bellingcat, Evident and CalMatters | Podcast Episode on RSS.com",
-        "description": "This week we were joined by  Bellingcat researcher Kolina Koltai and our long-standing publishing partners Kevin Clancy, cofounder of Evident Media and Sergio Olmos, an investigator from CalMatters. T...",
-        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreick326bgx7o2we3gkoqpl47aps7iaexfajkxtu36mlxq3sbv4lfgu@jpeg"
-      }
     }
   ],
-  "generatedAt": "2025-08-25T17:04:02.465Z",
+  "generatedAt": "2025-08-25T18:06:17.043Z",
   "totalPosts": 4,
   "author": {
     "handle": "benwest.bsky.social",
