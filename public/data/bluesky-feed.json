@@ -18,7 +18,9 @@
       "quotedPost": {
         "text": "Stalkerware app TheTruthSpy has a security flaw that allows anyone to reset the password of any user. \n\n&quot;the spyware operation’s director Van (Vardy) Thieu said he “lost” the source code and cannot fix the bug.&quot;\n\ntechcrunch.com/2025/08/25/a...",
         "author": "evacide",
-        "handle": "evacide.bsky.social"
+        "handle": "evacide.bsky.social",
+        "url": "https://bsky.app/profile/evacide.bsky.social/post/3lxakxhncks2h",
+        "images": []
       }
     },
     {
@@ -39,7 +41,9 @@
       "quotedPost": {
         "text": "Zero Knowledge Proofs Alone Are Not a Digital ID Solution to Protecting User Privacy",
         "author": "John Wunderlich",
-        "handle": "privacycdn.bsky.social"
+        "handle": "privacycdn.bsky.social",
+        "url": "https://bsky.app/profile/privacycdn.bsky.social/post/3lwtnc5lw542c",
+        "images": []
       }
     },
     {
@@ -60,7 +64,9 @@
       "quotedPost": {
         "text": "&quot;Executives anticipated hundreds in millions of dollars in revenue and &#39;an incredibly powerful brand moment&#39; for Azure, according to the files.&quot;",
         "author": "Spencer Ackerman",
-        "handle": "attackerman.bsky.social"
+        "handle": "attackerman.bsky.social",
+        "url": "https://bsky.app/profile/attackerman.bsky.social/post/3lvqeqrv2ic2p",
+        "images": []
       }
     },
     {
@@ -81,11 +87,13 @@
       "quotedPost": {
         "text": "&quot;The U.S. Army issued Palantir a contract Thursday worth up to $10 billion over the course of the next decade. The new contract, the largest ever awarded to the software and data analysis company, cements Palantir’s role as a major processor of data for the military.&quot; wapo.st/41gmXEy",
         "author": "Justin Hendrix",
-        "handle": "justinhendrix.bsky.social"
+        "handle": "justinhendrix.bsky.social",
+        "url": "https://bsky.app/profile/justinhendrix.bsky.social/post/3lvdj4wukcc2t",
+        "images": []
       }
     }
   ],
-  "generatedAt": "2025-08-25T18:06:17.043Z",
+  "generatedAt": "2025-08-25T18:34:39.603Z",
   "totalPosts": 4,
   "author": {
     "handle": "benwest.bsky.social",
