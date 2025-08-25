@@ -1,3 +1,4 @@
+// scripts/generate-bluesky-feed.js
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Bluesky configuration - you'll need to set these as environment variables
+// Bluesky configuration (set via GitHub Actions secrets or env)
 const BLUESKY_HANDLE = process.env.BLUESKY_HANDLE || 'benwest.bsky.social';
 const BLUESKY_APP_PASSWORD = process.env.BLUESKY_APP_PASSWORD;
 
@@ -27,7 +28,7 @@ async function ensureDirectoryExists(dir) {
 // Sanitize text content to prevent XSS
 function sanitizeText(text) {
   if (!text) return '';
-  return text
+  return String(text)
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
@@ -41,9 +42,7 @@ function sanitizeUrl(url) {
   try {
     const parsed = new URL(url);
     // Only allow HTTPS URLs
-    if (parsed.protocol !== 'https:') {
-      return '';
-    }
+    if (parsed.protocol !== 'https:') return '';
     return url;
   } catch {
     return '';
@@ -53,90 +52,126 @@ function sanitizeUrl(url) {
 // Extract embed data from Bluesky posts
 function extractEmbeds(post) {
   const embeds = {};
-  
+
+  // Bluesky puts embed on post.embed; some libs might also mirror on post.record.embed
   const embed = post.embed || (post.record && post.record.embed);
-  
-  if (embed) {
-    // Handle images
-    if (embed.$type === 'app.bsky.embed.images#view' && embed.images) {
-      embeds.images = embed.images.map(img => ({
-        url: sanitizeUrl(img.fullsize || img.thumb),
-        alt: sanitizeText(img.alt || ''),
-        aspectRatio: img.aspectRatio || { width: 1, height: 1 }
-      })).filter(img => img.url);
+
+  // helpers
+  const takeImages = (imagesView) => {
+    try {
+      const imgs = imagesView?.images || [];
+      return imgs
+        .map(img => ({
+          url: sanitizeUrl(img.fullsize || img.thumb),
+          alt: sanitizeText(img.alt || ''),
+          aspectRatio: img.aspectRatio || { width: 1, height: 1 }
+        }))
+        .filter(i => i.url);
+    } catch {
+      return [];
     }
-    
-    // Handle external links
-    if (embed.$type === 'app.bsky.embed.external#view' && embed.external) {
-      const sanitizedUrl = sanitizeUrl(embed.external.uri);
-      if (sanitizedUrl) {
+  };
+
+  const buildQuotedFromRecordView = (recordView) => {
+    // recordView can be:
+    // - app.bsky.embed.record#view   (quoted-only)
+    // - app.bsky.embed.recordWithMedia#view (quoted + media)
+    // The quoted record node is in .record or .record.record (for recordWithMedia)
+    const node = recordView?.record?.record || recordView?.record || recordView;
+    if (!node) return null;
+
+    const qUri = node.uri || recordView.uri || '';
+    const qRkey = qUri.split('/').pop() || '';
+    const qHandle = (node.author?.handle || recordView.author?.handle || '').replace(/^@/, '');
+    const qAuthor = sanitizeText(node.author?.displayName || recordView.author?.displayName || qHandle || 'Unknown');
+    const qText = sanitizeText(node.value?.text || node.text || '');
+
+    // Try to find images that belong to the QUOTED record (rare but possible)
+    let quotedImages = [];
+    if (recordView?.images?.length) {
+      quotedImages = takeImages(recordView);
+    }
+    if (!quotedImages.length && Array.isArray(node.embeds)) {
+      for (const em of node.embeds) {
+        if (em?.['$type'] === 'app.bsky.embed.images#view') {
+          quotedImages = takeImages(em);
+          break;
+        }
+      }
+    }
+
+    return {
+      text: qText,
+      author: qAuthor,
+      handle: sanitizeText(qHandle),
+      url: (qHandle && qRkey) ? `https://bsky.app/profile/${qHandle}/post/${qRkey}` : null,
+      images: quotedImages
+    };
+  };
+
+  if (embed) {
+    // 1) Top-level images on YOUR post
+    if (embed['$type'] === 'app.bsky.embed.images#view') {
+      const imgs = takeImages(embed);
+      if (imgs.length) embeds.images = imgs;
+    }
+
+    // 2) Link preview on YOUR post
+    if (embed['$type'] === 'app.bsky.embed.external#view' && embed.external) {
+      const sanitized = sanitizeUrl(embed.external.uri);
+      if (sanitized) {
         embeds.externalLink = {
-          url: sanitizedUrl,
+          url: sanitized,
           title: sanitizeText(embed.external.title || ''),
           description: sanitizeText(embed.external.description || ''),
           thumb: sanitizeUrl(embed.external.thumb || '')
         };
       }
     }
-    
-    // Handle quote posts
-    if (embed.$type === 'app.bsky.embed.record#view' && embed.record) {
-      const quotedRecord = embed.record;
-      if (quotedRecord.value && quotedRecord.author) {
-        embeds.quotedPost = {
-          text: sanitizeText(quotedRecord.value.text || ''),
-          author: sanitizeText(quotedRecord.author.displayName || quotedRecord.author.handle),
-          handle: sanitizeText(quotedRecord.author.handle)
-        };
-      }
+
+    // 3) Quoted post (record only)
+    if (embed['$type'] === 'app.bsky.embed.record#view') {
+      const qp = buildQuotedFromRecordView(embed);
+      if (qp) embeds.quotedPost = qp;
     }
-    
-    // Handle record with media
-    if (embed.$type === 'app.bsky.embed.recordWithMedia#view') {
-      if (embed.record && embed.record.record) {
-        const quotedRecord = embed.record.record;
-        embeds.quotedPost = {
-          text: sanitizeText((quotedRecord.value && quotedRecord.value.text) || ''),
-          author: sanitizeText((quotedRecord.author && quotedRecord.author.displayName) || (quotedRecord.author && quotedRecord.author.handle)),
-          handle: sanitizeText((quotedRecord.author && quotedRecord.author.handle))
-        };
-      }
-      if (embed.media && embed.media.images) {
-        embeds.images = embed.media.images.map(img => ({
-          url: sanitizeUrl(img.fullsize || img.thumb),
-          alt: sanitizeText(img.alt || ''),
-          aspectRatio: img.aspectRatio || { width: 1, height: 1 }
-        })).filter(img => img.url);
+
+    // 4) Quoted post + media attached to YOUR post
+    if (embed['$type'] === 'app.bsky.embed.recordWithMedia#view') {
+      const qp = buildQuotedFromRecordView(embed);
+      if (qp) embeds.quotedPost = qp;
+
+      // recordWithMedia can also include images attached to YOUR post in .media
+      if (embed.media?.['$type'] === 'app.bsky.embed.images#view') {
+        const imgs = takeImages(embed.media);
+        if (imgs.length) embeds.images = imgs;
       }
     }
   }
-  
+
   return embeds;
 }
 
 // Generate Bluesky post URL
 function generateBlueskyUrl(post) {
   const handle = post.author.handle;
-  const rkey = post.uri.split('/').pop();
-  return `https://bsky.app/profile/${handle}/post/${rkey}`;
+  const rkey = (post.uri || '').split('/').pop();
+  return handle && rkey ? `https://bsky.app/profile/${handle}/post/${rkey}` : '';
 }
 
 async function generateBlueskyFeed() {
   try {
     console.log('🚀 Starting Bluesky feed generation...');
-    
+
     if (!BLUESKY_APP_PASSWORD) {
-      console.log('⚠️  BLUESKY_APP_PASSWORD environment variable not set - skipping Bluesky feed generation');
-      console.log('💡 This is normal for local development. Bluesky feed will be generated in production.');
+      console.log('⚠️  BLUESKY_APP_PASSWORD env not set - skipping Bluesky feed generation');
+      console.log('💡 This is normal for local dev. Feed will be generated in Actions.');
       return;
     }
-    
+
     // Ensure output directory exists
     await ensureDirectoryExists(outputDir);
-    
+
     console.log('🔐 Authenticating with Bluesky...');
-    
-    // Create session with Bluesky
     const authResponse = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
       method: 'POST',
       headers: {
@@ -144,8 +179,8 @@ async function generateBlueskyFeed() {
         'User-Agent': 'BenWestBlog/1.0',
       },
       body: JSON.stringify({
-        identifier: BLUESKY_HANDLE,
-        password: BLUESKY_APP_PASSWORD,
+        identifier: BLUESKY_HANDLE,           // use full handle or email
+        password: BLUESKY_APP_PASSWORD,       // app password, not account password
       }),
     });
 
@@ -162,13 +197,16 @@ async function generateBlueskyFeed() {
 
     // Fetch author feed
     console.log('📡 Fetching Bluesky feed...');
-    const feedResponse = await fetch(`https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${did}&limit=20`, {
-      headers: {
-        'Authorization': `Bearer ${accessJwt}`,
-        'Content-Type': 'application/json',
-        'User-Agent': 'BenWestBlog/1.0',
-      },
-    });
+    const feedResponse = await fetch(
+      `https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${encodeURIComponent(did)}&limit=20`,
+      {
+        headers: {
+          'Authorization': `Bearer ${accessJwt}`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'BenWestBlog/1.0',
+        },
+      }
+    );
 
     if (!feedResponse.ok) {
       const errorText = await feedResponse.text();
@@ -179,22 +217,13 @@ async function generateBlueskyFeed() {
     console.log(`📊 Fetched ${(feedData.feed && feedData.feed.length) || 0} total feed items`);
 
     // Filter to only include original posts (no replies or reposts)
-    const originalPosts = feedData.feed.filter(item => {
+    const originalPosts = (feedData.feed || []).filter(item => {
       // Filter out reposts
-      if (item.reason) {
-        return false;
-      }
-
+      if (item.reason) return false;
       // Filter out replies
-      if (item.post.record.reply) {
-        return false;
-      }
-
+      if (item.post?.record?.reply) return false;
       // Only include posts from the authenticated user
-      if (item.post.author.did !== did) {
-        return false;
-      }
-
+      if (item.post?.author?.did !== did) return false;
       return true;
     });
 
@@ -203,15 +232,15 @@ async function generateBlueskyFeed() {
     // Transform the filtered data - limit to 4 posts
     const posts = originalPosts.slice(0, 4).map(item => {
       const embeds = extractEmbeds(item.post);
-      
+
       return {
         id: item.post.cid,
-        text: sanitizeText(item.post.record.text),
-        createdAt: item.post.record.createdAt,
+        text: sanitizeText(item.post.record?.text),
+        createdAt: item.post.record?.createdAt,
         author: {
-          displayName: sanitizeText(item.post.author.displayName || item.post.author.handle),
-          handle: sanitizeText(item.post.author.handle),
-          avatar: sanitizeUrl(item.post.author.avatar || ''),
+          displayName: sanitizeText(item.post.author?.displayName || item.post.author?.handle),
+          handle: sanitizeText(item.post.author?.handle),
+          avatar: sanitizeUrl(item.post.author?.avatar || ''),
         },
         engagement: {
           likes: item.post.likeCount || 0,
@@ -219,7 +248,7 @@ async function generateBlueskyFeed() {
           replies: item.post.replyCount || 0,
         },
         blueskyUrl: generateBlueskyUrl(item.post),
-        ...embeds // Spread the embed data (images, externalLink, quotedPost)
+        ...embeds // images[], externalLink{}, quotedPost{ text, author, handle, url, images[] }
       };
     });
 
@@ -237,17 +266,17 @@ async function generateBlueskyFeed() {
     // Save to JSON file
     const outputPath = path.join(outputDir, 'bluesky-feed.json');
     await fs.writeFile(outputPath, JSON.stringify(outputData, null, 2), 'utf8');
-    
+
     console.log(`✅ Generated Bluesky feed with ${posts.length} posts`);
     console.log(`📁 Saved to: ${outputPath}`);
-    
+
     // Also save a summary
     const summary = {
       generatedAt: new Date().toISOString(),
       totalPosts: posts.length,
       posts: posts.map(post => ({
         id: post.id,
-        text: post.text.substring(0, 100) + '...',
+        text: post.text.substring(0, 100) + (post.text.length > 100 ? '...' : ''),
         createdAt: post.createdAt,
         blueskyUrl: post.blueskyUrl,
         hasImages: !!(post.images && post.images.length > 0),
@@ -255,13 +284,12 @@ async function generateBlueskyFeed() {
         engagement: post.engagement
       }))
     };
-    
+
     const summaryPath = path.join(outputDir, 'bluesky-feed-summary.json');
     await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
-    
+
     console.log(`📋 Summary saved to: ${summaryPath}`);
     console.log('🎉 Bluesky feed generation complete!');
-
   } catch (error) {
     console.error('❌ Bluesky feed generation failed:', error.message);
     process.exit(1);
@@ -269,4 +297,4 @@ async function generateBlueskyFeed() {
 }
 
 // Run the generation
-generateBlueskyFeed(); 
+generateBlueskyFeed();
