@@ -10,7 +10,7 @@
         "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
       },
       "engagement": {
-        "likes": 2,
+        "likes": 4,
         "reposts": 1,
         "replies": 1
       },
@@ -85,7 +85,7 @@
       }
     }
   ],
-  "generatedAt": "2025-08-28T21:03:29.201Z",
+  "generatedAt": "2025-08-28T22:03:30.545Z",
   "totalPosts": 4,
   "author": {
     "handle": "benwest.bsky.social",
