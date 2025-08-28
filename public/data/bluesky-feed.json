@@ -1,6 +1,22 @@
 {
   "posts": [
     {
+      "id": "bafyreiaskuwftdegkjdhygcj236ga5dkykuwzz4mdm2uosoxm3y7u2kvba",
+      "text": "I am pretty happy to have managed to get @ghost.org up and in production on a raspberry pi. I&#39;m not a software developer. Feels great to make something actually work hahaha. Even added a nifty bluesky feed, inspired by @molly.wiki on the @flipboard.com podcast with @mmccue.bsky.social. BenWest.blog",
+      "createdAt": "2025-08-28T20:29:35.918Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 2,
+        "reposts": 1,
+        "replies": 1
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lxif3s6exk2x"
+    },
+    {
       "id": "bafyreicav2km6tlfngvs43w2itvjnd23pghopg54kkqwb2bsy3dq6jvfs4",
       "text": "What could possibly go wrong... \n\nCitizen App Is Using AI to Generate Crime Alerts With No Human Review. It’s Making a Lot of Mistakes - @404media.co \nwww.404media.co/citizen-is-u...\n\n#surveillance #privacy #crime #USpoli #ethics #infosec",
       "createdAt": "2025-08-25T18:46:22.745Z",
@@ -67,32 +83,9 @@
         "url": "https://bsky.app/profile/privacycdn.bsky.social/post/3lwtnc5lw542c",
         "images": []
       }
-    },
-    {
-      "id": "bafyreicnoye4bmmn46k6ldufyd6hude3vav3ev5hsxxbfsflf2dl75lkvu",
-      "text": "Uuuuuuugh 😡",
-      "createdAt": "2025-08-06T13:56:38.460Z",
-      "author": {
-        "displayName": "Ben West 🦋",
-        "handle": "benwest.bsky.social",
-        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
-      },
-      "engagement": {
-        "likes": 2,
-        "reposts": 0,
-        "replies": 0
-      },
-      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lvqeuuswns2w",
-      "quotedPost": {
-        "text": "&quot;Executives anticipated hundreds in millions of dollars in revenue and &#39;an incredibly powerful brand moment&#39; for Azure, according to the files.&quot;",
-        "author": "Spencer Ackerman",
-        "handle": "attackerman.bsky.social",
-        "url": "https://bsky.app/profile/attackerman.bsky.social/post/3lvqeqrv2ic2p",
-        "images": []
-      }
     }
   ],
-  "generatedAt": "2025-08-28T20:04:40.701Z",
+  "generatedAt": "2025-08-28T21:03:29.201Z",
   "totalPosts": 4,
   "author": {
     "handle": "benwest.bsky.social",
