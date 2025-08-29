@@ -24,29 +24,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: |
-          # Remove old lock file and regenerate it
-          rm -f package-lock.json
-          npm install
-          # Commit the new lock file if it changed
-          if ! git diff --quiet package-lock.json; then
-            git config --local user.email "github-actions[bot]@users.noreply.github.com"
-            git config --local user.name "github-actions[bot]"
-            git add package-lock.json
-            git commit -m "📦 Update package-lock.json after cleanup"
-            git push origin main
-          fi
-
-      - name: Debug - Check file structure
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          echo "=== All files and directories ==="
-          find . -type f | head -20
-          echo "=== Looking for scripts directory ==="
-          ls -la scripts/ || echo "scripts/ directory not found"
-          echo "=== Looking for the script specifically ==="
-          ls -la scripts/generate-bluesky-feed.js || echo "Script file not found"
+        run: npm install
 
       - name: Generate Bluesky feed
         env:
@@ -60,50 +38,27 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Debug: Show what files exist
-          echo "=== Files in current directory ==="
-          find . -name "*bluesky*" -type f
-          echo "=== End file listing ==="
-          
-          # Ensure we're diffing against the latest main
+          # Ensure we're working with the latest changes
           git fetch origin main
+          git reset --hard origin/main
           
           # Create directories for Ghost's expected location
           mkdir -p content/images
-          echo "Created content/images directory"
           
           # Copy to Ghost's actual file serving location
-          if [ -f public/data/bluesky-feed.json ]; then
-            echo "Found source files, copying to content/images/..."
-            cp public/data/bluesky-feed.json content/images/bluesky-feed.json
-            cp public/data/bluesky-feed-summary.json content/images/bluesky-feed-summary.json
-            echo "Successfully copied files to content/images/"
-            
-            # Verify the files were copied
-            if [ -f content/images/bluesky-feed.json ]; then
-              echo "✓ content/images/bluesky-feed.json exists"
-              echo "File size: $(wc -c < content/images/bluesky-feed.json) bytes"
-            fi
-          else
-            echo "✗ Source files not found in public/data/"
-            echo "Available files:"
-            ls -la public/data/ || echo "public/data/ directory doesn't exist"
-            exit 1
-          fi
+          cp public/data/bluesky-feed.json content/images/bluesky-feed.json
+          cp public/data/bluesky-feed-summary.json content/images/bluesky-feed-summary.json
           
           # Check if anything changed and add files with force flag
           git add -f content/images/bluesky-feed*.json
           
           if git diff --cached --quiet; then
-            echo "No changes detected in content/files/"
+            echo "No changes detected in content/images/"
             exit 0
           fi
           
           # Commit the changes
           git commit -m "🤖 Update Bluesky feed [skip ci]"
-          echo "Changes committed"
           
-          # Avoid non-fast-forward errors
-          git pull --rebase origin main
+          # Push the changes
           git push origin HEAD:main
-          echo "Changes pushed successfully"
