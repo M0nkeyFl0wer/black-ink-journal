@@ -1,0 +1,94 @@
+{
+  "posts": [
+    {
+      "id": "bafyreictwqe3ksxll6sna6jh66czikakgiz5a5n5ok37zuavzm26gya6ne",
+      "text": "Troubling.",
+      "createdAt": "2025-08-28T23:17:16.487Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 1,
+        "reposts": 0,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lxiohmoles26",
+      "quotedPost": {
+        "text": "&quot;Meta originally scrapped the facial recognition feature for the first generation of the Ray-Ban Meta AI glasses over ethical concerns.&quot;\n\nmashable.com/article/meta...",
+        "author": "evacide",
+        "handle": "evacide.bsky.social",
+        "url": "https://bsky.app/profile/evacide.bsky.social/post/3lxilklnuoc2s",
+        "images": []
+      }
+    },
+    {
+      "id": "bafyreiaskuwftdegkjdhygcj236ga5dkykuwzz4mdm2uosoxm3y7u2kvba",
+      "text": "I am pretty happy to have managed to get @ghost.org up and in production on a raspberry pi. I&#39;m not a software developer. Feels great to make something actually work hahaha. Even added a nifty bluesky feed, inspired by @molly.wiki on the @flipboard.com podcast with @mmccue.bsky.social. BenWest.blog",
+      "createdAt": "2025-08-28T20:29:35.918Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 11,
+        "reposts": 2,
+        "replies": 2
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lxif3s6exk2x"
+    },
+    {
+      "id": "bafyreicav2km6tlfngvs43w2itvjnd23pghopg54kkqwb2bsy3dq6jvfs4",
+      "text": "What could possibly go wrong... \n\nCitizen App Is Using AI to Generate Crime Alerts With No Human Review. It’s Making a Lot of Mistakes - @404media.co \nwww.404media.co/citizen-is-u...\n\n#surveillance #privacy #crime #USpoli #ethics #infosec",
+      "createdAt": "2025-08-25T18:46:22.745Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 1,
+        "reposts": 0,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lxanwhjjgk2h",
+      "externalLink": {
+        "url": "https://www.404media.co/citizen-is-using-ai-to-generate-crime-alerts-with-no-human-review-its-making-a-lot-of-mistakes/",
+        "title": "Citizen Is Using AI to Generate Crime Alerts With No Human Review. It’s Making a Lot of Mistakes",
+        "description": "Three sources described how AI is writing alerts for Citizen and broadcasting them without prior human review. In one case AI mistranslated “motor vehicle accident” to “murder vehicle accident.”",
+        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreiardbjwfk65q74j24ldqsz6hht3jqzwt32bci3jghbvn56eyrbi44@jpeg"
+      }
+    },
+    {
+      "id": "bafyreia4ta2ufzjs7zmkemhyzbgrwgt2ho5tme45uv5fusrfwjyzyv4mw4",
+      "text": "Wow, this is such a mess. Siiigh. Thanks for sharing @evacide.bsky.social",
+      "createdAt": "2025-08-25T17:59:48.841Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 0,
+        "reposts": 1,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lxald72clc2f",
+      "quotedPost": {
+        "text": "Stalkerware app TheTruthSpy has a security flaw that allows anyone to reset the password of any user. \n\n&quot;the spyware operation’s director Van (Vardy) Thieu said he “lost” the source code and cannot fix the bug.&quot;\n\ntechcrunch.com/2025/08/25/a...",
+        "author": "evacide",
+        "handle": "evacide.bsky.social",
+        "url": "https://bsky.app/profile/evacide.bsky.social/post/3lxakxhncks2h",
+        "images": []
+      }
+    }
+  ],
+  "generatedAt": "2025-08-29T14:35:37.348Z",
+  "totalPosts": 4,
+  "author": {
+    "handle": "benwest.bsky.social",
+    "displayName": "Ben West 🦋"
+  }
+}
