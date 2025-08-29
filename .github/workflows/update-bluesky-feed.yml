@@ -1,8 +1,7 @@
 name: Update Bluesky Feed
-
 on:
   schedule:
-    - cron: '0 * * * *'   # hourly
+    - cron: '0 * * * *' # hourly
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -13,7 +12,6 @@ permissions:
 jobs:
   update-feed:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,20 +38,33 @@ jobs:
           set -e
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
+          
           # Ensure we're diffing against the latest main
           git fetch origin main
-
-          # If nothing changed, skip committing
-          if git diff --quiet origin/main -- public/data/bluesky-feed.json public/data/bluesky-feed-summary.json; then
-            echo "No changes vs origin/main."
+          
+          # Create the content/files directory for Ghost
+          mkdir -p content/files
+          
+          # Copy the generated files to where Ghost expects them
+          if [ -f public/data/bluesky-feed.json ]; then
+            cp public/data/bluesky-feed.json content/files/bluesky-feed.json
+            cp public/data/bluesky-feed-summary.json content/files/bluesky-feed-summary.json
+            echo "Copied files to content/files/"
+          else
+            echo "Source files not found in public/data/"
+            exit 1
+          fi
+          
+          # Check if anything changed in the target location
+          if git diff --quiet HEAD -- content/files/bluesky-feed.json content/files/bluesky-feed-summary.json; then
+            echo "No changes detected in content/files/."
             exit 0
           fi
-
-          git add public/data/bluesky-feed.json public/data/bluesky-feed-summary.json
+          
+          # Add the Ghost-compatible files
+          git add content/files/bluesky-feed.json content/files/bluesky-feed-summary.json
           git commit -m "🤖 Update Bluesky feed [skip ci]"
-
+          
           # Avoid non-fast-forward errors
           git pull --rebase origin main
-
           git push origin HEAD:main
