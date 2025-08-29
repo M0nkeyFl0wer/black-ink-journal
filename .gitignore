@@ -5,6 +5,7 @@ npm-debug.log*
 # Generated files
 public/data/
 content/files/*.json
+!content/files/bluesky-feed*.json
 
 # Logs
 *.log
