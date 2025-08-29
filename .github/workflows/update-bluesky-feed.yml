@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update-feed:
@@ -32,15 +33,17 @@ jobs:
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
         run: node scripts/generate-bluesky-feed.js
 
-      - name: Commit and push if changed
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Ensure we're working with the latest changes
-          git fetch origin main
-          git reset --hard origin/main
+          # Create a new branch
+          BRANCH_NAME="bot/update-bluesky-feed-$(date +%s)"
+          git checkout -b $BRANCH_NAME
           
           # Create directories for Ghost's expected location
           mkdir -p content/files
@@ -58,7 +61,10 @@ jobs:
           fi
           
           # Commit the changes
-          git commit -m "🤖 Update Bluesky feed [skip ci]"
+          git commit -m "🤖 Update Bluesky feed"
           
-          # Push the changes
-          git push --force origin HEAD:main
+          # Push the new branch
+          git push origin $BRANCH_NAME
+          
+          # Create a pull request
+          gh pr create --title "🤖 Update Bluesky feed" --body "Automated update of the Bluesky feed."
