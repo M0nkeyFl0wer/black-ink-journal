@@ -25,7 +25,18 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          # Remove old lock file and regenerate it
+          rm -f package-lock.json
+          npm install
+          # Commit the new lock file if it changed
+          if ! git diff --quiet package-lock.json; then
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git add package-lock.json
+            git commit -m "📦 Update package-lock.json after cleanup"
+            git push origin main
+          fi
 
       - name: Generate Bluesky feed
         env:
@@ -39,32 +50,53 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
+          # Debug: Show what files exist
+          echo "=== Files in current directory ==="
+          find . -name "*bluesky*" -type f
+          echo "=== End file listing ==="
+          
           # Ensure we're diffing against the latest main
           git fetch origin main
           
           # Create the content/files directory for Ghost
           mkdir -p content/files
+          echo "Created content/files directory"
           
-          # Copy the generated files to where Ghost expects them
+          # Check if source files exist and copy them
           if [ -f public/data/bluesky-feed.json ]; then
+            echo "Found source files, copying..."
             cp public/data/bluesky-feed.json content/files/bluesky-feed.json
             cp public/data/bluesky-feed-summary.json content/files/bluesky-feed-summary.json
-            echo "Copied files to content/files/"
+            echo "Successfully copied files to content/files/"
+            
+            # Verify the files were copied
+            if [ -f content/files/bluesky-feed.json ]; then
+              echo "✓ content/files/bluesky-feed.json exists"
+              echo "File size: $(wc -c < content/files/bluesky-feed.json) bytes"
+            else
+              echo "✗ Failed to create content/files/bluesky-feed.json"
+              exit 1
+            fi
           else
-            echo "Source files not found in public/data/"
+            echo "✗ Source files not found in public/data/"
+            echo "Available files:"
+            ls -la public/data/ || echo "public/data/ directory doesn't exist"
             exit 1
           fi
           
           # Check if anything changed in the target location
-          if git diff --quiet HEAD -- content/files/bluesky-feed.json content/files/bluesky-feed-summary.json; then
-            echo "No changes detected in content/files/."
+          git add content/files/bluesky-feed.json content/files/bluesky-feed-summary.json
+          
+          if git diff --cached --quiet; then
+            echo "No changes detected in content/files/"
             exit 0
           fi
           
-          # Add the Ghost-compatible files
-          git add content/files/bluesky-feed.json content/files/bluesky-feed-summary.json
+          # Commit the changes
           git commit -m "🤖 Update Bluesky feed [skip ci]"
+          echo "Changes committed"
           
           # Avoid non-fast-forward errors
           git pull --rebase origin main
           git push origin HEAD:main
+          echo "Changes pushed successfully"
