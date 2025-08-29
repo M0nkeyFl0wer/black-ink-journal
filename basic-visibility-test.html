@@ -1,0 +1,55 @@
+<style>
+#test-widget {
+  background: red !important;
+  color: white !important;
+  padding: 20px !important;
+  margin: 20px !important;
+  border: 3px solid yellow !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  font-size: 18px !important;
+  font-family: Arial !important;
+}
+</style>
+
+<script>
+console.log('TEST: Script loaded');
+
+// Create widget immediately, no conditions
+var testWidget = document.createElement('div');
+testWidget.id = 'test-widget';
+testWidget.innerHTML = '<h2>TEST WIDGET VISIBLE</h2><p>If you see this, JavaScript is working</p>';
+
+console.log('TEST: Widget created');
+
+// Try multiple insertion methods
+setTimeout(function() {
+  console.log('TEST: Attempting to insert widget');
+  
+  // Method 1: Try main
+  var main = document.querySelector('main');
+  if (main) {
+    main.appendChild(testWidget);
+    console.log('TEST: Added to main element');
+    return;
+  }
+  
+  // Method 2: Try gh-main
+  var ghMain = document.querySelector('.gh-main');
+  if (ghMain) {
+    ghMain.appendChild(testWidget);
+    console.log('TEST: Added to .gh-main element');
+    return;
+  }
+  
+  // Method 3: Try body
+  document.body.appendChild(testWidget);
+  console.log('TEST: Added to body element');
+  
+}, 1000);
+
+// Additional debugging
+console.log('TEST: Current URL:', window.location.pathname);
+console.log('TEST: Body classes:', document.body.className);
+console.log('TEST: Home template check:', document.body.classList.contains('home-template'));
+</script>

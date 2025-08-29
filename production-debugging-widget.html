@@ -1,0 +1,114 @@
+<style>
+/* Hide subscription CTAs */
+.gh-subscribe-form, .subscribe-form, .newsletter-signup, .portal-cta, .subscribe-cta, .gh-portal-cta,
+[class*="subscribe"], [class*="newsletter"], [class*="portal"], [class*="signup"],
+footer .subscribe, footer .newsletter, .footer-cta, .site-footer .portal-cta { display: none !important; }
+
+/* Debug widget styles */
+#bluesky-debug { 
+  background: #000; 
+  color: #fff; 
+  padding: 20px; 
+  margin: 20px auto; 
+  max-width: 600px; 
+  border-radius: 10px; 
+  font-family: monospace;
+}
+.debug-test { 
+  margin: 10px 0; 
+  padding: 10px; 
+  border: 1px solid #333; 
+  border-radius: 5px; 
+}
+.debug-success { border-color: green; }
+.debug-error { border-color: red; }
+
+body:not(.home-template) #bluesky-debug { display: none !important; }
+</style>
+
+<script>
+(function () {
+  console.log('[BlueskyDebug] Starting production debugging...');
+
+  var isHome = document.body.classList.contains('home-template') || 
+               window.location.pathname === '/' || 
+               window.location.pathname === '/index.html';
+  
+  if (!isHome) return;
+
+  // Create debug widget
+  var widget = document.createElement('div');
+  widget.id = 'bluesky-debug';
+  widget.innerHTML = '<h3>Bluesky Widget Production Debug</h3><div id="debug-results">Testing...</div>';
+  
+  var target = document.querySelector('.gh-main') || document.querySelector('main') || document.body;
+  target.appendChild(widget);
+
+  var results = document.getElementById('debug-results');
+  var testResults = [];
+
+  function addResult(test, status, message) {
+    testResults.push({ test, status, message });
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    var html = '';
+    testResults.forEach(function(result) {
+      var cssClass = result.status === 'success' ? 'debug-success' : 'debug-error';
+      html += '<div class="debug-test ' + cssClass + '">';
+      html += '<strong>' + result.test + ':</strong> ' + result.message;
+      html += '</div>';
+    });
+    results.innerHTML = html;
+  }
+
+  // Test different paths
+  var pathsToTest = [
+    '/content/images/bluesky-feed.json',
+    '/assets/bluesky-feed.json', 
+    '/public/bluesky-feed.json',
+    'https://raw.githubusercontent.com/M0nkeyFl0wer/black-ink-journal/main/bluesky-feed.json'
+  ];
+
+  function testPath(path, index) {
+    if (index >= pathsToTest.length) {
+      console.log('[BlueskyDebug] All tests completed');
+      return;
+    }
+
+    var currentPath = pathsToTest[index];
+    console.log('[BlueskyDebug] Testing path:', currentPath);
+
+    fetch(currentPath + '?t=' + Date.now(), { 
+      cache: 'no-store',
+      mode: 'cors'
+    })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json().then(function(data) {
+            addResult('Path: ' + currentPath, 'success', 
+              'Status ' + response.status + ' - Found ' + (data.posts ? data.posts.length : 0) + ' posts');
+          });
+        } else {
+          addResult('Path: ' + currentPath, 'error', 'HTTP ' + response.status);
+        }
+      })
+      .catch(function(error) {
+        addResult('Path: ' + currentPath, 'error', error.message);
+      })
+      .finally(function() {
+        // Test next path after delay
+        setTimeout(function() {
+          testPath(pathsToTest, index + 1);
+        }, 1000);
+      });
+  }
+
+  // Start testing
+  setTimeout(function() {
+    testPath(pathsToTest, 0);
+  }, 500);
+
+})();
+</script>

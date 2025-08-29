@@ -145,5 +145,5 @@ jobs:
           git add content/images/bluesky-feed*.json
           git commit -m "🤖 Update Bluesky feed [skip ci]"
           
-          # Push with force to avoid conflicts
-          git push origin main --force-with-lease
+          # Push with retry logic to handle stale info
+          git push origin main --force-with-lease || (git pull --rebase origin main && git push origin main)

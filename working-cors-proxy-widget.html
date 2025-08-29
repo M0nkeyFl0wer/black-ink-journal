@@ -1,0 +1,43 @@
+<style>
+.gh-subscribe-form, .subscribe-form, .newsletter-signup, .portal-cta { display: none !important; }
+#bluesky-widget { background: #000; color: #fff; padding: 20px; margin: 20px auto; max-width: 600px; border-radius: 12px; }
+body:not(.home-template) #bluesky-widget { display: none !important; }
+</style>
+
+<div id="bluesky-widget" style="display: none;">
+  <h3>Recent Bluesky Posts</h3>
+  <div id="bluesky-content">Loading posts...</div>
+</div>
+
+<script>
+if (document.body.classList.contains('home-template')) {
+  document.getElementById('bluesky-widget').style.display = 'block';
+  
+  var corsProxy = 'https://api.allorigins.win/get?url=';
+  var githubUrl = 'https://raw.githubusercontent.com/M0nkeyFl0wer/black-ink-journal/main/bluesky-feed.json';
+  var fullUrl = corsProxy + encodeURIComponent(githubUrl);
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', fullUrl);
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      try {
+        var response = JSON.parse(xhr.responseText);
+        var data = JSON.parse(response.contents);
+        var html = '';
+        for (var i = 0; i < data.posts.length; i++) {
+          html += '<div style="border:1px solid #333;padding:15px;margin:15px 0;border-radius:8px;">';
+          html += '<strong>' + data.posts[i].author.displayName + '</strong><br>';
+          html += data.posts[i].text + '<br><br>';
+          html += '<a href="' + data.posts[i].blueskyUrl + '" target="_blank" style="color:#1da1f2;">View on Bluesky</a>';
+          html += '</div>';
+        }
+        document.getElementById('bluesky-content').innerHTML = html;
+      } catch (e) {
+        document.getElementById('bluesky-content').innerHTML = 'Error loading posts';
+      }
+    }
+  };
+  xhr.send();
+}
+</script>

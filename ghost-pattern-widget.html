@@ -1,0 +1,97 @@
+<style>
+.gh-subscribe-form, .subscribe-form, .newsletter-signup, .portal-cta, .subscribe-cta, .gh-portal-cta { display: none !important; }
+#bluesky-widget { 
+  background: #000000; 
+  color: #ffffff; 
+  padding: 20px; 
+  margin: 20px auto; 
+  max-width: 600px; 
+  border-radius: 12px; 
+  font-family: sans-serif; 
+}
+.bluesky-post { 
+  border: 1px solid #333333; 
+  padding: 15px; 
+  margin: 15px 0; 
+  border-radius: 8px; 
+}
+body:not(.home-template) #bluesky-widget { display: none !important; }
+</style>
+
+<div id="bluesky-widget" style="display: none;">
+  <h3 style="color: #ffffff; margin-bottom: 20px;">Recent Bluesky Posts</h3>
+  <div id="bluesky-content">Loading posts...</div>
+</div>
+
+<script>
+(function() {
+  var config = {
+    jsonUrl: "/content/images/bluesky-feed.json",
+    containerId: "bluesky-content",
+    widgetId: "bluesky-widget"
+  };
+
+  function isHomePage() {
+    return document.body.classList.contains("home-template") || window.location.pathname === "/";
+  }
+
+  function showWidget() {
+    var widget = document.getElementById(config.widgetId);
+    if (widget) {
+      widget.style.display = "block";
+    }
+  }
+
+  function renderPosts(data) {
+    var container = document.getElementById(config.containerId);
+    if (!container || !data || !data.posts) return;
+
+    var html = "";
+    for (var i = 0; i < data.posts.length; i++) {
+      var post = data.posts[i];
+      html += '<div class="bluesky-post">';
+      html += '<strong>' + (post.author ? post.author.displayName : "Unknown") + '</strong><br>';
+      html += '<small>@' + (post.author ? post.author.handle : "") + '</small><br><br>';
+      html += (post.text || "") + '<br><br>';
+      if (post.blueskyUrl) {
+        html += '<a href="' + post.blueskyUrl + '" target="_blank" style="color: #1da1f2;">View on Bluesky</a>';
+      }
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function loadPosts() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", config.jsonUrl + "?t=" + new Date().getTime());
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            renderPosts(data);
+          } catch (e) {
+            document.getElementById(config.containerId).innerHTML = "Error parsing data";
+          }
+        } else {
+          document.getElementById(config.containerId).innerHTML = 'Unable to load posts. <a href="https://bsky.app/profile/benwest.bsky.social" target="_blank" style="color: #1da1f2;">View on Bluesky</a>';
+        }
+      }
+    };
+    xhr.send();
+  }
+
+  function init() {
+    if (isHomePage()) {
+      showWidget();
+      loadPosts();
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>

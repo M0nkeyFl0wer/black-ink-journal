@@ -1,0 +1,34 @@
+<style>
+.gh-subscribe-form, .subscribe-form, .newsletter-signup, .portal-cta, .subscribe-cta, .gh-portal-cta { display: none !important; }
+#bluesky-widget { background: #000; color: #fff; padding: 20px; margin: 20px auto; max-width: 600px; border-radius: 12px; }
+</style>
+
+<div id="bluesky-widget" style="display: none;">
+  <h3>Recent Bluesky Posts</h3>
+  <div id="bluesky-content">Loading...</div>
+</div>
+
+<script>
+var isHome = document.body.classList.contains('home-template');
+if (isHome) {
+  document.getElementById('bluesky-widget').style.display = 'block';
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/content/images/bluesky-feed.json');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      var data = JSON.parse(xhr.responseText);
+      var html = '';
+      for (var i = 0; i < data.posts.length; i++) {
+        html += '<div style="border:1px solid #333;padding:15px;margin:15px 0;border-radius:8px;">';
+        html += '<strong>' + data.posts[i].author.displayName + '</strong><br>';
+        html += data.posts[i].text + '<br>';
+        html += '<a href="' + data.posts[i].blueskyUrl + '" target="_blank">View on Bluesky</a>';
+        html += '</div>';
+      }
+      document.getElementById('bluesky-content').innerHTML = html;
+    }
+  };
+  xhr.send();
+}
+</script>

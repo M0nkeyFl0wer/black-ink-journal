@@ -1,0 +1,56 @@
+<style>
+.gh-subscribe-form, .subscribe-form, .newsletter-signup, .portal-cta, .subscribe-cta, .gh-portal-cta,
+[class*="subscribe"], [class*="newsletter"], [class*="portal"], [class*="signup"],
+footer .subscribe, footer .newsletter, .footer-cta, .site-footer .portal-cta { display: none !important; }
+
+#bluesky-widget { 
+  background: #000; 
+  color: #fff; 
+  padding: 20px; 
+  margin: 20px auto; 
+  max-width: 600px; 
+  border-radius: 12px; 
+  font-family: sans-serif; 
+}
+.bluesky-post { 
+  border: 1px solid #333; 
+  padding: 15px; 
+  margin: 15px 0; 
+  border-radius: 8px; 
+}
+body:not(.home-template) #bluesky-widget { display: none !important; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var isHome = document.body.classList.contains('home-template') || window.location.pathname === '/';
+  if (!isHome) return;
+  
+  var widget = document.createElement('div');
+  widget.id = 'bluesky-widget';
+  widget.innerHTML = '<h3>Bluesky Posts</h3><div id="posts">Loading...</div>';
+  
+  var target = document.querySelector('main') || document.body;
+  target.appendChild(widget);
+  
+  fetch('/content/images/bluesky-feed.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var container = document.getElementById('posts');
+      if (data && data.posts) {
+        var html = '';
+        data.posts.forEach(function(post) {
+          html += '<div class="bluesky-post">';
+          html += '<strong>' + post.author.displayName + '</strong><br>';
+          html += post.text + '<br>';
+          html += '<a href="' + post.blueskyUrl + '" target="_blank">View on Bluesky</a>';
+          html += '</div>';
+        });
+        container.innerHTML = html;
+      }
+    })
+    .catch(function() {
+      document.getElementById('posts').innerHTML = 'Error loading posts';
+    });
+});
+</script>
