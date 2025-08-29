@@ -1,0 +1,247 @@
+<style>
+/* Hide ALL subscription CTAs */
+.gh-subscribe-form, .subscribe-form, .newsletter-signup, .portal-cta, .subscribe-cta, .gh-portal-cta,
+[class*="subscribe"], [class*="newsletter"], [class*="portal"], [class*="signup"],
+footer .subscribe, footer .newsletter, .footer-cta, .site-footer .portal-cta { display: none !important; }
+
+/* AMOLED Black Bluesky Widget */
+#bluesky-widget { background: #000000; border-radius: 12px; padding: 20px; max-width:600px; margin:20px auto; font-family:sans-serif; }
+.bluesky-post { border: 1px solid #1a1a1a; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: #000000; color: #ffffff; }
+.bluesky-post:hover { box-shadow: 0 2px 8px rgba(0,133,255,0.3); }
+.bluesky-post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.bluesky-avatar { width: 40px; height: 40px; border-radius: 50%; background: #333; }
+.bluesky-author { flex: 1; }
+.bluesky-display-name { font-weight: 600; color: #ffffff; margin: 0; }
+.bluesky-handle { color: #8899a6; font-size: 14px; margin: 0; }
+.bluesky-text { margin: 12px 0; line-height: 1.5; color: #ffffff; }
+.bluesky-external-link { display: block; border: 1px solid #1a1a1a; border-radius: 12px; padding: 12px; margin: 12px 0; text-decoration: none; color: inherit; background: #000000; }
+.bluesky-external-link:hover { background: #111; }
+.bluesky-link-image { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+.bluesky-link-title { font-weight: 600; color: #ffffff; margin-bottom: 4px; }
+.bluesky-link-description { color: #8899a6; font-size: 14px; margin-bottom: 4px; }
+.bluesky-link-url { color: #1da1f2; font-size: 14px; }
+.bluesky-engagement { display: flex; justify-content: flex-end; margin-top: 12px; padding-top: 12px; border-top: 1px solid #1a1a1a; }
+.bluesky-post-link { color: #1da1f2; text-decoration: none; font-size: 14px; font-weight: 500; }
+
+/* Quoted post card */
+.bluesky-quote {
+  border: 1px solid #1a1a1a; border-radius: 10px; padding: 12px; margin-top: 10px; background: #0a0a0a;
+}
+.bluesky-quote-author { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #8899a6; font-size: 14px; }
+.bluesky-quote-text { color: #e6e6e6; line-height: 1.45; white-space: pre-wrap; }
+.bluesky-quote a { color: #1da1f2; text-decoration: none; }
+.bluesky-quote a:hover { text-decoration: underline; }
+
+/* Image grids */
+.bluesky-images, .bluesky-quote-images {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px;
+}
+.bluesky-images img, .bluesky-quote-images img {
+  width: 100%; height: 180px; object-fit: cover; border-radius: 8px; background: #111;
+}
+
+/* Hide widget anywhere except home (defensive) */
+body:not(.home-template) #bluesky-widget { display: none !important; }
+</style>
+
+<script>
+(function () {
+  console.log('[BlueskyWidget] v2.4 loaded - Fixed GitHub raw URL');
+
+  var isHome = document.body.classList.contains('home-template') || 
+               window.location.pathname === '/' || 
+               window.location.pathname === '/index.html';
+  if (!isHome) return;
+
+  var HANDLE_FALLBACK = 'benwest.bsky.social';
+
+  var safeStorage = {
+    getItem: function(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        console.warn('[BlueskyWidget] localStorage getItem failed:', e);
+        return null;
+      }
+    },
+    setItem: function(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        console.warn('[BlueskyWidget] localStorage setItem failed:', e);
+        return false;
+      }
+    }
+  };
+
+  function injectWidgetShell(profileUrl) {
+    var widget = document.createElement('div');
+    widget.id = 'bluesky-widget';
+    
+    var headerHtml = '<a href="' + profileUrl + '" target="_blank" rel="noopener" ' +
+      'style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:15px;' +
+      'background:linear-gradient(135deg,#0085ff 0%,#00a8ff 100%);border-radius:12px;color:white;text-decoration:none;">' +
+      '<div style="width:24px;height:24px;background:white;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#0085ff;font-size:14px;">🦋</div>' +
+      '<div>' +
+      '<h3 style="margin:0;font-size:18px;">Join Me Where the Sky is Blue</h3>' +
+      '<p style="margin:0;font-size:14px;opacity:0.9;">Recent posts and updates</p>' +
+      '</div>' +
+      '</a>' +
+      '<div id="bluesky-posts">Loading posts...</div>';
+    
+    widget.innerHTML = headerHtml;
+    var target = document.querySelector('.gh-main') || document.querySelector('main') || document.body;
+    target.appendChild(widget);
+  }
+
+  function renderPosts(data) {
+    var container = document.getElementById('bluesky-posts');
+    if (!container) return;
+
+    if (!data || !data.posts || !data.posts.length) {
+      container.innerHTML = 'No posts found';
+      return;
+    }
+
+    try {
+      var handle = data.handle || (data.posts[0] && data.posts[0].author && data.posts[0].author.handle) || HANDLE_FALLBACK;
+      var headerLink = document.querySelector('#bluesky-widget > a');
+      if (headerLink) headerLink.href = 'https://bsky.app/profile/' + handle;
+    } catch (e) {}
+
+    var html = '';
+    for (var i = 0; i < data.posts.length; i++) {
+      var post = data.posts[i];
+      html += '<div class="bluesky-post">';
+      html += '<div class="bluesky-post-header">';
+      html += '<img src="' + (post.author && post.author.avatar ? post.author.avatar : '') + '" class="bluesky-avatar" alt="">';
+      html += '<div class="bluesky-author">';
+      html += '<p class="bluesky-display-name">' + (post.author && post.author.displayName ? post.author.displayName : 'Unknown') + '</p>';
+      html += '<p class="bluesky-handle">@' + (post.author && post.author.handle ? post.author.handle : '') + '</p>';
+      html += '</div>';
+      html += '</div>';
+      html += '<div class="bluesky-text">' + (post.text || '') + '</div>';
+
+      if (post.images && post.images.length) {
+        html += '<div class="bluesky-images">';
+        for (var ii = 0; ii < Math.min(post.images.length, 4); ii++) {
+          var im = post.images[ii];
+          html += '<img src="' + im.url + '" alt="' + (im.alt || '') + '">';
+        }
+        html += '</div>';
+      }
+
+      if (post.quotedPost) {
+        var qp = post.quotedPost;
+        var qpHandle = qp.handle ? qp.handle.replace(/^@/, '') : '';
+        var qpProfileUrl = qpHandle ? ('https://bsky.app/profile/' + qpHandle) : '#';
+        var qpAttribution = qp.author ? (qp.author + (qpHandle ? ' (@' + qpHandle + ')' : '')) : (qpHandle ? '@' + qpHandle : 'Quoted post');
+
+        html += '<div class="bluesky-quote">';
+        html += '<div class="bluesky-quote-author"><a href="' + qpProfileUrl + '" target="_blank" rel="noopener">' + qpAttribution + '</a></div>';
+        html += '<div class="bluesky-quote-text">' + (qp.text || '') + '</div>';
+
+        if (qp.images && qp.images.length) {
+          html += '<div class="bluesky-quote-images">';
+          for (var qi = 0; qi < Math.min(qp.images.length, 4); qi++) {
+            var qim = qp.images[qi];
+            html += '<img src="' + qim.url + '" alt="' + (qim.alt || '') + '">';
+          }
+          html += '</div>';
+        }
+
+        if (qp.url) {
+          html += '<div style="margin-top:8px;"><a href="' + qp.url + '" target="_blank" rel="noopener">View quoted post</a></div>';
+        }
+        html += '</div>';
+      }
+
+      if (post.externalLink && post.externalLink.url) {
+        html += '<a href="' + post.externalLink.url + '" target="_blank" rel="noopener" class="bluesky-external-link">';
+        if (post.externalLink.thumb) html += '<img src="' + post.externalLink.thumb + '" class="bluesky-link-image" alt="">';
+        if (post.externalLink.title) html += '<div class="bluesky-link-title">' + post.externalLink.title + '</div>';
+        if (post.externalLink.description) html += '<div class="bluesky-link-description">' + post.externalLink.description + '</div>';
+        html += '</a>';
+      }
+
+      if (post.blueskyUrl) {
+        html += '<div class="bluesky-engagement"><a href="' + post.blueskyUrl + '" target="_blank" rel="noopener" class="bluesky-post-link">View on Bluesky</a></div>';
+      }
+      html += '</div>';
+    }
+    container.innerHTML = html;
+
+    try {
+      var badge = document.createElement('div');
+      badge.style.cssText = 'text-align:right;font-size:12px;color:#8899a6;margin-top:8px;';
+      badge.textContent = 'Updated: ' + (data.generatedAt || new Date().toISOString());
+      document.getElementById('bluesky-widget').appendChild(badge);
+    } catch (e) {}
+  }
+
+  function loadPosts() {
+    var postsEl = document.getElementById('bluesky-posts');
+    if (!postsEl) return;
+    postsEl.innerHTML = '<div style="text-align:center;color:#8899a6;padding:20px;">Fetching posts...</div>';
+
+    var url = 'https://raw.githubusercontent.com/M0nkeyFl0wer/black-ink-journal/main/bluesky-feed.json?ts=' + Date.now();
+    console.log('[BlueskyWidget] Fetching from:', url);
+    
+    fetch(url, { 
+      cache: 'no-store', 
+      mode: 'cors'
+    })
+      .then(function (r) { 
+        console.log('[BlueskyWidget] Response status:', r.status);
+        if (!r.ok) throw new Error('HTTP ' + r.status); 
+        return r.json(); 
+      })
+      .then(function (data) {
+        console.log('[BlueskyWidget] Data received:', data);
+        
+        var cached = safeStorage.setItem('blueskyFeedCache', JSON.stringify(data));
+        if (cached) {
+          console.log('[BlueskyWidget] Cached successfully');
+        }
+        
+        renderPosts(data);
+      })
+      .catch(function (err) {
+        console.error('[BlueskyWidget] Fetch error:', err);
+        
+        var cached = safeStorage.getItem('blueskyFeedCache');
+        if (cached) {
+          try {
+            console.log('[BlueskyWidget] Using cached data');
+            return renderPosts(JSON.parse(cached));
+          } catch (e) {
+            console.warn('[BlueskyWidget] Cache parse failed:', e);
+          }
+        }
+        
+        postsEl.innerHTML = '<div style="text-align:center;color:#ff6b6b;padding:20px;">' +
+          'Unable to load posts. ' +
+          '<button onclick="window.location.reload()" style="background:#1da1f2;color:white;border:none;padding:4px 8px;border-radius:4px;margin:0 4px;cursor:pointer;">Retry</button>' +
+          ' or <a href="https://bsky.app/profile/' + HANDLE_FALLBACK + '" target="_blank" style="color:#1da1f2;">View on Bluesky</a></div>';
+      });
+  }
+
+  injectWidgetShell('https://bsky.app/profile/' + HANDLE_FALLBACK);
+
+  var cached = safeStorage.getItem('blueskyFeedCache');
+  if (cached) {
+    try {
+      console.log('[BlueskyWidget] Loading cached data on page load');
+      renderPosts(JSON.parse(cached));
+    } catch (e) {
+      console.warn('[BlueskyWidget] Failed to load cached data:', e);
+    }
+  }
+
+  window.addEventListener('load', function () {
+    loadPosts();
+    setInterval(loadPosts, 5 * 60 * 1000);
+  });
+})();
+</script>

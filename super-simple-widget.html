@@ -1,0 +1,45 @@
+<style>
+#bluesky-widget { 
+  background: black; 
+  color: white; 
+  padding: 20px; 
+  margin: 20px auto; 
+  max-width: 600px; 
+  border-radius: 10px;
+}
+body:not(.home-template) #bluesky-widget { 
+  display: none; 
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Bluesky widget starting');
+  
+  var isHome = document.body.classList.contains('home-template');
+  if (!isHome) return;
+  
+  var widget = document.createElement('div');
+  widget.id = 'bluesky-widget';
+  widget.innerHTML = '<h3>Bluesky Posts</h3><div id="posts">Loading...</div>';
+  
+  var main = document.querySelector('main') || document.body;
+  main.appendChild(widget);
+  
+  fetch('https://raw.githubusercontent.com/M0nkeyFl0wer/black-ink-journal/main/bluesky-feed.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var posts = document.getElementById('posts');
+      if (data && data.posts) {
+        var html = '';
+        for (var i = 0; i < data.posts.length; i++) {
+          html += '<p>' + data.posts[i].text + '</p>';
+        }
+        posts.innerHTML = html;
+      }
+    })
+    .catch(function() {
+      document.getElementById('posts').innerHTML = 'Error loading posts';
+    });
+});
+</script>

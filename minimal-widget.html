@@ -1,0 +1,142 @@
+<style>
+/* Hide ALL subscription CTAs */
+.gh-subscribe-form, .subscribe-form, .newsletter-signup, .portal-cta, .subscribe-cta, .gh-portal-cta,
+[class*="subscribe"], [class*="newsletter"], [class*="portal"], [class*="signup"],
+footer .subscribe, footer .newsletter, .footer-cta, .site-footer .portal-cta { display: none !important; }
+
+/* AMOLED Black Bluesky Widget */
+#bluesky-widget { 
+  background: #000000; 
+  border-radius: 12px; 
+  padding: 20px; 
+  max-width: 600px; 
+  margin: 20px auto; 
+  font-family: sans-serif; 
+  color: white;
+}
+.bluesky-post { 
+  border: 1px solid #1a1a1a; 
+  border-radius: 12px; 
+  padding: 16px; 
+  margin-bottom: 16px; 
+  background: #000000; 
+  color: #ffffff; 
+}
+.bluesky-post-header { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  margin-bottom: 12px; 
+}
+.bluesky-avatar { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  background: #333; 
+}
+.bluesky-author { flex: 1; }
+.bluesky-display-name { 
+  font-weight: 600; 
+  color: #ffffff; 
+  margin: 0; 
+}
+.bluesky-handle { 
+  color: #8899a6; 
+  font-size: 14px; 
+  margin: 0; 
+}
+.bluesky-text { 
+  margin: 12px 0; 
+  line-height: 1.5; 
+  color: #ffffff; 
+}
+.bluesky-post-link { 
+  color: #1da1f2; 
+  text-decoration: none; 
+  font-size: 14px; 
+}
+
+/* Hide widget anywhere except home */
+body:not(.home-template) #bluesky-widget { display: none !important; }
+</style>
+
+<script>
+console.log('BLUESKY WIDGET: Starting to load...');
+
+// Check if we're on the home page
+var isHome = document.body.classList.contains('home-template') || 
+             window.location.pathname === '/' || 
+             window.location.pathname === '/index.html';
+
+console.log('BLUESKY WIDGET: Is home page?', isHome);
+
+if (!isHome) {
+  console.log('BLUESKY WIDGET: Not on home page, exiting');
+} else {
+  console.log('BLUESKY WIDGET: On home page, creating widget');
+  
+  // Create the widget immediately
+  var widget = document.createElement('div');
+  widget.id = 'bluesky-widget';
+  widget.innerHTML = '<h3 style="color: white; margin: 0 0 20px 0;">Recent Bluesky Posts</h3><div id="bluesky-posts">Loading posts...</div>';
+  
+  // Find where to put it
+  var target = document.querySelector('.gh-main') || document.querySelector('main') || document.body;
+  console.log('BLUESKY WIDGET: Target element found:', target ? 'YES' : 'NO');
+  
+  if (target) {
+    target.appendChild(widget);
+    console.log('BLUESKY WIDGET: Widget added to page');
+    
+    // Now try to load the data
+    setTimeout(function() {
+      console.log('BLUESKY WIDGET: Attempting to fetch data...');
+      
+      fetch('https://raw.githubusercontent.com/M0nkeyFl0wer/black-ink-journal/main/bluesky-feed.json')
+        .then(function(response) {
+          console.log('BLUESKY WIDGET: Response status:', response.status);
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        })
+        .then(function(data) {
+          console.log('BLUESKY WIDGET: Data received:', data);
+          
+          var postsContainer = document.getElementById('bluesky-posts');
+          if (postsContainer && data && data.posts && data.posts.length > 0) {
+            var html = '';
+            for (var i = 0; i < Math.min(data.posts.length, 3); i++) {
+              var post = data.posts[i];
+              html += '<div class="bluesky-post">';
+              html += '<div class="bluesky-post-header">';
+              html += '<div class="bluesky-author">';
+              html += '<p class="bluesky-display-name">' + (post.author ? post.author.displayName : 'Unknown') + '</p>';
+              html += '<p class="bluesky-handle">@' + (post.author ? post.author.handle : '') + '</p>';
+              html += '</div>';
+              html += '</div>';
+              html += '<div class="bluesky-text">' + (post.text || '') + '</div>';
+              if (post.blueskyUrl) {
+                html += '<p><a href="' + post.blueskyUrl + '" target="_blank" class="bluesky-post-link">View on Bluesky</a></p>';
+              }
+              html += '</div>';
+            }
+            postsContainer.innerHTML = html;
+            console.log('BLUESKY WIDGET: Posts rendered successfully');
+          } else {
+            postsContainer.innerHTML = '<p style="color: #8899a6;">No posts found</p>';
+            console.log('BLUESKY WIDGET: No posts to display');
+          }
+        })
+        .catch(function(error) {
+          console.error('BLUESKY WIDGET: Fetch error:', error);
+          var postsContainer = document.getElementById('bluesky-posts');
+          if (postsContainer) {
+            postsContainer.innerHTML = '<p style="color: #ff6b6b;">Unable to load posts. <a href="https://bsky.app/profile/benwest.bsky.social" target="_blank" style="color: #1da1f2;">View on Bluesky</a></p>';
+          }
+        });
+    }, 1000); // Wait 1 second for page to load
+    
+  } else {
+    console.error('BLUESKY WIDGET: Could not find target element to attach widget');
+  }
+}
+</script>

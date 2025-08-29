@@ -1,0 +1,149 @@
+name: Update Bluesky Feed - Simple
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate and commit feed
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+        run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Pull latest changes first
+          git pull origin main
+          
+          # Install dependencies
+          npm install @atproto/api
+          
+          # Generate feed
+          node << 'SCRIPT'
+          const { BskyAgent } = require('@atproto/api');
+          const fs = require('fs');
+          
+          async function main() {
+            try {
+              const agent = new BskyAgent({ service: 'https://bsky.social' });
+              
+              await agent.login({
+                identifier: process.env.BLUESKY_HANDLE,
+                password: process.env.BLUESKY_APP_PASSWORD
+              });
+              
+              const response = await agent.getAuthorFeed({
+                actor: process.env.BLUESKY_HANDLE,
+                limit: 10
+              });
+              
+              // Filter out reposts and replies - only original posts
+              const originalPosts = response.data.feed.filter(item => {
+                return !item.reason && !item.post.record.reply && item.post.author.did === response.data.feed[0].post.author.did;
+              });
+              
+              const posts = originalPosts.slice(0, 4).map(item => ({
+                id: item.post.cid,
+                text: item.post.record.text || '',
+                createdAt: item.post.record.createdAt,
+                author: {
+                  displayName: item.post.author.displayName || '',
+                  handle: item.post.author.handle || '',
+                  avatar: item.post.author.avatar || ''
+                },
+                engagement: {
+                  likes: item.post.likeCount || 0,
+                  reposts: item.post.repostCount || 0,
+                  replies: item.post.replyCount || 0
+                },
+                blueskyUrl: `https://bsky.app/profile/${item.post.author.handle}/post/${item.post.uri.split('/').pop()}`,
+                images: item.post.embed?.images?.map(img => ({
+                  url: img.fullsize,
+                  alt: img.alt || ''
+                })) || [],
+                externalLink: item.post.embed?.external ? {
+                  url: item.post.embed.external.uri,
+                  title: item.post.embed.external.title,
+                  description: item.post.embed.external.description,
+                  thumb: item.post.embed.external.thumb
+                } : null,
+                quotedPost: item.post.embed?.record && item.post.embed.record.value ? {
+                  text: item.post.embed.record.value.text,
+                  author: item.post.embed.record.author.displayName,
+                  handle: item.post.embed.record.author.handle,
+                  url: `https://bsky.app/profile/${item.post.embed.record.author.handle}/post/${item.post.embed.record.uri.split('/').pop()}`,
+                  images: []
+                } : null
+              }));
+              
+              const feedData = {
+                posts,
+                generatedAt: new Date().toISOString(),
+                totalPosts: posts.length,
+                author: {
+                  handle: process.env.BLUESKY_HANDLE,
+                  displayName: posts[0]?.author.displayName || process.env.BLUESKY_HANDLE
+                }
+              };
+              
+              // Ensure directory exists
+              if (!fs.existsSync('content/images')) {
+                fs.mkdirSync('content/images', { recursive: true });
+              }
+              
+              // Write files
+              fs.writeFileSync('content/images/bluesky-feed.json', JSON.stringify(feedData, null, 2));
+              
+              const summary = {
+                generatedAt: feedData.generatedAt,
+                totalPosts: feedData.totalPosts,
+                posts: posts.map(p => ({
+                  text: p.text.substring(0, 100) + (p.text.length > 100 ? '...' : ''),
+                  createdAt: p.createdAt,
+                  blueskyUrl: p.blueskyUrl
+                }))
+              };
+              
+              fs.writeFileSync('content/images/bluesky-feed-summary.json', JSON.stringify(summary, null, 2));
+              
+              console.log(`✅ Generated feed with ${posts.length} posts`);
+              
+            } catch (error) {
+              console.error('❌ Error:', error);
+              process.exit(1);
+            }
+          }
+          
+          main();
+          SCRIPT
+          
+          # Check if files changed
+          if git diff --quiet content/images/bluesky-feed*.json; then
+            echo "No changes to feed files"
+            exit 0
+          fi
+          
+          # Add and commit changes
+          git add content/images/bluesky-feed*.json
+          git commit -m "🤖 Update Bluesky feed [skip ci]"
+          
+          # Push with force to avoid conflicts
+          git push origin main --force-with-lease
