@@ -68,24 +68,21 @@ jobs:
           # Ensure we're diffing against the latest main
           git fetch origin main
           
-          # Create the content/files directory for Ghost
-          mkdir -p content/files
-          echo "Created content/files directory"
+          # Create directories for Ghost's expected location
+          mkdir -p content/images
+          echo "Created content/images directory"
           
-          # Check if source files exist and copy them
+          # Copy to Ghost's actual file serving location
           if [ -f public/data/bluesky-feed.json ]; then
-            echo "Found source files, copying..."
-            cp public/data/bluesky-feed.json content/files/bluesky-feed.json
-            cp public/data/bluesky-feed-summary.json content/files/bluesky-feed-summary.json
-            echo "Successfully copied files to content/files/"
+            echo "Found source files, copying to content/images/..."
+            cp public/data/bluesky-feed.json content/images/bluesky-feed.json
+            cp public/data/bluesky-feed-summary.json content/images/bluesky-feed-summary.json
+            echo "Successfully copied files to content/images/"
             
             # Verify the files were copied
-            if [ -f content/files/bluesky-feed.json ]; then
-              echo "✓ content/files/bluesky-feed.json exists"
-              echo "File size: $(wc -c < content/files/bluesky-feed.json) bytes"
-            else
-              echo "✗ Failed to create content/files/bluesky-feed.json"
-              exit 1
+            if [ -f content/images/bluesky-feed.json ]; then
+              echo "✓ content/images/bluesky-feed.json exists"
+              echo "File size: $(wc -c < content/images/bluesky-feed.json) bytes"
             fi
           else
             echo "✗ Source files not found in public/data/"
@@ -94,8 +91,8 @@ jobs:
             exit 1
           fi
           
-          # Check if anything changed in the target location
-          git add -f content/files/bluesky-feed.json content/files/bluesky-feed-summary.json
+          # Check if anything changed and add files with force flag
+          git add -f content/images/bluesky-feed*.json
           
           if git diff --cached --quiet; then
             echo "No changes detected in content/files/"
