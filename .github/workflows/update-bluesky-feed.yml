@@ -61,4 +61,4 @@ jobs:
           git commit -m "🤖 Update Bluesky feed [skip ci]"
           
           # Push the changes
-          git push origin HEAD:main
+          git push --force origin HEAD:main
