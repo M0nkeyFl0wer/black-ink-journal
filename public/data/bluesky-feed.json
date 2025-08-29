@@ -1,6 +1,29 @@
 {
   "posts": [
     {
+      "id": "bafyreictwqe3ksxll6sna6jh66czikakgiz5a5n5ok37zuavzm26gya6ne",
+      "text": "Troubling.",
+      "createdAt": "2025-08-28T23:17:16.487Z",
+      "author": {
+        "displayName": "Ben West 🦋",
+        "handle": "benwest.bsky.social",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
+      },
+      "engagement": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 0
+      },
+      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lxiohmoles26",
+      "quotedPost": {
+        "text": "&quot;Meta originally scrapped the facial recognition feature for the first generation of the Ray-Ban Meta AI glasses over ethical concerns.&quot;\n\nmashable.com/article/meta...",
+        "author": "evacide",
+        "handle": "evacide.bsky.social",
+        "url": "https://bsky.app/profile/evacide.bsky.social/post/3lxilklnuoc2s",
+        "images": []
+      }
+    },
+    {
       "id": "bafyreiaskuwftdegkjdhygcj236ga5dkykuwzz4mdm2uosoxm3y7u2kvba",
       "text": "I am pretty happy to have managed to get @ghost.org up and in production on a raspberry pi. I&#39;m not a software developer. Feels great to make something actually work hahaha. Even added a nifty bluesky feed, inspired by @molly.wiki on the @flipboard.com podcast with @mmccue.bsky.social. BenWest.blog",
       "createdAt": "2025-08-28T20:29:35.918Z",
@@ -60,32 +83,9 @@
         "url": "https://bsky.app/profile/evacide.bsky.social/post/3lxakxhncks2h",
         "images": []
       }
-    },
-    {
-      "id": "bafyreies4wg3asdlm5n2zyp55ub57ulutj3aj3cl273iemjceuywqy4j6q",
-      "text": "this",
-      "createdAt": "2025-08-20T15:15:12.676Z",
-      "author": {
-        "displayName": "Ben West 🦋",
-        "handle": "benwest.bsky.social",
-        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:gqnkli3xz7deiqfrbjx3lzho/bafkreieogcthlsd5i3nycv65gbcekyazbnhrxs7c7vyzummgegtmx73fka@jpeg"
-      },
-      "engagement": {
-        "likes": 0,
-        "reposts": 0,
-        "replies": 0
-      },
-      "blueskyUrl": "https://bsky.app/profile/benwest.bsky.social/post/3lwtpsb3w722l",
-      "quotedPost": {
-        "text": "Zero Knowledge Proofs Alone Are Not a Digital ID Solution to Protecting User Privacy",
-        "author": "John Wunderlich",
-        "handle": "privacycdn.bsky.social",
-        "url": "https://bsky.app/profile/privacycdn.bsky.social/post/3lwtnc5lw542c",
-        "images": []
-      }
     }
   ],
-  "generatedAt": "2025-08-28T23:04:06.607Z",
+  "generatedAt": "2025-08-29T00:15:02.777Z",
   "totalPosts": 4,
   "author": {
     "handle": "benwest.bsky.social",
