@@ -14,24 +14,21 @@ jobs:
   update-feed:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
-
       - name: Generate Bluesky feed
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
-        run: node scripts/generate-bluesky-feed.js
+        run: |
+          mkdir -p temp_feed
+          cd temp_feed
+          npm init -y
+          npm install @atproto/api
+          node -e 'const { BskyAgent } = require("@atproto/api"); const fs = require("fs"); const agent = new BskyAgent({ service: "https://bsky.social" }); async function main() { await agent.login({ identifier: process.env.BLUESKY_HANDLE, password: process.env.BLUESKY_APP_PASSWORD }); const feed = await agent.getAuthorFeed({ actor: process.env.BLUESKY_HANDLE, limit: 10 }); const posts = feed.data.feed.map(item => ({ text: item.post.record.text, blueskyUrl: `https://bsky.app/profile/${item.post.author.handle}/post/${item.post.uri.split("/").pop()}`, author: { handle: item.post.author.handle, displayName: item.post.author.displayName, avatar: item.post.author.avatar }, images: item.post.embed?.images?.map(img => ({ url: img.fullsize, alt: img.alt })), externalLink: item.post.embed?.external ? { url: item.post.embed.external.uri, title: item.post.embed.external.title, description: item.post.embed.external.description, thumb: item.post.embed.external.thumb } : undefined, quotedPost: item.post.embed?.record?.__typename === "app.bsky.embed.record#viewRecord" ? { handle: item.post.embed.record.author.handle, text: item.post.embed.record.value.text, url: `https://bsky.app/profile/${item.post.embed.record.author.handle}/post/${item.post.embed.record.uri.split("/").pop()}` } : undefined })); const summary = { handle: process.env.BLUESKY_HANDLE, generatedAt: new Date().toISOString(), posts: posts.map(p => ({ text: p.text.substring(0, 100), url: p.blueskyUrl })) }; fs.writeFileSync("bluesky-feed.json", JSON.stringify({ handle: process.env.BLUESKY_HANDLE, generatedAt: new Date().toISOString(), posts }, null, 2)); fs.writeFileSync("bluesky-feed-summary.json", JSON.stringify(summary, null, 2)); } main();'
 
       - name: Create Pull Request
         env:
@@ -45,25 +42,14 @@ jobs:
           BRANCH_NAME="bot/update-bluesky-feed-$(date +%s)"
           git checkout -b $BRANCH_NAME
           
-          # Create directories for Ghost's expected location
+          # Move the generated files to the correct location
           mkdir -p content/files
+          mv temp_feed/bluesky-feed.json content/files/bluesky-feed.json
+          mv temp_feed/bluesky-feed-summary.json content/files/bluesky-feed-summary.json
           
-          # Copy to Ghost's actual file serving location
-          cp public/data/bluesky-feed.json content/files/bluesky-feed.json
-          cp public/data/bluesky-feed-summary.json content/files/bluesky-feed-summary.json
-          
-          # Check if anything changed and add files with force flag
+          # Add, commit, and push the changes
           git add -f content/files/bluesky-feed*.json
-          
-          if git diff --cached --quiet; then
-            echo "No changes detected in content/files/"
-            exit 0
-          fi
-          
-          # Commit the changes
           git commit -m "🤖 Update Bluesky feed"
-          
-          # Push the new branch
           git push origin $BRANCH_NAME
           
           # Create a pull request
