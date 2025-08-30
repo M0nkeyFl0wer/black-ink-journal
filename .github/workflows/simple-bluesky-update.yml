@@ -62,6 +62,7 @@ jobs:
                   transition: background-color 0.3s;
                   cursor: pointer;
                   background-color: #000000;
+                  position: relative;
                 }
                 .bluesky-post:hover {
                   background-color: #111111 !important;
@@ -72,6 +73,8 @@ jobs:
                   margin: 10px 0;
                   overflow: hidden;
                   background: #111;
+                  position: relative;
+                  z-index: 1;
                 }
                 .link-preview-content {
                   padding: 12px;
@@ -92,6 +95,8 @@ jobs:
                   color: #888;
                   font-size: 12px;
                   text-decoration: none;
+                  position: relative;
+                  z-index: 2;
                 }
                 .link-preview img {
                   width: 100%;
@@ -157,7 +162,12 @@ jobs:
                   if (externalLink.description) {
                     html += `<div class="link-preview-desc">${externalLink.description}</div>`;
                   }
-                  html += `<a href="${externalLink.url}" class="link-preview-url" onclick="event.stopPropagation();" target="_blank">${new URL(externalLink.url).hostname}</a>`;
+                  try {
+                    const hostname = new URL(externalLink.url).hostname;
+                    html += `<div class="link-preview-url">${hostname}</div>`;
+                  } catch (e) {
+                    html += `<div class="link-preview-url">${externalLink.url}</div>`;
+                  }
                   html += `</div></div>`;
                 }
                 
@@ -195,5 +205,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add content/bluesky-widget.html
-          git commit -m "Add link previews to Bluesky feed widget" || echo "No changes"
+          git commit -m "Remove inline JavaScript for full CSP compliance" || echo "No changes"
           git push || echo "Push failed"
