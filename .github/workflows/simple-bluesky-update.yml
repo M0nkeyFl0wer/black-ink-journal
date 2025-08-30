@@ -1,4 +1,4 @@
-  name: Update Bluesky Feed - Static HTML
+ name: Update Bluesky Feed - Static HTML
   on:
     schedule:
       - cron: '0 * * * *'
@@ -26,19 +26,13 @@
             BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
             BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
           run: |
-            # Configure git
             git config user.name "github-actions[bot]"
             git config user.email 
   "github-actions[bot]@users.noreply.github.com"
-
-            # Pull latest changes first
             git pull origin main
-
-            # Install dependencies
             npm install @atproto/api
 
-            # Generate feed
-            node << 'SCRIPT'
+            cat > generate_feed.js << 'EOF'
             const { BskyAgent } = require('@atproto/api');
             const fs = require('fs');
 
@@ -57,7 +51,6 @@
                   limit: 10
                 });
 
-                // Filter out reposts and replies - only original posts
                 const originalPosts = response.data.feed.filter(item => {
                   return !item.reason && !item.post.record.reply &&
   item.post.author.did === response.data.feed[0].post.author.did;
@@ -74,33 +67,28 @@
   andle}/post/${item.post.uri.split('/').pop()}`
                 }));
 
-                // Generate static HTML instead of JSON
-                const htmlContent = `
-  <div class="bluesky-feed" style="background: #1a1a1a; color: white; 
-  padding: 20px; margin: 20px 0; border-radius: 8px;">
-    <h3 style="margin-top: 0;">Recent Bluesky Posts</h3>
-    ${posts.map(post => `
-      <div class="bluesky-post" style="border-bottom: 1px solid #333; 
-  padding: 15px 0; margin: 10px 0;">
-        <p style="margin: 0 0 10px 0; line-height: 1.4;">${post.text}</p>
-        <small style="color: #888;">
-          <a href="${post.blueskyUrl}" target="_blank" style="color:
-  #1da1f2; text-decoration: none;">View on Bluesky</a>
-          • ${new Date(post.createdAt).toLocaleDateString()}
-        </small>
-      </div>
-    `).join('')}
-  </div>`;
+                const htmlContent = `<div class="bluesky-feed"
+  style="background: #1a1a1a; color: white; padding: 20px; margin: 20px 0; 
+  border-radius: 8px;">
+                  <h3 style="margin-top: 0;">Recent Bluesky Posts</h3>
+                  ${posts.map(post => `<div class="bluesky-post"
+  style="border-bottom: 1px solid #333; padding: 15px 0; margin: 10px 0;">
+                    <p style="margin: 0 0 10px 0; line-height:
+  1.4;">${post.text}</p>
+                    <small style="color: #888;">
+                      <a href="${post.blueskyUrl}" target="_blank"
+  style="color: #1da1f2; text-decoration: none;">View on Bluesky</a>
+                      • ${new Date(post.createdAt).toLocaleDateString()}
+                    </small>
+                  </div>`).join('')}
+                </div>`;
 
-                // Ensure directory exists
                 if (!fs.existsSync('content')) {
                   fs.mkdirSync('content', { recursive: true });
                 }
 
-                // Write HTML file
                 fs.writeFileSync('content/bluesky-widget.html',
   htmlContent);
-
                 console.log(`✅ Generated HTML widget with ${posts.length}
   posts`);
 
@@ -111,18 +99,16 @@
             }
 
             main();
-            SCRIPT
+            EOF
 
-            # Check if files changed
+            node generate_feed.js
+
             if git diff --quiet content/bluesky-widget.html; then
               echo "No changes to HTML file"
               exit 0
             fi
 
-            # Add and commit changes
             git add content/bluesky-widget.html
             git commit -m "🤖 Update Bluesky feed HTML [skip ci]"
-
-            # Push with retry logic
             git push origin main --force-with-lease || (git pull --rebase
   origin main && git push origin main)
