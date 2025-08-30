@@ -1,4 +1,4 @@
- name: Update Bluesky Feed - Static HTML
+  name: Update Bluesky Feed - Static HTML
   on:
     schedule:
       - cron: '0 * * * *'
@@ -13,102 +13,46 @@
       steps:
         - name: Checkout
           uses: actions/checkout@v4
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Setup Node
           uses: actions/setup-node@v4
           with:
             node-version: '20'
 
-        - name: Generate and commit feed
+        - name: Generate HTML feed
           env:
             BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
             BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
           run: |
+            npm install @atproto/api
+            node -e "
+            const { BskyAgent } = require('@atproto/api');
+            const fs = require('fs');
+            (async () => {
+              const agent = new BskyAgent({ service: 'https://bsky.social' 
+  });
+              await agent.login({ identifier: process.env.BLUESKY_HANDLE, 
+  password: process.env.BLUESKY_APP_PASSWORD });
+              const response = await agent.getAuthorFeed({ actor: 
+  process.env.BLUESKY_HANDLE, limit: 4 });
+              const posts = response.data.feed.slice(0, 3);
+              const html = '<div 
+  style=\"background:#1a1a1a;color:white;padding:20px;margin:20px 
+  0;\"><h3>Recent Bluesky Posts</h3>' + posts.map(item => '<div 
+  style=\"padding:10px 0;border-bottom:1px solid #333;\"><p>' + 
+  (item.post.record.text || '') + '</p><a href=\"https://bsky.app/profile/' 
+  + item.post.author.handle + '/post/' + item.post.uri.split('/').pop() + 
+  '\" target=\"_blank\">View on Bluesky</a></div>').join('') + '</div>';
+              fs.mkdirSync('content', { recursive: true });
+              fs.writeFileSync('content/bluesky-widget.html', html);
+            })();
+            "
+
+        - name: Commit changes
+          run: |
             git config user.name "github-actions[bot]"
             git config user.email 
   "github-actions[bot]@users.noreply.github.com"
-            git pull origin main
-            npm install @atproto/api
-
-            cat > generate_feed.js << 'EOF'
-            const { BskyAgent } = require('@atproto/api');
-            const fs = require('fs');
-
-            async function main() {
-              try {
-                const agent = new BskyAgent({ service: 'https://bsky.social'
-   });
-
-                await agent.login({
-                  identifier: process.env.BLUESKY_HANDLE,
-                  password: process.env.BLUESKY_APP_PASSWORD
-                });
-
-                const response = await agent.getAuthorFeed({
-                  actor: process.env.BLUESKY_HANDLE,
-                  limit: 10
-                });
-
-                const originalPosts = response.data.feed.filter(item => {
-                  return !item.reason && !item.post.record.reply &&
-  item.post.author.did === response.data.feed[0].post.author.did;
-                });
-
-                const posts = originalPosts.slice(0, 4).map(item => ({
-                  text: item.post.record.text || '',
-                  createdAt: item.post.record.createdAt,
-                  author: {
-                    displayName: item.post.author.displayName || '',
-                    handle: item.post.author.handle || ''
-                  },
-                  blueskyUrl: `https://bsky.app/profile/${item.post.author.h
-  andle}/post/${item.post.uri.split('/').pop()}`
-                }));
-
-                const htmlContent = `<div class="bluesky-feed"
-  style="background: #1a1a1a; color: white; padding: 20px; margin: 20px 0; 
-  border-radius: 8px;">
-                  <h3 style="margin-top: 0;">Recent Bluesky Posts</h3>
-                  ${posts.map(post => `<div class="bluesky-post"
-  style="border-bottom: 1px solid #333; padding: 15px 0; margin: 10px 0;">
-                    <p style="margin: 0 0 10px 0; line-height:
-  1.4;">${post.text}</p>
-                    <small style="color: #888;">
-                      <a href="${post.blueskyUrl}" target="_blank"
-  style="color: #1da1f2; text-decoration: none;">View on Bluesky</a>
-                      • ${new Date(post.createdAt).toLocaleDateString()}
-                    </small>
-                  </div>`).join('')}
-                </div>`;
-
-                if (!fs.existsSync('content')) {
-                  fs.mkdirSync('content', { recursive: true });
-                }
-
-                fs.writeFileSync('content/bluesky-widget.html',
-  htmlContent);
-                console.log(`✅ Generated HTML widget with ${posts.length}
-  posts`);
-
-              } catch (error) {
-                console.error('❌ Error:', error);
-                process.exit(1);
-              }
-            }
-
-            main();
-            EOF
-
-            node generate_feed.js
-
-            if git diff --quiet content/bluesky-widget.html; then
-              echo "No changes to HTML file"
-              exit 0
-            fi
-
-            git add content/bluesky-widget.html
-            git commit -m "🤖 Update Bluesky feed HTML [skip ci]"
-            git push origin main --force-with-lease || (git pull --rebase
-  origin main && git push origin main)
+            git add content/bluesky-widget.html || true
+            git commit -m "Update Bluesky feed" || true
+            git push || true
