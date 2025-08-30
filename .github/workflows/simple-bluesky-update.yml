@@ -48,7 +48,26 @@ jobs:
               
               const posts = originalPosts.slice(0, 4);
               
-              let html = `<div style="background:#000000;color:white;padding:20px;margin:20px 0;border-radius:8px;">
+              let html = `<style>
+                .bluesky-post-link {
+                  text-decoration: none;
+                  color: inherit;
+                  display: block;
+                }
+                .bluesky-post {
+                  padding: 15px;
+                  margin: 10px 0;
+                  border: 1px solid #222;
+                  border-radius: 8px;
+                  transition: background-color 0.3s;
+                  cursor: pointer;
+                  background-color: #000000;
+                }
+                .bluesky-post:hover {
+                  background-color: #111111 !important;
+                }
+              </style>
+              <div style="background:#000000;color:white;padding:20px;margin:20px 0;border-radius:8px;">
                 <div style="text-align:center;margin-bottom:20px;">
                   <a href="https://bsky.app/profile/${process.env.BLUESKY_HANDLE}" target="_blank" style="color:#1da1f2;text-decoration:none;font-size:18px;">
                     🌤️ Join Me Where the Sky is Blue
@@ -72,10 +91,8 @@ jobs:
                   author: item.post.embed.record.author?.displayName || 'Unknown'
                 } : null;
                 
-                html += `<a href="${url}" target="_blank" style="text-decoration:none;color:inherit;display:block;">
-                  <div style="padding:15px;margin:10px 0;border:1px solid #222;border-radius:8px;transition:background-color 0.3s;cursor:pointer;" 
-                       onmouseover="this.style.backgroundColor='#111111'" 
-                       onmouseout="this.style.backgroundColor='#000000'">
+                html += `<a href="${url}" target="_blank" class="bluesky-post-link">
+                  <div class="bluesky-post">
                     <p style="margin:0 0 10px 0;line-height:1.4;color:white;">${text}</p>`;
                 
                 // Add images if present
@@ -121,5 +138,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add content/bluesky-widget.html
-          git commit -m "Update Bluesky feed HTML with AMOLED black theme" || echo "No changes"
+          git commit -m "Update Bluesky feed HTML with CSP-safe styling" || echo "No changes"
           git push || echo "Push failed"
