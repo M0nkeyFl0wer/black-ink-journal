@@ -1,4 +1,60 @@
-<div style="background:#000000;color:white;padding:20px;margin:20px 0;border-radius:8px;">
+<style>
+      .bluesky-post-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+      .bluesky-post {
+        padding: 15px;
+        margin: 10px 0;
+        border: 1px solid #222;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+        background-color: #000000;
+        position: relative;
+      }
+      .bluesky-post:hover {
+        background-color: #111111 !important;
+      }
+      .link-preview {
+        border: 1px solid #333;
+        border-radius: 6px;
+        margin: 10px 0;
+        overflow: hidden;
+        background: #111;
+        position: relative;
+        z-index: 1;
+      }
+      .link-preview-content {
+        padding: 12px;
+      }
+      .link-preview-title {
+        font-weight: bold;
+        margin: 0 0 5px 0;
+        color: #1da1f2;
+        font-size: 14px;
+      }
+      .link-preview-desc {
+        color: #ccc;
+        font-size: 13px;
+        margin: 0 0 5px 0;
+        line-height: 1.3;
+      }
+      .link-preview-url {
+        color: #888;
+        font-size: 12px;
+        text-decoration: none;
+        position: relative;
+        z-index: 2;
+      }
+      .link-preview img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+    </style>
+    <div style="background:#000000;color:white;padding:20px;margin:20px 0;border-radius:8px;">
       <div style="text-align:center;margin-bottom:20px;">
         <a href="https://bsky.app/profile/benwest.bsky.social" target="_blank" style="color:#1da1f2;text-decoration:none;font-size:18px;">
           🌤️ Join Me Where the Sky is Blue
