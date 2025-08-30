@@ -39,29 +39,73 @@ jobs:
               
               const response = await agent.getAuthorFeed({
                 actor: process.env.BLUESKY_HANDLE,
-                limit: 4
+                limit: 6
               });
               
-              const posts = response.data.feed.slice(0, 3);
-              let html = '<div style="background:#1a1a1a;color:white;padding:20px;margin:20px 0;"><h3>Recent Bluesky Posts</h3>';
+              const originalPosts = response.data.feed.filter(item => {
+                return !item.reason && !item.post.record.reply && item.post.author.did === response.data.feed[0].post.author.did;
+              });
+              
+              const posts = originalPosts.slice(0, 4);
+              
+              let html = `<div style="background:#000000;color:white;padding:20px;margin:20px 0;border-radius:8px;">
+                <div style="text-align:center;margin-bottom:20px;">
+                  <a href="https://bsky.app/profile/${process.env.BLUESKY_HANDLE}" target="_blank" style="color:#1da1f2;text-decoration:none;font-size:18px;">
+                    🌤️ Join Me Where the Sky is Blue
+                  </a>
+                </div>
+                <h3 style="margin-top:0;margin-bottom:20px;">Recent Posts</h3>`;
               
               for (const item of posts) {
                 const text = item.post.record.text || '';
                 const handle = item.post.author.handle;
                 const postId = item.post.uri.split('/').pop();
                 const url = `https://bsky.app/profile/${handle}/post/${postId}`;
+                const date = new Date(item.post.record.createdAt).toLocaleDateString();
                 
-                html += `<div style="padding:10px 0;border-bottom:1px solid #333;">`;
-                html += `<p>${text}</p>`;
-                html += `<a href="${url}" target="_blank">View on Bluesky</a>`;
-                html += `</div>`;
+                // Check for images
+                const images = item.post.embed?.images || [];
+                
+                // Check for quoted post
+                const quotedPost = item.post.embed?.record?.value ? {
+                  text: item.post.embed.record.value.text,
+                  author: item.post.embed.record.author?.displayName || 'Unknown'
+                } : null;
+                
+                html += `<a href="${url}" target="_blank" style="text-decoration:none;color:inherit;display:block;">
+                  <div style="padding:15px;margin:10px 0;border:1px solid #222;border-radius:8px;transition:background-color 0.3s;cursor:pointer;" 
+                       onmouseover="this.style.backgroundColor='#111111'" 
+                       onmouseout="this.style.backgroundColor='#000000'">
+                    <p style="margin:0 0 10px 0;line-height:1.4;color:white;">${text}</p>`;
+                
+                // Add images if present
+                if (images.length > 0) {
+                  html += `<div style="margin:10px 0;">`;
+                  for (const img of images) {
+                    html += `<img src="${img.fullsize}" alt="${img.alt || 'Image from post'}" style="max-width:100%;height:auto;border-radius:4px;margin:5px 5px 5px 0;">`;
+                  }
+                  html += `</div>`;
+                }
+                
+                // Add quoted post if present
+                if (quotedPost) {
+                  html += `<div style="border-left:3px solid #1da1f2;padding-left:10px;margin:10px 0;background:#000000;padding:10px;border-radius:4px;">
+                    <small style="color:#888;">Quoting ${quotedPost.author}:</small>
+                    <p style="margin:5px 0;font-style:italic;color:#ccc;">${quotedPost.text}</p>
+                  </div>`;
+                }
+                
+                html += `    <small style="color:#888;">${date}</small>
+                  </div>
+                </a>`;
               }
               
               html += '</div>';
               
               fs.mkdirSync('content', { recursive: true });
               fs.writeFileSync('content/bluesky-widget.html', html);
-              console.log('Generated HTML widget successfully');
+              console.log(`Generated HTML widget with ${posts.length} posts`);
+              
             } catch (error) {
               console.error('Error:', error);
               process.exit(1);
@@ -77,5 +121,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add content/bluesky-widget.html
-          git commit -m "Update Bluesky feed HTML" || echo "No changes"
+          git commit -m "Update Bluesky feed HTML with AMOLED black theme" || echo "No changes"
           git push || echo "Push failed"
