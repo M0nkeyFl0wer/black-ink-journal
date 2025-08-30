@@ -1,0 +1,305 @@
+name: Ghost Blog Backup & Deploy to GitHub Pages
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC to backup blog
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  backup-ghost:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install axios cheerio fs-extra
+
+      - name: Backup Ghost content
+        env:
+          GHOST_URL: https://benwest.blog
+          GHOST_API_KEY: ${{ secrets.GHOST_API_KEY }}
+        run: |
+          cat > backup-ghost.js << 'EOF'
+          const axios = require('axios');
+          const fs = require('fs-extra');
+          const path = require('path');
+
+          async function backupGhost() {
+            try {
+              const GHOST_URL = process.env.GHOST_URL || 'https://benwest.blog';
+              const API_KEY = process.env.GHOST_API_KEY;
+              
+              // Backup directory
+              const backupDir = './backup';
+              await fs.ensureDir(backupDir);
+              await fs.ensureDir(`${backupDir}/posts`);
+              await fs.ensureDir(`${backupDir}/pages`);
+              await fs.ensureDir(`${backupDir}/assets`);
+
+              console.log('Starting Ghost backup...');
+
+              // Backup posts (public posts only, no API key needed)
+              const postsUrl = `${GHOST_URL}/ghost/api/content/posts/?key=22444f78447824223cefc48062&limit=all&include=tags,authors&formats=html`;
+              console.log('Fetching posts...');
+              
+              const postsResponse = await axios.get(postsUrl);
+              const posts = postsResponse.data.posts;
+              
+              // Save posts as JSON
+              await fs.writeFile(`${backupDir}/posts.json`, JSON.stringify(posts, null, 2));
+              
+              // Save individual post files
+              for (const post of posts) {
+                const postData = {
+                  ...post,
+                  backup_date: new Date().toISOString()
+                };
+                
+                const filename = `${post.slug}.json`;
+                await fs.writeFile(`${backupDir}/posts/${filename}`, JSON.stringify(postData, null, 2));
+                console.log(`Backed up post: ${post.title}`);
+              }
+
+              // Backup pages
+              const pagesUrl = `${GHOST_URL}/ghost/api/content/pages/?key=22444f78447824223cefc48062&limit=all&formats=html`;
+              console.log('Fetching pages...');
+              
+              try {
+                const pagesResponse = await axios.get(pagesUrl);
+                const pages = pagesResponse.data.pages;
+                
+                await fs.writeFile(`${backupDir}/pages.json`, JSON.stringify(pages, null, 2));
+                
+                for (const page of pages) {
+                  const pageData = {
+                    ...page,
+                    backup_date: new Date().toISOString()
+                  };
+                  
+                  const filename = `${page.slug}.json`;
+                  await fs.writeFile(`${backupDir}/pages/${filename}`, JSON.stringify(pageData, null, 2));
+                  console.log(`Backed up page: ${page.title}`);
+                }
+              } catch (error) {
+                console.log('Pages backup failed (might not have public pages):', error.message);
+              }
+
+              // Create backup metadata
+              const metadata = {
+                backup_date: new Date().toISOString(),
+                ghost_url: GHOST_URL,
+                total_posts: posts.length,
+                posts: posts.map(p => ({
+                  title: p.title,
+                  slug: p.slug,
+                  published_at: p.published_at,
+                  updated_at: p.updated_at
+                }))
+              };
+
+              await fs.writeFile(`${backupDir}/metadata.json`, JSON.stringify(metadata, null, 2));
+              
+              console.log(`✅ Backup completed: ${posts.length} posts backed up`);
+              
+            } catch (error) {
+              console.error('❌ Backup failed:', error);
+              process.exit(1);
+            }
+          }
+
+          backupGhost();
+          EOF
+
+          node backup-ghost.js
+
+      - name: Generate static site
+        run: |
+          cat > generate-site.js << 'EOF'
+          const fs = require('fs-extra');
+          const path = require('path');
+
+          async function generateSite() {
+            try {
+              // Read backup data
+              const posts = JSON.parse(await fs.readFile('./backup/posts.json', 'utf8'));
+              const metadata = JSON.parse(await fs.readFile('./backup/metadata.json', 'utf8'));
+
+              // Create site directory
+              await fs.ensureDir('./site');
+              await fs.ensureDir('./site/posts');
+
+              // Generate index.html
+              const indexHtml = `<!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Ben West's Blog - GitHub Backup</title>
+                <style>
+                  * { margin: 0; padding: 0; box-sizing: border-box; }
+                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #fff; background: #000; }
+                  .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+                  .header { text-align: center; margin-bottom: 40px; padding: 40px 0; }
+                  .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+                  .header p { color: #ccc; font-size: 1.1rem; }
+                  .backup-notice { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center; }
+                  .backup-notice a { color: #1da1f2; text-decoration: none; }
+                  .backup-notice a:hover { text-decoration: underline; }
+                  .post { background: #111; border: 1px solid #222; padding: 25px; margin-bottom: 20px; border-radius: 8px; }
+                  .post h2 { margin-bottom: 10px; }
+                  .post h2 a { color: #fff; text-decoration: none; }
+                  .post h2 a:hover { color: #1da1f2; }
+                  .post-meta { color: #888; font-size: 0.9rem; margin-bottom: 15px; }
+                  .post-excerpt { color: #ccc; line-height: 1.6; }
+                  .tags { margin-top: 15px; }
+                  .tag { background: #333; color: #ccc; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; text-decoration: none; }
+                  .footer { text-align: center; margin-top: 60px; padding: 20px; border-top: 1px solid #333; color: #888; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <header class="header">
+                    <h1>Ben West's Blog</h1>
+                    <p>GitHub Backup Site</p>
+                  </header>
+
+                  <div class="backup-notice">
+                    <p><strong>📁 This is a backup version.</strong><br>
+                    Visit the main site at <a href="https://benwest.blog" target="_blank">benwest.blog</a> for the latest content.<br>
+                    Last backup: ${new Date(metadata.backup_date).toLocaleString()}
+                    </p>
+                  </div>
+
+                  <main>
+                    ${posts.map(post => `
+                      <article class="post">
+                        <h2><a href="posts/${post.slug}.html">${post.title}</a></h2>
+                        <div class="post-meta">
+                          Published on ${new Date(post.published_at).toLocaleDateString()} 
+                          ${post.primary_author ? `by ${post.primary_author.name}` : ''}
+                        </div>
+                        <div class="post-excerpt">${post.excerpt || 'No excerpt available.'}</div>
+                        ${post.tags && post.tags.length > 0 ? `
+                          <div class="tags">
+                            ${post.tags.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
+                          </div>
+                        ` : ''}
+                      </article>
+                    `).join('')}
+                  </main>
+
+                  <footer class="footer">
+                    <p>&copy; ${new Date().getFullYear()} Ben West. GitHub backup generated automatically.</p>
+                  </footer>
+                </div>
+              </body>
+              </html>`;
+
+              await fs.writeFile('./site/index.html', indexHtml);
+
+              // Generate individual post pages
+              for (const post of posts) {
+                const postHtml = `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>${post.title} - Ben West's Blog</title>
+                  <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #fff; background: #000; }
+                    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+                    .nav { margin-bottom: 30px; }
+                    .nav a { color: #1da1f2; text-decoration: none; }
+                    .nav a:hover { text-decoration: underline; }
+                    .post-header { margin-bottom: 30px; }
+                    .post-title { font-size: 2.2rem; margin-bottom: 15px; }
+                    .post-meta { color: #888; font-size: 0.9rem; padding: 15px 0; border-bottom: 1px solid #333; }
+                    .post-content { color: #ccc; line-height: 1.8; }
+                    .post-content h1, .post-content h2, .post-content h3 { color: #fff; margin: 30px 0 15px 0; }
+                    .post-content p { margin-bottom: 15px; }
+                    .post-content a { color: #1da1f2; }
+                    .post-content code { background: #222; padding: 2px 6px; border-radius: 4px; }
+                    .post-content pre { background: #111; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
+                    .post-content blockquote { border-left: 3px solid #1da1f2; padding-left: 20px; margin: 20px 0; color: #aaa; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <nav class="nav">
+                      <a href="../index.html">&larr; Back to Blog</a> | 
+                      <a href="https://benwest.blog" target="_blank">Visit Live Site</a>
+                    </nav>
+                    
+                    <article>
+                      <header class="post-header">
+                        <h1 class="post-title">${post.title}</h1>
+                        <div class="post-meta">
+                          Published on ${new Date(post.published_at).toLocaleDateString()}
+                          ${post.primary_author ? `by ${post.primary_author.name}` : ''}
+                          ${post.updated_at !== post.published_at ? ` • Updated ${new Date(post.updated_at).toLocaleDateString()}` : ''}
+                        </div>
+                      </header>
+                      
+                      <div class="post-content">
+                        ${post.html || '<p>Content not available in backup.</p>'}
+                      </div>
+                    </article>
+                  </div>
+                </body>
+                </html>`;
+
+                await fs.writeFile(`./site/posts/${post.slug}.html`, postHtml);
+              }
+
+              console.log(`✅ Static site generated with ${posts.length} posts`);
+
+            } catch (error) {
+              console.error('❌ Site generation failed:', error);
+              process.exit(1);
+            }
+          }
+
+          generateSite();
+          EOF
+
+          node generate-site.js
+
+      - name: Commit backup files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backup/ site/ || true
+          git commit -m "🔄 Automated Ghost backup - $(date)" || echo "No changes to commit"
+          git push || echo "Nothing to push"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2

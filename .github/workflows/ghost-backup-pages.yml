@@ -1,0 +1,358 @@
+name: Ghost Backup + Bluesky Feed Integration
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily backup at 2 AM
+    - cron: '0 * * * *'  # Bluesky feed hourly
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  backup-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install axios cheerio fs-extra @atproto/api
+
+      - name: Update Bluesky feed
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+        run: |
+          # Use our existing Bluesky feed generator
+          node -e "
+          const { BskyAgent } = require('@atproto/api');
+          const fs = require('fs-extra');
+          
+          (async () => {
+            try {
+              const agent = new BskyAgent({ service: 'https://bsky.social' });
+              await agent.login({
+                identifier: process.env.BLUESKY_HANDLE,
+                password: process.env.BLUESKY_APP_PASSWORD
+              });
+              
+              const response = await agent.getAuthorFeed({
+                actor: process.env.BLUESKY_HANDLE,
+                limit: 6
+              });
+              
+              const originalPosts = response.data.feed.filter(item => {
+                return !item.reason && !item.post.record.reply && item.post.author.did === response.data.feed[0].post.author.did;
+              });
+              
+              const posts = originalPosts.slice(0, 4).map(item => ({
+                id: item.post.cid,
+                text: item.post.record.text || '',
+                createdAt: item.post.record.createdAt,
+                author: {
+                  displayName: item.post.author.displayName || '',
+                  handle: item.post.author.handle || ''
+                },
+                blueskyUrl: \`https://bsky.app/profile/\${item.post.author.handle}/post/\${item.post.uri.split('/').pop()}\`,
+                images: item.post.embed?.images?.map(img => ({
+                  url: img.fullsize,
+                  alt: img.alt || ''
+                })) || [],
+                externalLink: item.post.embed?.external ? {
+                  url: item.post.embed.external.uri,
+                  title: item.post.embed.external.title,
+                  description: item.post.embed.external.description,
+                  thumb: item.post.embed.external.thumb
+                } : null,
+                quotedPost: item.post.embed?.record?.value ? {
+                  text: item.post.embed.record.value.text,
+                  author: item.post.embed.record.author?.displayName || 'Unknown',
+                  url: \`https://bsky.app/profile/\${item.post.embed.record.author.handle}/post/\${item.post.embed.record.uri.split('/').pop()}\`
+                } : null
+              }));
+              
+              const feedData = {
+                posts,
+                generatedAt: new Date().toISOString(),
+                totalPosts: posts.length
+              };
+              
+              await fs.ensureDir('content');
+              await fs.writeFile('content/bluesky-feed.json', JSON.stringify(feedData, null, 2));
+              console.log(\`✅ Generated Bluesky feed with \${posts.length} posts\`);
+              
+            } catch (error) {
+              console.error('❌ Bluesky feed error:', error);
+            }
+          })();
+          "
+
+      - name: Backup Ghost content
+        env:
+          GHOST_URL: https://benwest.blog
+        run: |
+          cat > backup-ghost.js << 'EOF'
+          const axios = require('axios');
+          const fs = require('fs-extra');
+
+          async function backupGhost() {
+            try {
+              const GHOST_URL = 'https://benwest.blog';
+              const backupDir = './backup';
+              await fs.ensureDir(backupDir);
+              await fs.ensureDir(`${backupDir}/posts`);
+
+              console.log('Starting Ghost backup...');
+
+              const postsUrl = `${GHOST_URL}/ghost/api/content/posts/?key=22444f78447824223cefc48062&limit=all&include=tags,authors&formats=html`;
+              const postsResponse = await axios.get(postsUrl);
+              const posts = postsResponse.data.posts;
+              
+              await fs.writeFile(`${backupDir}/posts.json`, JSON.stringify(posts, null, 2));
+              
+              for (const post of posts) {
+                const postData = { ...post, backup_date: new Date().toISOString() };
+                await fs.writeFile(`${backupDir}/posts/${post.slug}.json`, JSON.stringify(postData, null, 2));
+              }
+
+              const metadata = {
+                backup_date: new Date().toISOString(),
+                ghost_url: GHOST_URL,
+                total_posts: posts.length
+              };
+
+              await fs.writeFile(`${backupDir}/metadata.json`, JSON.stringify(metadata, null, 2));
+              console.log(`✅ Backup completed: ${posts.length} posts`);
+              
+            } catch (error) {
+              console.error('❌ Backup failed:', error);
+            }
+          }
+
+          backupGhost();
+          EOF
+
+          node backup-ghost.js
+
+      - name: Generate static site with Bluesky feed
+        run: |
+          cat > generate-site-with-bluesky.js << 'EOF'
+          const fs = require('fs-extra');
+
+          async function generateSite() {
+            try {
+              const posts = JSON.parse(await fs.readFile('./backup/posts.json', 'utf8'));
+              const metadata = JSON.parse(await fs.readFile('./backup/metadata.json', 'utf8'));
+              
+              let blueskyData = null;
+              try {
+                blueskyData = JSON.parse(await fs.readFile('./content/bluesky-feed.json', 'utf8'));
+              } catch (e) {
+                console.log('No Bluesky data found, continuing without it');
+              }
+
+              await fs.ensureDir('./site');
+              await fs.ensureDir('./site/posts');
+
+              // Generate Bluesky widget HTML
+              let blueskyWidget = '';
+              if (blueskyData && blueskyData.posts.length > 0) {
+                blueskyWidget = `
+                  <section class="bluesky-section">
+                    <div class="bluesky-header">
+                      <h2><span>🌤️</span> Recent from Bluesky</h2>
+                      <a href="https://bsky.app/profile/merry.dust9494@fastmail.com" target="_blank" class="bluesky-follow">Follow on Bluesky</a>
+                    </div>
+                    <div class="bluesky-posts">
+                      ${blueskyData.posts.map(post => `
+                        <div class="bluesky-post">
+                          <p class="post-text">${post.text}</p>
+                          ${post.images && post.images.length > 0 ? `
+                            <div class="post-images">
+                              ${post.images.map(img => `<img src="${img.url}" alt="${img.alt}" loading="lazy">`).join('')}
+                            </div>
+                          ` : ''}
+                          ${post.externalLink ? `
+                            <div class="external-link">
+                              ${post.externalLink.thumb ? `<img src="${post.externalLink.thumb}" alt="Link preview">` : ''}
+                              <div class="link-content">
+                                <h4>${post.externalLink.title || ''}</h4>
+                                <p>${post.externalLink.description || ''}</p>
+                                <a href="${post.externalLink.url}" target="_blank">${new URL(post.externalLink.url).hostname}</a>
+                              </div>
+                            </div>
+                          ` : ''}
+                          <div class="post-meta">
+                            <a href="${post.blueskyUrl}" target="_blank">${new Date(post.createdAt).toLocaleDateString()}</a>
+                          </div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </section>
+                `;
+              }
+
+              const indexHtml = `<!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Ben West's Blog - GitHub Backup</title>
+                <style>
+                  * { margin: 0; padding: 0; box-sizing: border-box; }
+                  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #fff; background: #000; }
+                  .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+                  .header { text-align: center; margin-bottom: 40px; padding: 40px 0; }
+                  .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+                  .header p { color: #ccc; font-size: 1.1rem; }
+                  
+                  .main-content { display: grid; grid-template-columns: 1fr 300px; gap: 40px; }
+                  @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } }
+                  
+                  .backup-notice { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center; }
+                  .backup-notice a { color: #1da1f2; text-decoration: none; }
+                  
+                  .post { background: #111; border: 1px solid #222; padding: 25px; margin-bottom: 20px; border-radius: 8px; }
+                  .post h2 a { color: #fff; text-decoration: none; }
+                  .post h2 a:hover { color: #1da1f2; }
+                  .post-meta { color: #888; font-size: 0.9rem; margin: 10px 0 15px 0; }
+                  .post-excerpt { color: #ccc; line-height: 1.6; }
+                  
+                  /* Bluesky Widget Styles */
+                  .bluesky-section { background: #111; border: 1px solid #222; padding: 25px; border-radius: 8px; position: sticky; top: 20px; }
+                  .bluesky-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+                  .bluesky-header h2 { font-size: 1.3rem; }
+                  .bluesky-header span { margin-right: 8px; }
+                  .bluesky-follow { background: #1da1f2; color: white; padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 0.9rem; }
+                  .bluesky-follow:hover { background: #0d8bd9; }
+                  
+                  .bluesky-post { border-bottom: 1px solid #333; padding: 15px 0; }
+                  .bluesky-post:last-child { border-bottom: none; }
+                  .post-text { color: #fff; margin-bottom: 10px; line-height: 1.4; }
+                  .post-images img { max-width: 100%; border-radius: 6px; margin: 10px 5px 10px 0; }
+                  .external-link { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 12px; margin: 10px 0; }
+                  .external-link img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
+                  .link-content h4 { color: #1da1f2; font-size: 0.95rem; margin-bottom: 5px; }
+                  .link-content p { color: #ccc; font-size: 0.85rem; margin-bottom: 5px; }
+                  .link-content a { color: #888; font-size: 0.8rem; text-decoration: none; }
+                  .post-meta a { color: #888; font-size: 0.8rem; text-decoration: none; }
+                  .post-meta a:hover { color: #1da1f2; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <header class="header">
+                    <h1>Ben West's Blog</h1>
+                    <p>GitHub Backup Site</p>
+                  </header>
+
+                  <div class="backup-notice">
+                    <p><strong>📁 This is a backup version.</strong><br>
+                    Visit the main site at <a href="https://benwest.blog" target="_blank">benwest.blog</a><br>
+                    Last backup: ${new Date(metadata.backup_date).toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div class="main-content">
+                    <main class="posts-section">
+                      ${posts.map(post => `
+                        <article class="post">
+                          <h2><a href="posts/${post.slug}.html">${post.title}</a></h2>
+                          <div class="post-meta">Published ${new Date(post.published_at).toLocaleDateString()}</div>
+                          <div class="post-excerpt">${post.excerpt || 'No excerpt available.'}</div>
+                        </article>
+                      `).join('')}
+                    </main>
+                    
+                    <aside class="sidebar">
+                      ${blueskyWidget}
+                    </aside>
+                  </div>
+                </div>
+              </body>
+              </html>`;
+
+              await fs.writeFile('./site/index.html', indexHtml);
+
+              // Generate individual post pages (same as before)
+              for (const post of posts) {
+                const postHtml = `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>${post.title} - Ben West's Blog</title>
+                  <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #fff; background: #000; }
+                    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+                    .nav { margin-bottom: 30px; }
+                    .nav a { color: #1da1f2; text-decoration: none; }
+                    .post-title { font-size: 2.2rem; margin-bottom: 15px; }
+                    .post-meta { color: #888; padding: 15px 0; border-bottom: 1px solid #333; margin-bottom: 30px; }
+                    .post-content { color: #ccc; line-height: 1.8; }
+                    .post-content h1, .post-content h2, .post-content h3 { color: #fff; margin: 30px 0 15px 0; }
+                    .post-content p { margin-bottom: 15px; }
+                    .post-content a { color: #1da1f2; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <nav class="nav">
+                      <a href="../index.html">&larr; Back to Blog</a> | 
+                      <a href="https://benwest.blog" target="_blank">Visit Live Site</a>
+                    </nav>
+                    <article>
+                      <h1 class="post-title">${post.title}</h1>
+                      <div class="post-meta">Published ${new Date(post.published_at).toLocaleDateString()}</div>
+                      <div class="post-content">${post.html || '<p>Content not available in backup.</p>'}</div>
+                    </article>
+                  </div>
+                </body>
+                </html>`;
+
+                await fs.writeFile(`./site/posts/${post.slug}.html`, postHtml);
+              }
+
+              console.log(`✅ Static site with Bluesky feed generated: ${posts.length} posts`);
+
+            } catch (error) {
+              console.error('❌ Site generation failed:', error);
+            }
+          }
+
+          generateSite();
+          EOF
+
+          node generate-site-with-bluesky.js
+
+      - name: Commit and deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backup/ site/ content/ || true
+          git commit -m "🔄 Ghost backup + Bluesky feed - $(date)" || echo "No changes"
+          git push || echo "Nothing to push"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
