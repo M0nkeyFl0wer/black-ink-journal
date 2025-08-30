@@ -1,58 +1,81 @@
-  name: Update Bluesky Feed - Static HTML
-  on:
-    schedule:
-      - cron: '0 * * * *'
-    workflow_dispatch:
+name: Update Bluesky Feed - Static HTML
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
-  permissions:
-    contents: write
+permissions:
+  contents: write
 
-  jobs:
-    update:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        - name: Setup Node
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-        - name: Generate HTML feed
-          env:
-            BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
-            BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
-          run: |
-            npm install @atproto/api
-            node -e "
-            const { BskyAgent } = require('@atproto/api');
-            const fs = require('fs');
-            (async () => {
-              const agent = new BskyAgent({ service: 'https://bsky.social' 
-  });
-              await agent.login({ identifier: process.env.BLUESKY_HANDLE, 
-  password: process.env.BLUESKY_APP_PASSWORD });
-              const response = await agent.getAuthorFeed({ actor: 
-  process.env.BLUESKY_HANDLE, limit: 4 });
+      - name: Generate HTML feed
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+        run: |
+          npm install @atproto/api
+          cat > feed-generator.js << 'EOF'
+          const { BskyAgent } = require('@atproto/api');
+          const fs = require('fs');
+          
+          async function main() {
+            try {
+              const agent = new BskyAgent({ service: 'https://bsky.social' });
+              await agent.login({
+                identifier: process.env.BLUESKY_HANDLE,
+                password: process.env.BLUESKY_APP_PASSWORD
+              });
+              
+              const response = await agent.getAuthorFeed({
+                actor: process.env.BLUESKY_HANDLE,
+                limit: 4
+              });
+              
               const posts = response.data.feed.slice(0, 3);
-              const html = '<div 
-  style=\"background:#1a1a1a;color:white;padding:20px;margin:20px 
-  0;\"><h3>Recent Bluesky Posts</h3>' + posts.map(item => '<div 
-  style=\"padding:10px 0;border-bottom:1px solid #333;\"><p>' + 
-  (item.post.record.text || '') + '</p><a href=\"https://bsky.app/profile/' 
-  + item.post.author.handle + '/post/' + item.post.uri.split('/').pop() + 
-  '\" target=\"_blank\">View on Bluesky</a></div>').join('') + '</div>';
+              let html = '<div style="background:#1a1a1a;color:white;padding:20px;margin:20px 0;"><h3>Recent Bluesky Posts</h3>';
+              
+              for (const item of posts) {
+                const text = item.post.record.text || '';
+                const handle = item.post.author.handle;
+                const postId = item.post.uri.split('/').pop();
+                const url = `https://bsky.app/profile/${handle}/post/${postId}`;
+                
+                html += `<div style="padding:10px 0;border-bottom:1px solid #333;">`;
+                html += `<p>${text}</p>`;
+                html += `<a href="${url}" target="_blank">View on Bluesky</a>`;
+                html += `</div>`;
+              }
+              
+              html += '</div>';
+              
               fs.mkdirSync('content', { recursive: true });
               fs.writeFileSync('content/bluesky-widget.html', html);
-            })();
-            "
+              console.log('Generated HTML widget successfully');
+            } catch (error) {
+              console.error('Error:', error);
+              process.exit(1);
+            }
+          }
+          
+          main();
+          EOF
+          node feed-generator.js
 
-        - name: Commit changes
-          run: |
-            git config user.name "github-actions[bot]"
-            git config user.email 
-  "github-actions[bot]@users.noreply.github.com"
-            git add content/bluesky-widget.html || true
-            git commit -m "Update Bluesky feed" || true
-            git push || true
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add content/bluesky-widget.html
+          git commit -m "Update Bluesky feed HTML" || echo "No changes"
+          git push || echo "Push failed"
